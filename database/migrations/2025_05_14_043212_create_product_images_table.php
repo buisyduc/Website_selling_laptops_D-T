@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('variant_id')->nullable()->constrained('product_variants')->onDelete('cascade');
             // Lưu đường dẫn ảnh
             $table->string('image_path');
+            // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
             $table->timestamps();
         });
     }

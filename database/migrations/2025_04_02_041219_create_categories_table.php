@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('parent_id')->nullable(); // Danh mục cha
             $table->boolean('status')->default(1); // 1: Hiển thị, 0: Ẩn
             $table->integer('order')->default(0); // Thứ tự hiển thị
+            // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');

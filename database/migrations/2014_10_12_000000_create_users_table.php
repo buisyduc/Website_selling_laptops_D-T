@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->enum('role', ['admin', 'customer'])->default('customer'); // Phân quyền
             $table->enum('status', ['active', 'inactive', 'banned'])->default('active'); // Trạng thái tài khoản
+            // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });

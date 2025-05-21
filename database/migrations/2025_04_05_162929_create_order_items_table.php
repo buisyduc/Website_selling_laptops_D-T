@@ -24,6 +24,7 @@ return new class extends Migration
 
             // Giá mỗi sản phẩm tại thời điểm mua
             $table->decimal('price', 10, 2);
+            
 
             $table->timestamps();
         });

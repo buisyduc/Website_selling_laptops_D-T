@@ -31,10 +31,9 @@ return new class extends Migration
             $table->integer('used_count')->default(0);
             //Giới hạn mỗi người dùng chỉ được sử dụng mã này tối đa bao nhiêu lần.
             $table->integer('per_user_limit')->nullable();
-
-
+            $table->softDeletes();
             // Thời gian hết hạn của mã giảm giá
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }

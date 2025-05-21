@@ -19,6 +19,8 @@ return new class extends Migration
              $table->string('slug')->unique();
              $table->text('description')->nullable();
              $table->string('logo')->nullable(); // Logo thương hiệu
+             // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
              $table->timestamps();
         });
     }

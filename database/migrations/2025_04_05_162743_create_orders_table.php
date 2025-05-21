@@ -37,6 +37,8 @@ return new class extends Migration
 
             // Ghi chú thêm về đơn hàng (nếu có)
             $table->text('note')->nullable();
+            // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -28,7 +28,8 @@ return new class extends Migration
            // Một số thông tin phụ trợ
            $table->date('release_date')->nullable();
 
-
+            // Thêm cột deleted_at để hỗ trợ xóa mềm
+            $table->softDeletes();
             $table->timestamps();
         });
     }
