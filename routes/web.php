@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ClientHomeController::class, 'index'])->name('index');
 
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('signup',[AuthController::class,'signup'])->name( 'signup');
 

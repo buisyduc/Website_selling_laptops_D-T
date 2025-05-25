@@ -5,7 +5,7 @@
 <!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
 <head>
         <!-- Title -->
-        <title>Home-PC365</title>
+        <title>D&T</title>
 
         <!-- Required Meta Tags Always Come First -->
         <meta charset="utf-8">
@@ -39,12 +39,12 @@
                     <div class="container">
                         <div class="d-flex align-items-center">
                             <div class="topbar-left">
-                                <a href="#" class="text-gray-110 font-size-13 hover-on-dark">Welcome to Worldwide Electronics Store</a>
+                                <a href="#" class="text-gray-110 font-size-13 hover-on-dark">Chào mừng bạn đến với Website bán laptop D&T</a>
                             </div>
                             <div class="topbar-right ml-auto">
                                 <ul class="list-inline mb-0">
                                     <li class="list-inline-item mr-0 u-header-topbar__nav-item u-header-topbar__nav-item-border">
-                                        <a href="contact-v2.html" class="u-header-topbar__nav-link"><i class="ec ec-map-pointer mr-1"></i> Store Locator</a>
+                                        <a href="contact-v2.html" class="u-header-topbar__nav-link"><i class="ec ec-map-pointer mr-1"></i> Địa Chỉ Shop</a>
                                     </li>
 
 
@@ -61,7 +61,7 @@
                                             data-unfold-animation-in="fadeInRight"
                                             data-unfold-animation-out="fadeOutRight"
                                             data-unfold-duration="500">
-                                            <i class="ec ec-user mr-1"></i> Register <span class="text-gray-50">or</span> Sign in
+                                            <i class="ec ec-user mr-1"></i> Đăng Nhập <span class="text-gray-50">Hoặc</span> Đăng Kí
                                         </a>
                                         <!-- End Account Sidebar Toggle Button -->
                                     </li>
@@ -84,7 +84,7 @@
                                     <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center mb-3" href="index.html" aria-label="PC365">
                                         <svg version="1.1" x="0px" y="0px" width="175.748px" height="42.52px" viewBox="0 0 175 42" style="margin-bottom: 0;" xmlns="http://www.w3.org/2000/svg">
                                             <text x="0" y="32" font-family="Arial, sans-serif" font-size="36" fill="#333E48" font-weight="bold">
-                                                PC365
+                                                D&T
                                             </text>
                                         </svg>
                                     </a>
@@ -140,7 +140,7 @@
                                                         <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center mb-3" href="index.html" aria-label="PC365">
                                                             <svg version="1.1" x="0px" y="0px" width="175.748px" height="42.52px" viewBox="0 0 175 42" style="margin-bottom: 0;" xmlns="http://www.w3.org/2000/svg">
                                                                 <text x="0" y="32" font-family="Arial, sans-serif" font-size="36" fill="#333E48" font-weight="bold">
-                                                                    PC365
+                                                                    D&T
                                                                 </text>
                                                             </svg>
                                                         </a>

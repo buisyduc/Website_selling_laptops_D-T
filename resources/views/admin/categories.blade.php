@@ -6,12 +6,12 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Categories</h4>
+                    <h4 class="mb-sm-0">Danh Mục</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Products</a></li>
-                            <li class="breadcrumb-item active">Categories</li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Sản Phẩm</a></li>
+                            <li class="breadcrumb-item active">Danh Mục</li>
                         </ol>
                     </div>
 
@@ -24,7 +24,7 @@
             <div class="col-xxl-3">
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="card-title mb-0">Create Categories</h6>
+                        <h6 class="card-title mb-0">Tạo danh mục</h6>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -37,60 +37,24 @@
 
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <label for="name" class="form-label">Category Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter category name" value="{{ old('name') }}">
+                                    <label for="name" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Nhập Tên danh mục" value="{{ old('name') }}">
                                     @error('name')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-
                                 <div class="col-md-12 mb-3">
-                                    <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="slug" name="slug" placeholder="Enter slug" value="{{ old('slug') }}">
-                                    @error('slug')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="image" class="form-label">Category Image</label>
+                                    <label for="image" class="form-label">Hình ảnh danh mục</label>
                                     <input type="file" class="form-control" id="image" name="image" accept="image/*">
                                 </div>
 
                                 <div class="col-md-12 mb-3">
-                                    <label for="parent_id" class="form-label">Parent Category</label>
-                                    <select class="form-select" id="parent_id" name="parent_id">
-                                        <option value="">None</option>
-                                        {!! (new App\Http\Controllers\Admin\CategorieController)->renderCategoryOptions($categories) !!}
-                                    </select>
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter category description" value="{{ old('description') }}"></textarea>
+                                    <label for="description" class="form-label">Trạng Thái</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Nhập Trạng Thái" value="{{ old('description') }}"></textarea>
                                     @error('description')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="status" class="form-label">Status</label>
-                                    <div class="position-relative">
-                                        <span id="status-text" class="form-control bg-light pe-5">Hiển thị</span>
-                                        <select class="form-select position-absolute top-0 end-0 h-100 w-auto opacity-0" id="status" name="status"
-                                            onchange="document.getElementById('status-text').innerText = this.options[this.selectedIndex].text">
-                                            <option value="1" selected>Hiển thị</option>
-                                            <option value="0">Ẩn</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="order" class="form-label">Order</label>
-                                    <input type="number" class="form-control" id="order" name="order" value="0">
-                                </div>
-
                                 <div class="col-md-12 text-end">
                                     <button type="submit" class="btn btn-success px-4">Add Category</button>
                                 </div>
