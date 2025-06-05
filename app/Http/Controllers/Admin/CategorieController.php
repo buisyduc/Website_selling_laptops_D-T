@@ -19,7 +19,7 @@ class CategorieController extends Controller
 
         $categories = $query->with('products')->paginate(8);
 
-        return view('admin/categories', compact('categories'));
+        return view('admin/Category/categories', compact('categories'));
     }
     public function renderCategoryOptions($categories, $parent_id = null, $prefix = '')
         {
@@ -75,13 +75,7 @@ class CategorieController extends Controller
 
         return view('admin/sub-categories', compact('categories'));
     }
-    public function destroy(Categorie $category)
-    {
-        $this->deleteCategoryAndChildren($category);
 
-        return redirect()->route('categories')
-                        ->with('message', 'Xóa dữ liệu thành công');
-    }
 
     private function deleteCategoryAndChildren($category)
     {
@@ -96,5 +90,88 @@ class CategorieController extends Controller
         // Sau cùng xóa danh mục hiện tại
         $category->delete();
     }
+    public function trashed()
+    {
+        $categories = Categorie::onlyTrashed()->paginate(8);
+
+        return view('admin/Category/SoftDeletedCategories', compact('categories'));
+    }
+
+    public function destroy(Categorie $category)
+    {
+        $category->delete(); // xóa mềm danh mục
+
+        return redirect()->route('categories')
+                        ->with('message', 'Đã xóa mềm danh mục thành công');
+    }
+    public function restore($id)
+    {
+        $category = Categorie::withTrashed()->findOrFail($id);
+        $category->restore();
+
+        return redirect()->route('categories.trashed') // route xem danh mục đã xóa mềm
+                        ->with('message', 'Khôi phục danh mục thành công');
+    }
+    public function forceDelete($id)
+    {
+        $category = Categorie::withTrashed()->findOrFail($id);
+        $category->forceDelete();
+
+        return redirect()->route('categories.trashed')
+                        ->with('message', 'Đã xóa vĩnh viễn danh mục');
+    }
+
+    public function edit(Categorie $category)
+    {
+        $allCategories = Categorie::all(); // Để hiển thị danh sách chọn parent
+        return view('admin/Category/editCategory', compact('category', 'allCategories'));
+    }
+    public function update(Request $request, Categorie $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'parent_id' => 'nullable|exists:categories,id',
+            'status' => 'boolean',
+            'order' => 'integer',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $category->image = $imagePath;
+        }
+
+        $category->update([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+            'parent_id' => $request->parent_id,
+            'status' => $request->has('status') ? 1 : 0,
+            'order' => $request->order ?? 0,
+        ]);
+
+        return redirect()->route('categories')->with('message', 'Cập nhật danh mục thành công');
+    }
+    public function restoreAll()
+    {
+        Categorie::onlyTrashed()->restore();
+
+        return redirect()->back()->with('success', 'Tất cả danh mục đã được khôi phục thành công.');
+    }
+    public function forceDeleteAll()
+    {
+        $categories = Categorie::onlyTrashed()->get();
+
+        foreach ($categories as $category) {
+            $category->forceDelete();
+        }
+
+        return redirect()->back()->with('success', 'Đã xóa vĩnh viễn tất cả danh mục đã xoá mềm.');
+    }
+
+
+
 
 }

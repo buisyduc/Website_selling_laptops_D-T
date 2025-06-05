@@ -9,8 +9,18 @@ class product extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'name','slug','description','price','discount','stock','views','sold','image','category_id','brand_id','warranty','battery','dimensions','color','weight','release_date','status',
+            'name',
+            'slug',
+            'description',
+            'image',
+            'category_id',
+            'brand_id',
+            'release_date',
+            'status' => 'boolean',
+            'release_date' => 'date'
+
     ];
+   
     public function category()
     {
         return $this->belongsTo(categorie::class);
@@ -40,5 +50,8 @@ class product extends Model
     {
         return $this->hasMany(product_image::class);
     }
-
+       public function variants()
+    {
+        return $this->hasMany(product_variants::class);
+    }
 }

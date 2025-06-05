@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class categorie extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = ['name', 'slug', 'description', 'image', 'parent_id', 'status', 'order'];
+    protected $dates = ['deleted_at']; // Khai báo cột deleted_at là kiểu ngày tháng
 
     public function children()
     {
@@ -23,5 +24,5 @@ class categorie extends Model
         return $this->hasMany(Product::class, 'category_id');
     }
 
-    
+
 }

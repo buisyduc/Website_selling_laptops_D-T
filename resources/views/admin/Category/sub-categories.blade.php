@@ -1,4 +1,4 @@
-@extends('admin.index')
+{{-- @extends('admin.index')
 @section('container-fluid')
 <div class="container-fluid">
 
@@ -93,4 +93,4 @@
 </div>
 
 
-@endsection
+@endsection --}}

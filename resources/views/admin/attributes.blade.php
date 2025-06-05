@@ -1,3 +1,7 @@
+
+
+
+
 @extends('admin.index')
 @section('container-fluid')
     <div class="container-fluid">
@@ -6,12 +10,12 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Brands</h4>
+                    <h4 class="mb-sm-0">Attributes</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Products</a></li>
-                            <li class="breadcrumb-item active">Brands</li>
+                            <li class="breadcrumb-item active">Attributes</li>
                         </ol>
                     </div>
 
@@ -24,41 +28,36 @@
             <div class="col-xxl-3">
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="card-title mb-0">Create Brand</h6>
+                        <h6 class="card-title mb-0">Create Attributes</h6>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        <form method="POST" action="{{ route('brands.store') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('attributes.store') }}" enctype="multipart/form-data">
 
                             @csrf
 
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <label for="name" class="form-label">Brand Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter brand name" required>
-                                    <div class="invalid-feedback">Please enter a brands name.</div>
+                                    <label for="name" class="form-label">Attributes Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="Nhập thuộc tính " required>
+                                    @error('name')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                    <div class="col-md-12 mb-3">
+                                    <label for="parent_id" class="form-label">Parent Attributes</label>
+                                    <select class="form-select" id="parent_id" name="parent_id">
+                                        <option value="">None</option>
+                                      {!! (new \App\Http\Controllers\Admin\AttributesProduct)->renderCategoryOptions($allAttributes) !!}
+
+                                    </select>
                                 </div>
 
-                                <div class="col-md-12 mb-3">
-                                    <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="slug" name="slug" placeholder="Enter slug" required>
-                                    <div class="invalid-feedback">Please enter a slug.</div>
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="logo" class="form-label">Brands Logo</label>
-                                    <input type="file" class="form-control" id="logo" name="logo" accept="logo/*">
-                                </div>
-
-                                <div class="col-md-12 mb-3">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter brand description"></textarea>
-                                </div>
-                                <div class="col-md-12 text-end">
-                                    <button type="submit" class="btn btn-success px-4">Add Brand</button>
+                                 <div class="col-md-12 text-end">
+                                    <button type="submit" class="btn btn-success px-4">Add Attributes</button>
                                 </div>
                             </div>
                         </form>
@@ -67,7 +66,7 @@
                 </div>
                 <!-- end card -->
             </div>
-            <div class="col-xxl-9">
+            {{-- <div class="col-xxl-9">
                 <div class="row justify-content-between mb-4">
                     <div class="col-xxl-3 col-lg-6">
                         <div class="search-box mb-3">
@@ -136,12 +135,18 @@
                         </div>
                     </div>
                 </div>
-            </div><!--end col-->
+            </div><!--end col--> --}}
         </div><!--end row-->
 
     </div>
+    <style>
+        .form-control::placeholder {
+            color: rgba(0, 0, 0, 0.5); /* Màu chữ mờ hơn */
+            font-style: italic; /* Làm chữ nghiêng */
+        }
+    </style>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="overviewOffcanvas" aria-labelledby="overviewOffcanvasLabel">
+    {{-- <div class="offcanvas offcanvas-end" tabindex="-1" id="overviewOffcanvas" aria-labelledby="overviewOffcanvasLabel">
         <div class="offcanvas-header bg-primary-subtle">
             <h5 class="offcanvas-title" id="overviewOffcanvasLabel">
                 #TB<span class="overview-id"></span>
@@ -178,9 +183,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <script>
+    {{-- <script>
            document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll('.category-link').forEach(item => {
                     item.addEventListener("click", function () {
@@ -222,5 +227,5 @@
         }
     </style>
 
-    <!-- container-fluid -->
+    <!-- container-fluid --> --}}
 @endsection

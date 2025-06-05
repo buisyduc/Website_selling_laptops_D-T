@@ -47,18 +47,18 @@ class AuthController extends Controller
             'name'              => 'required|string|max:255',
             'email'             => 'required|email|unique:users,email',
             'password'          => 'required|string|min:6|confirmed',
-        
-        ]); 
-    
+
+        ]);
+
         $user = User::create([
             'name'              => $data['name'],
             'email'             => $data['email'],
             'password'          => Hash::make($data['password']),
-            
+
         ]);
-             
-        return view('index')->with('message', 'Tạo tài khoản thành công');
-    
+
+        return view('client/index')->with('message', 'Tạo tài khoản thành công');
+
 
     }
 

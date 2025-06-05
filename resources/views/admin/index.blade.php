@@ -720,20 +720,33 @@
                                 <div class="collapse menu-dropdown" id="sidebarProducts">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="{{route('product-list')}}" class="nav-link" data-key="t-list-view">List View</a>
+                                            <a href="{{ route('categories') }}" class="nav-link" data-key="t-categories">Categories</a>
+                                        </li>
+                                         {{-- <li class="nav-item">
+                                            <a href="{{ route('sub-categories') }}" class="nav-link" data-key="t-sub-categories">Sub Categories</a>
+                                        </li> --}}
+                                         <li class="nav-item">
+                                            <a href="{{ route('categories.trashed') }}" class="nav-link" data-key="t-categories">Soft Deleted Categories</a>
+                                        </li>
+                                         {{-- <li class="nav-item">
+                                            <a href="{{ route('categories.edit',$category->id) }}" class="nav-link" data-key="t-categories">Edit Categories</a>
+                                        </li> --}}
+                                         <li class="nav-item">
+                                            <a href="{{ route('brands') }}" class="nav-link" data-key="t-brands">Brands</a>
+                                        </li>
+                                          <li class="nav-item">
+                                            <a href="{{ route('brands.trashed') }}" class="nav-link" data-key="t-categories">Soft Deleted Bands</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{route('product-list')}}" class="nav-link" data-key="t-list-view">List Product</a>
+                                        </li>
+                                           <li class="nav-item">
+                                            <a href="{{route('attributes')}}" class="nav-link" data-key="t-list-view">Product Variation</a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="{{ route('product.create')}}" class="nav-link" data-key="t-create-product">Create Product</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="{{ route('categories') }}" class="nav-link" data-key="t-categories">Categories</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="{{ route('sub-categories') }}" class="nav-link" data-key="t-sub-categories">Sub Categories</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="{{ route('brands') }}" class="nav-link" data-key="t-brands">Brands</a>
-                                        </li>
+
                                     </ul>
                                 </div>
                             </li>
@@ -767,6 +780,9 @@
                                         <li class="nav-item">
                                             <a href="sellers-list-view.html" class="nav-link" data-key="t-list-view">List View</a>
                                         </li>
+                                         <li class="nav-item">
+                                            <a href="sellers-list-view.html" class="nav-link" data-key="t-list-view">Attributes</a>
+                                        </li>
                                         <li class="nav-item">
                                             <a href="sellers-grid-view.html" class="nav-link" data-key="t-grid-view">Grid View</a>
                                         </li>
@@ -785,6 +801,9 @@
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
                                             <a href="invoices-list.html" class="nav-link" data-key="t-list-view">List View</a>
+                                        </li>
+                                         <li class="nav-item">
+                                            <a href="invoices-list.html" class="nav-link" data-key="t-list-view">Attributes Product</a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="invoices-details.html" class="nav-link" data-key="t-overview">Overview</a>
