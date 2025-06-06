@@ -1,5 +1,4 @@
-@extends('admin.index')
-@section('container-fluid')
+<?php $__env->startSection('container-fluid'); ?>
 
 <div class="container-fluid">
 
@@ -27,18 +26,16 @@
         <div class=" mb-12">
             <div class="row g-4 mb-4">
                 <div class="col-sm-auto">
-                    {{-- <div>
-                        <a href="{{route('product-create')}}" class="btn btn-success" id="addproduct-btn"><i class="ri-add-line align-bottom me-1"></i> Add Product</a>
-                    </div> --}}
+                    
                 </div>
                 <div class="col-sm">
                     <div class="d-flex justify-content-sm-end">
                         <div class="search-box ms-2">
-                            <form method="GET" action="{{ route('product-list') }}" class="mb-3 d-flex align-items-center gap-2" style="margin-top:10px">
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Product..."
+                            <form method="GET" action="<?php echo e(route('product-list')); ?>" class="mb-3 d-flex align-items-center gap-2" style="margin-top:10px">
+                                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search Product..."
                                     class="form-control" style="width: 300px;">
                                 <button type="submit" class="btn btn-primary">Search</button>
-                                <a href="{{ route('product-list') }}" class="btn btn-info">Reset</a>
+                                <a href="<?php echo e(route('product-list')); ?>" class="btn btn-info">Reset</a>
                             </form>
                         </div>
                     </div>
@@ -63,38 +60,38 @@
                       </tr>
                     </thead>
                     <tbody>
-                        @foreach ($products as $product)
+                        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <th scope="row"></th>
-                                <td>{{$product->name}}</td>
-                                <td>{{$product->stock}}</td>
+                                <td><?php echo e($product->name); ?></td>
+                                <td><?php echo e($product->stock); ?></td>
                                 <th scope="row">
 
-                                       @php
+                                       <?php
                                             $avgRating = round($product->averageRating(), 1); // Lấy rating trung bình, làm tròn 1 chữ số
-                                        @endphp
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star{{ $i <= $avgRating ? '-fill text-warning' : '' }}"></i>
-                                        @endfor
-                                        ({{ $avgRating }}/5)
+                                        ?>
+                                        <?php for($i = 1; $i <= 5; $i++): ?>
+                                            <i class="bi bi-star<?php echo e($i <= $avgRating ? '-fill text-warning' : ''); ?>"></i>
+                                        <?php endfor; ?>
+                                        (<?php echo e($avgRating); ?>/5)
 
                                 </th>
-                                <td>{{$product->price}}</td>
-                                <td scope="row">{{ $product->total_sold ?? 0 }} </td>
+                                <td><?php echo e($product->price); ?></td>
+                                <td scope="row"><?php echo e($product->total_sold ?? 0); ?> </td>
 
-                                <td scope="row">{{$product->created_at}}</td>
+                                <td scope="row"><?php echo e($product->created_at); ?></td>
 
 
                                 <td>
-                                    @if($product->image)
-    <img src="{{ asset('storage/' . $product->image) }}" width="50" height="50" alt="{{ $product->image }}">
-@else
-    <img src="{{ asset('images/default-image.jpg') }}" width="50" height="50" alt="Default Image">
-@endif
+                                    <?php if($product->image): ?>
+    <img src="<?php echo e(asset('storage/' . $product->image)); ?>" width="50" height="50" alt="<?php echo e($product->image); ?>">
+<?php else: ?>
+    <img src="<?php echo e(asset('images/default-image.jpg')); ?>" width="50" height="50" alt="Default Image">
+<?php endif; ?>
 
                                 </td>
-                                <td scope="row">{{$product->category->name}}</td>
-                                <td scope="row">{{$product->status}}</td>
+                                <td scope="row"><?php echo e($product->category->name); ?></td>
+                                <td scope="row"><?php echo e($product->status); ?></td>
                                 <td>
                                     <ul class="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
                                         <li><a href="#" class="badge bg-info-subtle text-info">Edit</a></li>
@@ -102,11 +99,12 @@
                                     </ul>
                                 </td>
                             </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     </tbody>
                   </table>
-                  {{$products->links()}}
+                  <?php echo e($products->links()); ?>
+
             </div>
         </div>
 
@@ -115,7 +113,7 @@
     <!-- end row -->
 </div>
 <!-- container-fluid -->
-@endsection
+<?php $__env->stopSection(); ?>
 <script>
     $(document).ready(function() {
         function filterProducts() {
@@ -128,7 +126,7 @@
             let rating = $("input[name='rating']:checked").val();
 
             $.ajax({
-                url: "{{ route('product-list') }}",
+                url: "<?php echo e(route('product-list')); ?>",
                 method: "GET",
                 data: {
                     category: category,
@@ -159,3 +157,5 @@
         });
     });
     </script>
+
+<?php echo $__env->make('admin.index', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\Website_selling_laptops_D-T\resources\views/admin/product-list.blade.php ENDPATH**/ ?>

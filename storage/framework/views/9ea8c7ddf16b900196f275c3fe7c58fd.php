@@ -18,21 +18,21 @@
         <link rel="shortcut icon" href="https://themesbrand.com/toner/html/assets/images/favicon.ico">
 
         <!-- jsvectormap css -->
-        <link href="{{asset('admin/css/jsvectormap.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/css/jsvectormap.min.css')); ?>" rel="stylesheet" type="text/css">
 
         <!--Swiper slider css-->
-        <link href="{{asset('admin/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/libs/swiper/swiper-bundle.min.css')); ?>" rel="stylesheet" type="text/css">
 
         <!-- Layout config Js -->
-        <script src="{{asset('js/layout.js')}}"></script>
+        <script src="<?php echo e(asset('js/layout.js')); ?>"></script>
         <!-- Bootstrap Css -->
-        <link href="{{asset('admin/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/css/bootstrap.min.css')); ?>" rel="stylesheet" type="text/css">
         <!-- Icons Css -->
-        <link href="{{asset('admin/css/icons.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/css/icons.min.css')); ?>" rel="stylesheet" type="text/css">
         <!-- App Css-->
-        <link href="{{asset('admin/css/app.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/css/app.min.css')); ?>" rel="stylesheet" type="text/css">
         <!-- custom Css-->
-        <link href="{{asset('admin/css/custom.min.css')}}" rel="stylesheet" type="text/css">
+        <link href="<?php echo e(asset('admin/css/custom.min.css')); ?>" rel="stylesheet" type="text/css">
 
     </head>
 
@@ -133,19 +133,19 @@
                             <div class="navbar-brand-box horizontal-logo">
                                 <a href="" class="logo logo-dark">
                                     <span class="logo-sm">
-                                        <img src="{{asset('admin/images/logo-sm.png')}}" alt="" height="22">
+                                        <img src="<?php echo e(asset('admin/images/logo-sm.png')); ?>" alt="" height="22">
                                     </span>
                                     <span class="logo-lg">
-                                        <img src="{{asset('admin/images/logo-dark.png')}}" alt="" height="25">
+                                        <img src="<?php echo e(asset('admin/images/logo-dark.png')); ?>" alt="" height="25">
                                     </span>
                                 </a>
 
                                 <a href="/" class="logo logo-light">
                                     <span class="logo-sm">
-                                        <img src="{{asset('admin/images/logo-sm.png')}}" alt="" height="22">
+                                        <img src="<?php echo e(asset('admin/images/logo-sm.png')); ?>" alt="" height="22">
                                     </span>
                                     <span class="logo-lg">
-                                        <img src="{{asset('admin/images/logo-light.png')}}" alt="" height="25">
+                                        <img src="<?php echo e(asset('admin/images/logo-light.png')); ?>" alt="" height="25">
                                     </span>
                                 </a>
                             </div>
@@ -683,18 +683,18 @@
                 <div class="navbar-brand-box">
                     <a href="index.html" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="{{asset('admin/images/logo-sm.png')}}" alt="" >
+                            <img src="<?php echo e(asset('admin/images/logo-sm.png')); ?>" alt="" >
                         </span>
                         <span class="logo-lg">
-                            <img src="{{asset('admin/images/logo-dark.png')}}" alt="" height="26">
+                            <img src="<?php echo e(asset('admin/images/logo-dark.png')); ?>" alt="" height="26">
                         </span>
                     </a>
                     <a href="index.html" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="{{asset('admin/images/logo-sm.png')}}" alt="" height="24">
+                            <img src="<?php echo e(asset('admin/images/logo-sm.png')); ?>" alt="" height="24">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{asset('admin/images/logo-light.png')}}" alt="" height="24">
+                            <img src="<?php echo e(asset('admin/images/logo-light.png')); ?>" alt="" height="24">
                         </span>
                     </a>
                     <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -720,31 +720,27 @@
                                 <div class="collapse menu-dropdown" id="sidebarProducts">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="{{ route('categories') }}" class="nav-link" data-key="t-categories">Categories</a>
+                                            <a href="<?php echo e(route('categories')); ?>" class="nav-link" data-key="t-categories">Categories</a>
                                         </li>
-                                         {{-- <li class="nav-item">
-                                            <a href="{{ route('sub-categories') }}" class="nav-link" data-key="t-sub-categories">Sub Categories</a>
-                                        </li> --}}
+                                         
                                          <li class="nav-item">
-                                            <a href="{{ route('categories.trashed') }}" class="nav-link" data-key="t-categories">Soft Deleted Categories</a>
+                                            <a href="<?php echo e(route('categories.trashed')); ?>" class="nav-link" data-key="t-categories">Soft Deleted Categories</a>
                                         </li>
-                                         {{-- <li class="nav-item">
-                                            <a href="{{ route('categories.edit',$category->id) }}" class="nav-link" data-key="t-categories">Edit Categories</a>
-                                        </li> --}}
+                                         
                                          <li class="nav-item">
-                                            <a href="{{ route('brands') }}" class="nav-link" data-key="t-brands">Brands</a>
+                                            <a href="<?php echo e(route('brands')); ?>" class="nav-link" data-key="t-brands">Brands</a>
                                         </li>
                                           <li class="nav-item">
-                                            <a href="{{ route('brands.trashed') }}" class="nav-link" data-key="t-categories">Soft Deleted Bands</a>
+                                            <a href="<?php echo e(route('brands.trashed')); ?>" class="nav-link" data-key="t-categories">Soft Deleted Bands</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{route('product-list')}}" class="nav-link" data-key="t-list-view">List Product</a>
+                                            <a href="<?php echo e(route('product-list')); ?>" class="nav-link" data-key="t-list-view">List Product</a>
                                         </li>
                                            <li class="nav-item">
-                                            <a href="{{route('attributes')}}" class="nav-link" data-key="t-list-view">Product Variation</a>
+                                            <a href="<?php echo e(route('attributes')); ?>" class="nav-link" data-key="t-list-view">Product Variation</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ route('product.create')}}" class="nav-link" data-key="t-create-product">Create Product</a>
+                                            <a href="<?php echo e(route('product.create')); ?>" class="nav-link" data-key="t-create-product">Create Product</a>
                                         </li>
 
                                     </ul>
@@ -972,7 +968,7 @@
             <div class="main-content">
 
                 <div class="page-content">
-                    @yield('container-fluid')
+                    <?php echo $__env->yieldContent('container-fluid'); ?>
                 </div>
                 <!-- End Page-content -->
 
@@ -1126,27 +1122,27 @@
 
 
         <!-- JAVASCRIPT -->
-        <script src="{{asset('admin/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-        <script src="{{asset('admin/libs/simplebar/simplebar.min.js')}}"></script>
-        <script src="{{asset('admin/js/plugins.js')}}"></script>
+        <script src="<?php echo e(asset('admin/libs/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/libs/simplebar/simplebar.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/js/plugins.js')); ?>"></script>
 
         <!-- apexcharts -->
-        <script src="{{asset('admin/libs/apexcharts/apexcharts.min.js')}}"></script>
+        <script src="<?php echo e(asset('admin/libs/apexcharts/apexcharts.min.js')); ?>"></script>
 
         <!-- Vector map-->
-        <script src="{{asset('admin/libs/jsvectormap/js/jsvectormap.min.js')}}"></script>
-        <script src="{{asset('admin/libs/jsvectormap/maps/world-merc.js')}}"></script>
+        <script src="<?php echo e(asset('admin/libs/jsvectormap/js/jsvectormap.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/libs/jsvectormap/maps/world-merc.js')); ?>"></script>
 
-        <script src="{{asset('admin/libs/list.js/list.min.html')}}"></script>
+        <script src="<?php echo e(asset('admin/libs/list.js/list.min.html')); ?>"></script>
 
         <!--Swiper slider js-->
-        <script src="{{asset('admin/libs/swiper/swiper-bundle.min.js')}}"></script>
+        <script src="<?php echo e(asset('admin/libs/swiper/swiper-bundle.min.js')); ?>"></script>
 
         <!-- Dashboard init -->
-        <script src="{{asset('admin/js/pages/dashboard-ecommerce.init.js')}}"></script>
+        <script src="<?php echo e(asset('admin/js/pages/dashboard-ecommerce.init.js')); ?>"></script>
 
         <!-- App js -->
-        <script src="{{asset('admin/js/app.js')}}"></script>
+        <script src="<?php echo e(asset('admin/js/app.js')); ?>"></script>
 
 
         <script>
@@ -1499,3 +1495,4 @@ if (chartRadialbarMultipleColors) {
 
 <!-- Mirrored from themesbrand.com/toner/html/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 16 Mar 2025 17:50:20 GMT -->
 </html>
+<?php /**PATH D:\Website_selling_laptops_D-T\resources\views/admin/index.blade.php ENDPATH**/ ?>

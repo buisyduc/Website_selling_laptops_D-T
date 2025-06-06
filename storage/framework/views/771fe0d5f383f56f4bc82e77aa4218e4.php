@@ -73,7 +73,7 @@
                             <nav class="navbar navbar-expand u-header__navbar py-0 justify-content-xl-between max-width-270 min-width-270">
                                 <!-- Logo -->
                                 <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center mb-3" href="/" aria-label="PC365">
-                                    <img src="{{ asset('storage/logo.png') }}" alt="Logo" />
+                                    <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Logo" />
                                 </a>
                                 <!-- End Logo -->
 
@@ -105,7 +105,7 @@
                                                 <div id="headerSidebarContent" class="u-sidebar__content u-header-sidebar__content">
                                                     <!-- Logo -->
                                                     <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center mb-3" href="/" aria-label="PC365">
-                                                        <img src="{{ asset('storage/logo.png') }}" alt="Logo" />
+                                                        <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Logo" />
                                                     </a>
                                                     <!-- End Logo -->
 
@@ -320,7 +320,7 @@
 
                                     <!-- Featured Brands -->
                                     <li class="nav-item u-header__nav-item">
-                                        <a class="nav-link u-header__nav-link" href="{{ route('client.products.index') }}" aria-haspopup="true" aria-expanded="false" aria-labelledby="pagesSubMenu">Sản phẩm</a>
+                                        <a class="nav-link u-header__nav-link" href="<?php echo e(route('client.products.index')); ?>" aria-haspopup="true" aria-expanded="false" aria-labelledby="pagesSubMenu">Sản phẩm</a>
 
 
                                     </li>
@@ -364,7 +364,7 @@
     <main id="content" role="main">
         <!-- Slider Section -->
         <div class="mb-5">
-            <div class="bg-img-hero" style="background-image: url('{{ asset('storage/banners/laptop-banner.jpg') }}');">
+            <div class="bg-img-hero" style="background-image: url('<?php echo e(asset('storage/banners/laptop-banner.jpg')); ?>');">
                 <div class="container min-height-420 overflow-hidden">
                     <div class="js-slick-carousel u-slick" data-pagi-classes="text-center position-absolute right-0 bottom-0 left-0 u-slick__pagination u-slick__pagination--long justify-content-start mb-3 mb-md-4 offset-xl-3 pl-2 pb-1">
 
@@ -389,7 +389,7 @@
                                     </a>
                                 </div>
                                 <div class="col-xl-5 col-6 d-flex align-items-center" data-scs-animation-in="zoomIn" data-scs-animation-delay="500">
-                                    <img class="img-fluid" src="{{ asset('storage/products/gallery/1749195562_xJR0nZeTwa.jpg') }}" alt="ASUS ROG Strix G15">
+                                    <img class="img-fluid" src="<?php echo e(asset('storage/products/gallery/1749195562_xJR0nZeTwa.jpg')); ?>" alt="ASUS ROG Strix G15">
 
                                 </div>
                             </div>
@@ -416,7 +416,7 @@
                                     </a>
                                 </div>
                                 <div class="col-xl-5 col-6 d-flex align-items-center" data-scs-animation-in="fadeInUp" data-scs-animation-delay="500">
-                                    <img class="img-fluid" src="{{ asset('storage/products/macbook.jpg') }}" alt="ASUS ROG Strix G15">
+                                    <img class="img-fluid" src="<?php echo e(asset('storage/products/macbook.jpg')); ?>" alt="ASUS ROG Strix G15">
                                 </div>
                             </div>
                         </div>
@@ -442,7 +442,7 @@
                                     </a>
                                 </div>
                                 <div class="col-xl-5 col-6 d-flex align-items-center" data-scs-animation-in="fadeInRight" data-scs-animation-delay="500">
-                                    <img class="img-fluid" src="{{ asset('storage/products/macbook.jpg') }}" alt="Acer Predator Helios 300">
+                                    <img class="img-fluid" src="<?php echo e(asset('storage/products/macbook.jpg')); ?>" alt="Acer Predator Helios 300">
 
                                 </div>
                             </div>
@@ -499,7 +499,7 @@
                     <div class="col-lg-5">
                         <div class="mb-6">
                             <a href="/" class="d-inline-block">
-                                <img src="{{ asset('storage/logo.png') }}" alt="Logo" style="width: 300px; height: 100px; object-fit: cover;" />
+                                <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Logo" style="width: 300px; height: 100px; object-fit: cover;" />
                             </a>
                         </div>
                         <div class="mb-4">
@@ -529,7 +529,7 @@
                                 </li>
                                 <li class="list-inline-item mr-0">
                                     <a href="https://accounts.google.com" target="_blank" rel="noopener noreferrer">
-                                        <img src="{{ asset('storage/gg.png') }}" alt="Logo" style="width: 75px; height: 60px;" />
+                                        <img src="<?php echo e(asset('storage/gg.png')); ?>" alt="Logo" style="width: 75px; height: 60px;" />
                                 </li>
                                 <li class="list-inline-item mr-0">
                                     <a href="https://www.youtube.com/yourchannel" target="_blank" rel="noopener noreferrer">
@@ -1132,4 +1132,5 @@ unset($__errorArgs, $__bag); ?>
 
 <!-- Mirrored from transvelo.github.io/electro-html/2.0/html/home/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 11 Apr 2025 07:11:59 GMT -->
 </html>
+<?php /**PATH D:\Website_selling_laptops_D-T\resources\views/client/index.blade.php ENDPATH**/ ?>
 <?php /**PATH D:\Website_selling_laptops_D-T\resources\views/client/index.blade.php ENDPATH**/ ?>

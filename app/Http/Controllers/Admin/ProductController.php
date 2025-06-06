@@ -55,7 +55,7 @@ class ProductController extends Controller
         $categories = categorie::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
 
-        return view('admin.products.index', compact('products', 'categories', 'brands', 'filters'));
+        return view('admin/product-list', compact('products', 'categories', 'brands', 'filters'));
     }
     /**
      * Show the form for creating a new product
