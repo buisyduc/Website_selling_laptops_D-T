@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +26,12 @@ Route::get('/', [ClientHomeController::class, 'index'])->name('index');
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('signup',[AuthController::class,'signup'])->name( 'signup');
+//client
+Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
+//
 
-
-
+//admin
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('admin/index', [HomeController::class, 'index'])->name('admin.index');
 //categories

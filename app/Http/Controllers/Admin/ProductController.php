@@ -22,6 +22,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
+
 class ProductController extends Controller
 {
     protected $productService;
@@ -67,7 +68,7 @@ class ProductController extends Controller
         $availableAttributes = variant_attributes::all(); // Hoặc query theo bảng bạn có
         $attributes = $this->productService->getVariantAttributes();
 
-        return view('admin/product-create', compact('categories', 'brands', 'attributes','availableAttributes'));
+        return view('admin/product-create', compact('categories', 'brands', 'attributes', 'availableAttributes'));
     }
 
     /**
@@ -94,7 +95,6 @@ class ProductController extends Controller
             return redirect()
                 ->route('product.create')
                 ->with('message', 'Sản phẩm đã được tạo thành công!');
-
         } catch (\Exception $e) {
             DB::rollback();
             $this->logError('ERROR CREATING PRODUCT', $e);
@@ -164,7 +164,6 @@ class ProductController extends Controller
             return redirect()
                 ->route('product.show', $id)
                 ->with('message', 'Sản phẩm đã được cập nhật thành công!');
-
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error updating product: ' . $e->getMessage());
@@ -192,7 +191,6 @@ class ProductController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Sản phẩm đã được xóa thành công!']);
-
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error deleting product: ' . $e->getMessage());
@@ -219,7 +217,6 @@ class ProductController extends Controller
                 'message' => 'Trạng thái sản phẩm đã được cập nhật.',
                 'status' => $product->status
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error toggling product status: ' . $e->getMessage());
             return response()->json(['error' => 'Có lỗi xảy ra.'], 500);
@@ -248,16 +245,18 @@ class ProductController extends Controller
     /**
      * Create product with validated data
      */
-    private function createProductWithData(Request $request, array $validatedData): product
+    private function createProductWithData(Request $request, array $validatedData): Product
     {
         $productData = [
-            'name' => $validatedData['name'],
-            'slug' => $validatedData['slug'],
-            'description' => $validatedData['description'],
-            'brand_id' => $validatedData['brand_id'],
-            'category_id' => $validatedData['category_id'],
-            'status' => $validatedData['status'],
+            'name'         => $validatedData['name'],
+            'slug' => $validatedData['slug'] ?? Str::slug($validatedData['name']),
+            'description'  => $validatedData['description'],
+            'brand_id'     => $validatedData['brand_id'],
+            'category_id'  => $validatedData['category_id'],
+            'status'       => $validatedData['status'],
             'release_date' => $validatedData['release_date'] ?? null,
+            'price'        => $validatedData['price'],              // 🟢 THÊM GIÁ
+            'discount'     => $validatedData['discount'] ?? 0,      // 🟢 THÊM GIẢM GIÁ
         ];
 
         // Handle main image upload
@@ -270,6 +269,7 @@ class ProductController extends Controller
 
         return $product;
     }
+
 
     /**
      * Handle product images (gallery)
@@ -400,22 +400,21 @@ class ProductController extends Controller
     {
         Log::info("=== HANDLING VARIANTS FOR PRODUCT {$productId} ===");
 
-       foreach ($variants as $index => $variantData) {
-    Log::info("Variant #{$index} data:", $variantData);
+        foreach ($variants as $index => $variantData) {
+            Log::info("Variant #{$index} data:", $variantData);
 
-    if (!$this->isValidVariantData($variantData)) {
-        Log::warning("Skipping invalid variant at index {$index}");
-        continue;
-    }
+            if (!$this->isValidVariantData($variantData)) {
+                Log::warning("Skipping invalid variant at index {$index}");
+                continue;
+            }
 
-    try {
-        $this->createProductVariant($productId, $variantData, $index);
-    } catch (\Exception $e) {
-        Log::error("Error creating variant at index {$index}: " . $e->getMessage());
-        throw $e;
-    }
-}
-
+            try {
+                $this->createProductVariant($productId, $variantData, $index);
+            } catch (\Exception $e) {
+                Log::error("Error creating variant at index {$index}: " . $e->getMessage());
+                throw $e;
+            }
+        }
     }
 
 
@@ -431,78 +430,78 @@ class ProductController extends Controller
      * Create a single product variant
      */
     private function createProductVariant(int $productId, array $variantData, int $index): product_variants
-{
-    $variantCreateData = [
-        'product_id' => $productId,
-        'sku' => $variantData['sku'] ?? $this->generateSku($productId, $index),
-        'price' => (int) $variantData['price'],
-        'compare_price' => !empty($variantData['compare_price']) ? (float) $variantData['compare_price'] : null,
-        'cost_price' => !empty($variantData['cost_price']) ? (float) $variantData['cost_price'] : null,
-        'stock_quantity' => (int) $variantData['stock_quantity'],
-        'weight' => !empty($variantData['weight']) ? (float) $variantData['weight'] : null,
-        'length' => !empty($variantData['length']) ? (float) $variantData['length'] : null,
-        'width' => !empty($variantData['width']) ? (float) $variantData['width'] : null,
-        'height' => !empty($variantData['height']) ? (float) $variantData['height'] : null,
-        'status' => $variantData['status'] ?? 1,
-    ];
+    {
+        $variantCreateData = [
+            'product_id' => $productId,
+            'sku' => $variantData['sku'] ?? $this->generateSku($productId, $index),
+            'price' => (int) $variantData['price'],
+            'compare_price' => !empty($variantData['compare_price']) ? (float) $variantData['compare_price'] : null,
+            'cost_price' => !empty($variantData['cost_price']) ? (float) $variantData['cost_price'] : null,
+            'stock_quantity' => (int) $variantData['stock_quantity'],
+            'weight' => !empty($variantData['weight']) ? (float) $variantData['weight'] : null,
+            'length' => !empty($variantData['length']) ? (float) $variantData['length'] : null,
+            'width' => !empty($variantData['width']) ? (float) $variantData['width'] : null,
+            'height' => !empty($variantData['height']) ? (float) $variantData['height'] : null,
+            'status' => $variantData['status'] ?? 1,
+        ];
 
-    $variant = product_variants::create($variantCreateData);
-    Log::info("Created variant {$variant->id}");
+        $variant = product_variants::create($variantCreateData);
+        Log::info("Created variant {$variant->id}");
 
-   // Xử lý attributes của biến thể
-   if (!empty($variantData['attributes']) && is_array($variantData['attributes'])) {
-    Log::info("Attributes data for variant: ", $variantData['attributes']);
+        // Xử lý attributes của biến thể
+        if (!empty($variantData['attributes']) && is_array($variantData['attributes'])) {
+            Log::info("Attributes data for variant: ", $variantData['attributes']);
 
-    foreach ($variantData['attributes'] as $attributeData) {
-        $attributeId = $attributeData['attribute_id'] ?? null;
-        if (!$attributeId) continue;
+            foreach ($variantData['attributes'] as $attributeData) {
+                $attributeId = $attributeData['attribute_id'] ?? null;
+                if (!$attributeId) continue;
 
-        $attribute = variant_attributes::find($attributeId);
-        if (!$attribute) {
-            Log::warning("Attribute ID {$attributeId} not found.");
-            continue;
-        }
+                $attribute = variant_attributes::find($attributeId);
+                if (!$attribute) {
+                    Log::warning("Attribute ID {$attributeId} not found.");
+                    continue;
+                }
 
-        $options = $attributeData['options'] ?? [];
+                $options = $attributeData['options'] ?? [];
 
-        foreach ($options as $optionValue) {
-            $optionValue = trim($optionValue);
-            if ($optionValue === '') continue;
+                foreach ($options as $optionValue) {
+                    $optionValue = trim($optionValue);
+                    if ($optionValue === '') continue;
 
-            $option = variant_options::firstOrCreate([
-                'attribute_id' => $attribute->id,
-                'value' => $optionValue,
-            ]);
+                    $option = variant_options::firstOrCreate([
+                        'attribute_id' => $attribute->id,
+                        'value' => $optionValue,
+                    ]);
 
-            $exists = product_variant_options::where([
-                'variant_id' => $variant->id,
-                'attribute_id' => $attribute->id,
-                'option_id' => $option->id,
-            ])->exists();
+                    $exists = product_variant_options::where([
+                        'variant_id' => $variant->id,
+                        'attribute_id' => $attribute->id,
+                        'option_id' => $option->id,
+                    ])->exists();
 
-            if (!$exists) {
-                product_variant_options::create([
-                    'variant_id' => $variant->id,
-                    'attribute_id' => $attribute->id,
-                    'option_id' => $option->id,
-                ]);
+                    if (!$exists) {
+                        product_variant_options::create([
+                            'variant_id' => $variant->id,
+                            'attribute_id' => $attribute->id,
+                            'option_id' => $option->id,
+                        ]);
+                    }
+                }
             }
         }
+
+
+
+
+
+
+        return $variant;
     }
-}
 
 
 
 
-
-
-    return $variant;
-}
-
-
-
-
-     /**
+    /**
      * Extract attributes from flat variant structure
      */
     private function extractFlatAttributes(array $variantData): array
@@ -525,7 +524,7 @@ class ProductController extends Controller
         return $attributes;
     }
 
-  /**
+    /**
      * Extract attributes data from variant with multiple strategies
      */
     private function extractAttributesFromVariant(array $variantData): array
@@ -542,7 +541,7 @@ class ProductController extends Controller
         // Strategy 2: Extract from flat structure
         return $this->extractFlatAttributes($variantData);
     }
-        /**
+    /**
      * Process a single variant attribute
      */
     private function processVariantAttribute(int $variantId, array $attributeData): void
@@ -560,7 +559,6 @@ class ProductController extends Controller
             $attribute = $this->findOrCreateAttribute($attributeName);
             $option = $this->findOrCreateOption($attribute->id, $optionValue);
             $this->createVariantOptionLink($variantId, $option->id);
-
         } catch (\Exception $e) {
             Log::error("Error processing attribute for variant {$variantId}: " . $e->getMessage());
             throw $e;
@@ -831,7 +829,6 @@ class ProductController extends Controller
                 'message' => 'Attribute created successfully',
                 'data' => $attribute
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error creating attribute: ' . $e->getMessage());
             return response()->json([
@@ -875,7 +872,7 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         try {
-            $message = match($action) {
+            $message = match ($action) {
                 'delete' => $this->bulkDelete($productIds),
                 'activate' => $this->bulkActivate($productIds),
                 'deactivate' => $this->bulkDeactivate($productIds),
@@ -884,7 +881,6 @@ class ProductController extends Controller
 
             DB::commit();
             return response()->json(['message' => $message]);
-
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error in bulk action: ' . $e->getMessage());

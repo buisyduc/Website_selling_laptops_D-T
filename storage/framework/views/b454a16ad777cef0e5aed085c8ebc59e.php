@@ -22,22 +22,22 @@
         <form id="product-form" method="POST" action="<?php echo e(route('product.store')); ?>" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             <?php if(session('message')): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?php echo e(session('message')); ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php echo e(session('message')); ?>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <?php endif; ?>
 
             
             <?php if($errors->any()): ?>
-                <div class="alert alert-danger">
-                    <ul>
-                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li><?php echo e($error); ?></li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </ul>
-                </div>
+            <div class="alert alert-danger">
+                <ul>
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </ul>
+            </div>
             <?php endif; ?>
 
             <div class="row">
@@ -68,7 +68,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -83,13 +83,21 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
+                            <div class="form-group">
+                                <label for="price">Giá sản phẩm</label>
+                                <input type="number" name="price" id="price" class="form-control" required>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="discount">Giảm giá (nếu có)</label>
+                                <input type="number" name="discount" id="discount" class="form-control" value="0">
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Mô tả sản phẩm</label>
                                 <textarea class="form-control form-control-lg" id="description" name="description" rows="5" placeholder="Nhập mô tả chi tiết..." required><?php echo e(old('description')); ?></textarea>
@@ -98,7 +106,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -110,12 +118,12 @@ unset($__errorArgs, $__bag); ?>
                                 <select class="form-select" name="brand_id" required>
                                     <option value="">Chọn thương hiệu</option>
                                     <?php if(isset($brands) && $brands->count()): ?>
-                                        <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($brand->id); ?>" <?php echo e(old('brand_id') == $brand->id ? 'selected' : ''); ?>>
-                                                <?php echo e($brand->name); ?>
+                                    <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($brand->id); ?>" <?php echo e(old('brand_id') == $brand->id ? 'selected' : ''); ?>>
+                                        <?php echo e($brand->name); ?>
 
-                                            </option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <?php endif; ?>
                                 </select>
                                 <?php $__errorArgs = ['brand_id'];
@@ -123,7 +131,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -135,12 +143,12 @@ unset($__errorArgs, $__bag); ?>
                                 <select class="form-select" id="category_id" name="category_id" required>
                                     <option value="">Chọn danh mục</option>
                                     <?php if(isset($categories) && $categories->count()): ?>
-                                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
-                                                <?php echo e($category->name); ?>
+                                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
+                                        <?php echo e($category->name); ?>
 
-                                            </option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <?php endif; ?>
                                 </select>
                                 <?php $__errorArgs = ['category_id'];
@@ -148,7 +156,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -183,7 +191,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -207,7 +215,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -217,7 +225,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="text-danger"><?php echo e($message); ?></span>
+                                <span class="text-danger"><?php echo e($message); ?></span>
                                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -396,121 +404,122 @@ unset($__errorArgs, $__bag); ?>
         width: 100%;
         margin-top: 5px;
     }
+
 </style>
 
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // ==== 1. Upload ảnh phụ với preview và xóa ====
-    const uploadIcon = document.getElementById('upload-icon');
-    const fileInput = document.getElementById('product-images-input');
-    const previewContainer = document.getElementById('image-preview-container');
-    const dropzone = document.getElementById('productImagesDropzone');
+    document.addEventListener('DOMContentLoaded', function() {
+        // ==== 1. Upload ảnh phụ với preview và xóa ====
+        const uploadIcon = document.getElementById('upload-icon');
+        const fileInput = document.getElementById('product-images-input');
+        const previewContainer = document.getElementById('image-preview-container');
+        const dropzone = document.getElementById('productImagesDropzone');
 
-    if (dropzone && fileInput) {
-        dropzone.addEventListener('dragover', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#0d6efd';
-        });
-
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.style.borderColor = '#dee2e6';
-        });
-
-        dropzone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#dee2e6';
-
-            // Append new files to existing ones
-            const dt = new DataTransfer();
-            // Lấy các file cũ
-            Array.from(fileInput.files).forEach(file => dt.items.add(file));
-            // Thêm file mới
-            Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
-
-            fileInput.files = dt.files;
-            fileInput.dispatchEvent(new Event('change'));
-        });
-
-        uploadIcon?.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', event => {
-            const files = event.target.files;
-            previewContainer.innerHTML = '';
-
-            Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) return;
-
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'img-thumbnail';
-                    Object.assign(img.style, {
-                        width: '100px',
-                        height: '100px',
-                        objectFit: 'cover'
-                    });
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn btn-danger btn-sm mt-2';
-                    removeBtn.textContent = 'Xóa';
-
-                    removeBtn.addEventListener('click', e => {
-                        e.preventDefault();
-                        previewItem.remove();
-
-                        const dt = new DataTransfer();
-                        // Khi xóa, cập nhật lại fileInput.files, bỏ file index bị xóa
-                        Array.from(fileInput.files).forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        fileInput.files = dt.files;
-
-                        // Sau khi xóa, cập nhật lại preview để index chính xác
-                        // Gọi lại event change để render lại preview
-                        fileInput.dispatchEvent(new Event('change'));
-                    });
-
-                    previewItem.appendChild(img);
-                    previewItem.appendChild(removeBtn);
-                    previewContainer.appendChild(previewItem);
-                };
-
-                reader.readAsDataURL(file);
+        if (dropzone && fileInput) {
+            dropzone.addEventListener('dragover', e => {
+                e.preventDefault();
+                dropzone.style.borderColor = '#0d6efd';
             });
-        });
-    }
 
-    // ==== 2. Xử lý biến thể sản phẩm ====
-    let variantCount = 0;
-    let attributeCounter = 0; // Counter cho attributes
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.style.borderColor = '#dee2e6';
+            });
 
-    // Dữ liệu thuộc tính lấy từ backend (Laravel Blade)
-    const availableAttributes = <?php echo json_encode($availableAttributes, 15, 512) ?>;
+            dropzone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropzone.style.borderColor = '#dee2e6';
 
-    // Dữ liệu biến thể cũ (nếu có) khi validate lỗi quay lại
-    const oldVariants = <?php echo json_encode(old('variants', []), 512) ?>;
+                // Append new files to existing ones
+                const dt = new DataTransfer();
+                // Lấy các file cũ
+                Array.from(fileInput.files).forEach(file => dt.items.add(file));
+                // Thêm file mới
+                Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
 
-    if (typeof oldVariants === 'object' && oldVariants !== null) {
-        Object.entries(oldVariants).forEach(([key, variant]) => {
-            addVariant(key, variant);
-        });
-    }
+                fileInput.files = dt.files;
+                fileInput.dispatchEvent(new Event('change'));
+            });
 
-    function updateOptionsDisplay(variantId, attributeId) {
-    const container = document.getElementById(`options-display-${variantId}-${attributeId}`);
-    const hiddenContainer = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
-    if (!hiddenContainer) return;
+            uploadIcon ? .addEventListener('click', () => fileInput.click());
 
-    const options = Array.from(hiddenContainer.querySelectorAll('input')).map(i => i.value);
+            fileInput.addEventListener('change', event => {
+                const files = event.target.files;
+                previewContainer.innerHTML = '';
 
-    container.innerHTML = options.map(opt => `
+                Array.from(files).forEach((file, index) => {
+                    if (!file.type.startsWith('image/')) return;
+
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const previewItem = document.createElement('div');
+                        previewItem.classList.add('preview-item');
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-thumbnail';
+                        Object.assign(img.style, {
+                            width: '100px'
+                            , height: '100px'
+                            , objectFit: 'cover'
+                        });
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'btn btn-danger btn-sm mt-2';
+                        removeBtn.textContent = 'Xóa';
+
+                        removeBtn.addEventListener('click', e => {
+                            e.preventDefault();
+                            previewItem.remove();
+
+                            const dt = new DataTransfer();
+                            // Khi xóa, cập nhật lại fileInput.files, bỏ file index bị xóa
+                            Array.from(fileInput.files).forEach((f, i) => {
+                                if (i !== index) dt.items.add(f);
+                            });
+                            fileInput.files = dt.files;
+
+                            // Sau khi xóa, cập nhật lại preview để index chính xác
+                            // Gọi lại event change để render lại preview
+                            fileInput.dispatchEvent(new Event('change'));
+                        });
+
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(removeBtn);
+                        previewContainer.appendChild(previewItem);
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        // ==== 2. Xử lý biến thể sản phẩm ====
+        let variantCount = 0;
+        let attributeCounter = 0; // Counter cho attributes
+
+        // Dữ liệu thuộc tính lấy từ backend (Laravel Blade)
+        const availableAttributes = <?php echo json_encode($availableAttributes, 15, 512) ?>;
+
+        // Dữ liệu biến thể cũ (nếu có) khi validate lỗi quay lại
+        const oldVariants = <?php echo json_encode(old('variants', []), 512) ?>;
+
+        if (typeof oldVariants === 'object' && oldVariants !== null) {
+            Object.entries(oldVariants).forEach(([key, variant]) => {
+                addVariant(key, variant);
+            });
+        }
+
+        function updateOptionsDisplay(variantId, attributeId) {
+            const container = document.getElementById(`options-display-${variantId}-${attributeId}`);
+            const hiddenContainer = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
+            if (!hiddenContainer) return;
+
+            const options = Array.from(hiddenContainer.querySelectorAll('input')).map(i => i.value);
+
+            container.innerHTML = options.map(opt => `
         <span class="option-tag me-2 mb-1 d-inline-block">
             ${opt}
             <button type="button" class="btn btn-sm btn-link text-danger remove-option"
@@ -519,21 +528,21 @@ document.addEventListener('DOMContentLoaded', function () {
             </button>
         </span>
     `).join('');
-}
+        }
 
-    function addAttribute(variantId, attributeKey = null, attributeData = null) {
-    const container = document.getElementById(`attributes-container-${variantId}`);
-    const attributeId = attributeKey || (++attributeCounter);
-    attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
+        function addAttribute(variantId, attributeKey = null, attributeData = null) {
+            const container = document.getElementById(`attributes-container-${variantId}`);
+            const attributeId = attributeKey || (++attributeCounter);
+            attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
 
-    const selectedAttribute = attributeData?.attribute_id || '';
-    const options = attributeData?.options || [];
+            const selectedAttribute = attributeData ? .attribute_id || '';
+            const options = attributeData ? .options || [];
 
-    const attributeDiv = document.createElement('div');
-    attributeDiv.className = 'attribute-group mb-3';
-    attributeDiv.id = `attribute-${variantId}-${attributeId}`;
+            const attributeDiv = document.createElement('div');
+            attributeDiv.className = 'attribute-group mb-3';
+            attributeDiv.id = `attribute-${variantId}-${attributeId}`;
 
-   attributeDiv.innerHTML = `
+            attributeDiv.innerHTML = `
     <div class="d-flex align-items-center gap-2">
         <select class="form-select attribute-select" name="variants[${variantId}][attributes][${attributeId}][attribute_id]" required style="flex: 1;">
             <option value="">-- Chọn thuộc tính --</option>
@@ -572,25 +581,25 @@ document.addEventListener('DOMContentLoaded', function () {
 `;
 
 
-    container.appendChild(attributeDiv);
-}
+            container.appendChild(attributeDiv);
+        }
 
 
-    window.addVariant = function (variantKey = null, variantData = null) {
-        const id = variantKey || (++variantCount);
-        variantCount = Math.max(variantCount, parseInt(id));
+        window.addVariant = function(variantKey = null, variantData = null) {
+            const id = variantKey || (++variantCount);
+            variantCount = Math.max(variantCount, parseInt(id));
 
-        const container = document.getElementById('variants-container');
+            const container = document.getElementById('variants-container');
 
-        const sku = variantData?.sku || '';
-        const price = variantData?.price || '';
-        const stock = variantData?.stock_quantity || '';
+            const sku = variantData ? .sku || '';
+            const price = variantData ? .price || '';
+            const stock = variantData ? .stock_quantity || '';
 
-        const variantDiv = document.createElement('div');
-        variantDiv.className = 'variant-item';
-        variantDiv.id = `variant-${id}`;
+            const variantDiv = document.createElement('div');
+            variantDiv.className = 'variant-item';
+            variantDiv.id = `variant-${id}`;
 
-        variantDiv.innerHTML = `
+            variantDiv.innerHTML = `
             <button type="button" class="remove-variant-btn btn-close" data-variant-id="${id}"></button>
             <div class="row mb-3">
                 <div class="col-md-12">
@@ -620,125 +629,131 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `;
 
-        container.appendChild(variantDiv);
+            container.appendChild(variantDiv);
 
-        if (variantData?.attributes) {
-            Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
-                addAttribute(id, attrKey, attrData);
-            });
-        }
-    };
-
-    function addOptionToAttribute(variantId, attributeId) {
-    const input = document.getElementById(`option-input-${variantId}-${attributeId}`);
-    const value = input.value.trim();
-    if (!value) return;
-
-    // Kiểm tra xem option này đã tồn tại chưa
-    const container = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
-    if (!container) return;
-
-    // Tạo input hidden mới cho option
-    const exists = Array.from(container.querySelectorAll('input')).some(i => i.value === value);
-    if (exists) return;
-
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = `variants[${variantId}][attributes][${attributeId}][options][]`;
-    hiddenInput.value = value;
-    container.appendChild(hiddenInput);
-
-    updateOptionsDisplay(variantId, attributeId);
-
-    input.value = '';
-}
-   function removeOptionFromAttribute(variantId, attributeId, value) {
-    const hiddenContainer = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
-    if (!hiddenContainer) return;
-
-    const inputs = Array.from(hiddenContainer.querySelectorAll('input'));
-    inputs.forEach(i => {
-        if (i.value === value) {
-            hiddenContainer.removeChild(i);
-        }
-    });
-
-    updateOptionsDisplay(variantId, attributeId);
-}
-
-    // ==== 3. Event delegation ====
-    document.addEventListener('click', e => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-
-        const { variantId, attributeId, optionValue } = btn.dataset;
-
-        if (btn.classList.contains('remove-variant-btn')) {
-            document.getElementById(`variant-${variantId}`)?.remove();
-        }
-
-        if (btn.classList.contains('add-attribute-btn')) {
-            addAttribute(variantId);
-        }
-
-        if (btn.classList.contains('remove-attribute-btn')) {
-            document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
-        }
-
-        if (btn.classList.contains('remove-option')) {
-            removeOptionFromAttribute(variantId, attributeId, optionValue);
-        }
-    });
-
-    // ==== 4. Enter để thêm option nhanh ====
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && e.target.id?.startsWith('option-input-')) {
-            e.preventDefault();
-            const parts = e.target.id.split('-');
-            if (parts.length >= 4) {
-                addOptionToAttribute(parts[2], parts[3]);
+            if (variantData ? .attributes) {
+                Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
+                    addAttribute(id, attrKey, attrData);
+                });
             }
+        };
+
+        function addOptionToAttribute(variantId, attributeId) {
+            const input = document.getElementById(`option-input-${variantId}-${attributeId}`);
+            const value = input.value.trim();
+            if (!value) return;
+
+            // Kiểm tra xem option này đã tồn tại chưa
+            const container = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
+            if (!container) return;
+
+            // Tạo input hidden mới cho option
+            const exists = Array.from(container.querySelectorAll('input')).some(i => i.value === value);
+            if (exists) return;
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `variants[${variantId}][attributes][${attributeId}][options][]`;
+            hiddenInput.value = value;
+            container.appendChild(hiddenInput);
+
+            updateOptionsDisplay(variantId, attributeId);
+
+            input.value = '';
         }
-    });
 
-    // ==== 5. Form validation trước khi submit ====
-  document.getElementById('product-form')?.addEventListener('submit', function(e) {
-    const variants = document.querySelectorAll('.variant-item');
-    let hasError = false;
+        function removeOptionFromAttribute(variantId, attributeId, value) {
+            const hiddenContainer = document.getElementById(`options-hidden-container-${variantId}-${attributeId}`);
+            if (!hiddenContainer) return;
 
-    variants.forEach(variant => {
-        const attributes = variant.querySelectorAll('.attribute-group');
-
-        attributes.forEach(attr => {
-            const select = attr.querySelector('.attribute-select');
-            // Lấy tất cả input hidden options
-            const optionInputs = attr.querySelectorAll('input[type="hidden"]');
-
-            if (select) {
-                const attributeId = select.value;
-                const options = Array.from(optionInputs).map(i => i.value);
-
-                if (!attributeId) {
-                    alert('Vui lòng chọn thuộc tính cho tất cả biến thể!');
-                    hasError = true;
-                    return;
+            const inputs = Array.from(hiddenContainer.querySelectorAll('input'));
+            inputs.forEach(i => {
+                if (i.value === value) {
+                    hiddenContainer.removeChild(i);
                 }
+            });
 
-                if (options.length === 0) {
-                    alert('Vui lòng thêm ít nhất một giá trị cho thuộc tính!');
-                    hasError = true;
-                    return;
+            updateOptionsDisplay(variantId, attributeId);
+        }
+
+        // ==== 3. Event delegation ====
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const {
+                variantId
+                , attributeId
+                , optionValue
+            } = btn.dataset;
+
+            if (btn.classList.contains('remove-variant-btn')) {
+                document.getElementById(`variant-${variantId}`) ? .remove();
+            }
+
+            if (btn.classList.contains('add-attribute-btn')) {
+                addAttribute(variantId);
+            }
+
+            if (btn.classList.contains('remove-attribute-btn')) {
+                document.getElementById(`attribute-${variantId}-${attributeId}`) ? .remove();
+            }
+
+            if (btn.classList.contains('remove-option')) {
+                removeOptionFromAttribute(variantId, attributeId, optionValue);
+            }
+        });
+
+        // ==== 4. Enter để thêm option nhanh ====
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && e.target.id ? .startsWith('option-input-')) {
+                e.preventDefault();
+                const parts = e.target.id.split('-');
+                if (parts.length >= 4) {
+                    addOptionToAttribute(parts[2], parts[3]);
                 }
             }
         });
+
+        // ==== 5. Form validation trước khi submit ====
+        document.getElementById('product-form') ? .addEventListener('submit', function(e) {
+            const variants = document.querySelectorAll('.variant-item');
+            let hasError = false;
+
+            variants.forEach(variant => {
+                const attributes = variant.querySelectorAll('.attribute-group');
+
+                attributes.forEach(attr => {
+                    const select = attr.querySelector('.attribute-select');
+                    // Lấy tất cả input hidden options
+                    const optionInputs = attr.querySelectorAll('input[type="hidden"]');
+
+                    if (select) {
+                        const attributeId = select.value;
+                        const options = Array.from(optionInputs).map(i => i.value);
+
+                        if (!attributeId) {
+                            alert('Vui lòng chọn thuộc tính cho tất cả biến thể!');
+                            hasError = true;
+                            return;
+                        }
+
+                        if (options.length === 0) {
+                            alert('Vui lòng thêm ít nhất một giá trị cho thuộc tính!');
+                            hasError = true;
+                            return;
+                        }
+                    }
+                });
+            });
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+
     });
 
-    if (hasError) {
-        e.preventDefault();
-    }
-});
-
-});
 </script>
 
 <?php $__env->stopSection(); ?>
