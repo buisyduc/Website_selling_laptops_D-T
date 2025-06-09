@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
     protected $fillable=[
             'name',
             'slug',
@@ -20,7 +23,10 @@ class product extends Model
             'release_date' => 'date'
 
     ];
-   
+    protected $casts = [
+    'release_date' => 'date',  // hoặc 'datetime' nếu có giờ
+    ];
+
     public function category()
     {
         return $this->belongsTo(categorie::class);

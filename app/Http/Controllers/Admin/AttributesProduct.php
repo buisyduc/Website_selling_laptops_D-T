@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\product;
+use App\Models\product_variants;
 use App\Models\variant_attributes;
 use Illuminate\Http\Request;
 
@@ -15,10 +17,13 @@ public function index(Request $request){
         $query->where('name', 'like', '%' . $request->search . '%');
     }
 
-    $attributes = $query->paginate(8);
+    $variants  = product_variants::all();
+    $products = product::all();
+    $attributes = variant_attributes::query()->latest('id');
+    $attributes = $attributes->paginate(8);
     $allAttributes = variant_attributes::all(); // lấy tất cả để hiển thị danh mục cha
 
-    return view('admin/attributes', compact('attributes', 'allAttributes'));
+    return view('admin/Product/attributes', compact('attributes', 'allAttributes','products','variants'));
 }
 
      public function renderCategoryOptions($attributes, $parent_id = null, $prefix = '')

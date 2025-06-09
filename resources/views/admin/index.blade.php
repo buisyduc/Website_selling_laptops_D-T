@@ -740,6 +740,9 @@
                                         <li class="nav-item">
                                             <a href="{{route('product-list')}}" class="nav-link" data-key="t-list-view">List Product</a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="{{route('product.trashed')}}" class="nav-link" data-key="t-list-view">Soft Deleted Product</a>
+                                        </li>
                                            <li class="nav-item">
                                             <a href="{{route('attributes')}}" class="nav-link" data-key="t-list-view">Product Variation</a>
                                         </li>

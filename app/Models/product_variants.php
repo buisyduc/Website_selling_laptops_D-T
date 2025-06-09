@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\variant_attributes;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,4 +36,13 @@ class product_variants extends Model
     {
         return $this->variantOptions()->with(['attribute', 'option'])->get();
     }
+     public function variantAttribute()
+    {
+        return $this->belongsTo(variant_attributes::class, 'variant_attribute_id');
+    }
+    public function options()
+{
+    return $this->hasMany(product_variant_options::class, 'variant_id');
+}
+
 }
