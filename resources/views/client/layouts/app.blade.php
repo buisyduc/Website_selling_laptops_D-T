@@ -1108,6 +1108,33 @@ unset($__errorArgs, $__bag); ?>
             });
 
         </script>
+        <script>
+document.querySelectorAll('.quantity-input').forEach(input => {
+    input.addEventListener('change', function () {
+        const variantId = this.dataset.id;
+        const quantity = this.value;
+
+        fetch('{{ route('cart.updateQuantity') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                variant_id: variantId,
+                quantity: quantity
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                this.closest('tr').querySelector('.item-total').innerText = data.item_total;
+                document.querySelector('#cart-total').innerText = data.cart_total;
+            }
+        });
+    });
+});
+</script>
       <style>
     .form-section {
         display: none;

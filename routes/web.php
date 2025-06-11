@@ -33,7 +33,7 @@ Route::get('/products', [ClientProductController::class, 'index'])->name('client
 Route::get('/products/{id}', [ClientProductController::class, 'showById'])->name('client.products.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantityAjax'])->name('cart.updateQuantity');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 
 

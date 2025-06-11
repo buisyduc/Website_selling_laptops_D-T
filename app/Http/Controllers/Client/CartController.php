@@ -50,10 +50,29 @@ class CartController extends Controller
     }
 
 
-    public function update(Request $request)
-    {
-        // xử lý cập nhật số lượng
+   public function updateQuantityAjax(Request $request)
+{
+    $variantId = $request->input('variant_id');
+    $quantity = max(1, intval($request->input('quantity')));
+
+    $cart = session()->get('cart', []);
+
+    if (isset($cart[$variantId])) {
+        $cart[$variantId]['quantity'] = $quantity;
+        session()->put('cart', $cart);
+
+        $itemTotal = $cart[$variantId]['price'] * $quantity;
+        $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+
+        return response()->json([
+            'success' => true,
+            'item_total' => number_format($itemTotal, 0, ',', '.') . '₫',
+            'cart_total' => number_format($total, 0, ',', '.') . '₫'
+        ]);
     }
+
+    return response()->json(['success' => false], 400);
+}
 
     public function remove(Request $request)
     {
