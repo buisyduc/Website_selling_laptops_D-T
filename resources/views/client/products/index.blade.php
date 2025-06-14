@@ -1,10 +1,11 @@
 @extends('client.layouts.app')
 
-@section('title', 'Trang chủ')
+@section('title', 'Danh sách sản phẩm')
 
 @section('content')
-    <h3>Sản phẩm mới nhất</h3>
-    <div class="product-grid">
+<h3>Danh sách sản phẩm</h3>
+
+  <div class="product-grid">
         @foreach ($products as $product)
             <div class="product-card">
                 @if($product->image)

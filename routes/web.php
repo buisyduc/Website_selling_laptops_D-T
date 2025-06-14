@@ -6,7 +6,9 @@ use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +28,13 @@ Route::get('/', [ClientHomeController::class, 'index'])->name('index');
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('signup',[AuthController::class,'signup'])->name( 'signup');
 
+//client
+Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+Route::get('/products/{id}', [ClientProductController::class, 'showById'])->name('client.products.show');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantityAjax'])->name('cart.updateQuantity');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
