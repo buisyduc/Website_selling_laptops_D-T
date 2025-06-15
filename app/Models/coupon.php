@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class coupon extends Model
 {
     use HasFactory;
+    public function products()
+{
+    return $this->belongsToMany(Product::class, 'coupon_product');
+}
+
 }

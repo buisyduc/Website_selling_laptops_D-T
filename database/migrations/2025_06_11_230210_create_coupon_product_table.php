@@ -11,23 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
+            Schema::create('coupon_product', function (Blueprint $table) {
             $table->id();
-            // Liên kết với đơn hàng
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-
-            // Liên kết với sản phẩm
+            $table->foreignId('coupon_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-
-            // Số lượng sản phẩm
-            $table->integer('quantity');
-
-            // Giá mỗi sản phẩm tại thời điểm mua
-            $table->decimal('price', 10, 2);
-            
-
             $table->timestamps();
         });
+
     }
 
     /**
@@ -35,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('coupon_product');
     }
 };

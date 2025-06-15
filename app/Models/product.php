@@ -60,4 +60,9 @@ class product extends Model
     {
         return $this->hasMany(product_variants::class);
     }
+    public function coupons()
+{
+    return $this->belongsToMany(Coupon::class, 'coupon_product');
+}
+
 }

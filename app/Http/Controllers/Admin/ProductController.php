@@ -608,77 +608,87 @@ class ProductController extends Controller
     /**
      * Create a single product variant
      */
-    private function createProductVariant(int $productId, array $variantData, int $index): product_variants
-    {
-        $variantCreateData = [
-            'product_id' => $productId,
-            'sku' => $variantData['sku'] ?? $this->generateSku($productId, $index),
-            'price' => (int) $variantData['price'],
-            'compare_price' => !empty($variantData['compare_price']) ? (float) $variantData['compare_price'] : null,
-            'cost_price' => !empty($variantData['cost_price']) ? (float) $variantData['cost_price'] : null,
-            'stock_quantity' => (int) $variantData['stock_quantity'],
-            'weight' => !empty($variantData['weight']) ? (float) $variantData['weight'] : null,
-            'length' => !empty($variantData['length']) ? (float) $variantData['length'] : null,
-            'width' => !empty($variantData['width']) ? (float) $variantData['width'] : null,
-            'height' => !empty($variantData['height']) ? (float) $variantData['height'] : null,
-            'status' => $variantData['status'] ?? 1,
-        ];
+    private function createProductVariant(int $productId, array $variantData, int $index): void
+{
+    $commonAttributes = [];
+    $colors = [];
 
-        $variant = product_variants::create($variantCreateData);
-        Log::info("Created variant {$variant->id}");
+    // Tách riêng thuộc tính màu và các thuộc tính còn lại
+    foreach ($variantData['attributes'] as $attr) {
+        $attributeId = $attr['attribute_id'];
+        $options = $attr['options'];
 
-        // Xử lý attributes của biến thể
-        if (!empty($variantData['attributes']) && is_array($variantData['attributes'])) {
-            Log::info("Attributes data for variant: ", $variantData['attributes']);
+        if (!$attributeId || !is_array($options)) continue;
 
-            foreach ($variantData['attributes'] as $attributeData) {
-                $attributeId = $attributeData['attribute_id'] ?? null;
-                if (!$attributeId) continue;
+        $attribute = variant_attributes::find($attributeId);
+        if (!$attribute) continue;
 
-                $attribute = variant_attributes::find($attributeId);
-                if (!$attribute) {
-                    Log::warning("Attribute ID {$attributeId} not found.");
-                    continue;
-                }
-
-                $options = $attributeData['options'] ?? [];
-
-                foreach ($options as $optionValue) {
-                    $optionValue = trim($optionValue);
-                    if ($optionValue === '') continue;
-
-                    $option = variant_options::firstOrCreate([
-                        'attribute_id' => $attribute->id,
-                        'value' => $optionValue,
-                    ]);
-
-                    $exists = product_variant_options::where([
-                        'variant_id' => $variant->id,
-                        'attribute_id' => $attribute->id,
-                        'option_id' => $option->id,
-                    ])->exists();
-
-                    if (!$exists) {
-                        product_variant_options::create([
-                            'variant_id' => $variant->id,
-                            'attribute_id' => $attribute->id,
-                            'option_id' => $option->id,
-                        ]);
-                    }
-                }
-            }
+        if (stripos($attribute->name, 'màu') !== false) {
+            $colors = $options; // Ưu tiên 1 thuộc tính màu sắc
+        } else {
+            $commonAttributes[] = [
+                'attribute' => $attribute,
+                'options' => $options,
+            ];
         }
-
-
-
-
-
-
-        return $variant;
     }
 
+    // Nếu không có màu → tạo 1 biến thể duy nhất
+    if (empty($colors)) {
+        $variant = $this->createSingleVariant($productId, $variantData, $index);
+        $this->attachAttributes($variant, $commonAttributes);
+        return;
+    }
 
+    // Nếu có màu → tách ra mỗi màu là một biến thể riêng
+    foreach ($colors as $colorValue) {
+        $variant = $this->createSingleVariant($productId, $variantData, $index++);
+        $this->attachAttributes($variant, $commonAttributes);
+        $this->attachSingleAttribute($variant, 'Màu sắc', $colorValue);
+    }
+}
+private function createSingleVariant(int $productId, array $data, int $index): product_variants
+{
+    $variant = product_variants::create([
+        'product_id' => $productId,
+        'sku' => $data['sku'] ?? $this->generateSku($productId, $index),
+        'price' => (int) $data['price'],
+        'compare_price' => $data['compare_price'] ?? null,
+        'cost_price' => $data['cost_price'] ?? null,
+        'stock_quantity' => (int) $data['stock_quantity'],
+        'weight' => $data['weight'] ?? null,
+        'length' => $data['length'] ?? null,
+        'width' => $data['width'] ?? null,
+        'height' => $data['height'] ?? null,
+        'status' => $data['status'] ?? 1,
+    ]);
 
+    return $variant;
+}
+
+private function attachAttributes(product_variants $variant, array $attributes): void
+{
+    foreach ($attributes as $item) {
+        foreach ($item['options'] as $value) {
+            $this->attachSingleAttribute($variant, $item['attribute']->name, $value);
+        }
+    }
+}
+
+private function attachSingleAttribute(product_variants $variant, string $attributeName, string $value): void
+{
+    $attribute = variant_attributes::firstOrCreate(['name' => $attributeName]);
+    $option = variant_options::firstOrCreate([
+        'attribute_id' => $attribute->id,
+        'value' => trim($value),
+    ]);
+
+    product_variant_options::firstOrCreate([
+        'variant_id' => $variant->id,
+        'attribute_id' => $attribute->id,
+        'option_id' => $option->id,
+    ]);
+}
 
     /**
      * Extract attributes from flat variant structure
@@ -948,9 +958,6 @@ class ProductController extends Controller
         Log::error('Stack trace: ' . $e->getTraceAsString());
     }
 
-    // =====================================
-    // API ENDPOINTS
-    // =====================================
 
     /**
      * Get variant options for AJAX
@@ -1152,7 +1159,7 @@ class ProductController extends Controller
 
 
          $product = Product::with('category')->findOrFail($id);
-        // $recentOrders = Order::where('product_id', $id)->latest()->take(5)->get(); // Tùy chọn
+
         return view('admin/Product/product-view', compact('product'));
     }
 }

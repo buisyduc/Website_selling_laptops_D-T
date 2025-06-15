@@ -23,6 +23,17 @@ class categorie extends Model
     {
         return $this->hasMany(Product::class, 'category_id');
     }
+    public function getBreadcrumbs()
+        {
+            $breadcrumbs = collect();
+            $category = $this;
 
+            while ($category) {
+                $breadcrumbs->prepend($category);
+                $category = $category->parent;
+            }
+
+            return $breadcrumbs;
+        }
 
 }

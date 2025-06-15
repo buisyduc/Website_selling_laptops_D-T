@@ -6,7 +6,10 @@ use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,16 +25,47 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [ClientHomeController::class, 'index'])->name('index');
+Route::get('/home', [ClientHomeController::class, 'home'])->name('home');
+Route::get('/login', function () {
+    return response()->json(['message' => 'Vui lòng đăng nhập để tiếp tục.'], 401);
+})->name('login');
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('signup',[AuthController::class,'signup'])->name( 'signup');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/account-management', [AuthController::class, 'management'])->name('management');
 
 
+//giao diện chung
+Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
+
+
+
+// // Product routes
+// Route::get('/api/products/search', [ProductController::class, 'search'])->name('products.search');
+// Route::get('/api/products/{id}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
+
+
+
+Route::middleware(['auth', 'is_customer'])->group(function () {
+// CART
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update-item', [CartController::class, 'updateItem'])->name('cart.updateItem');
+    Route::delete('/cart/remove/{variantId}', [CartController::class, 'remove']);
+    Route::delete('/cart/clear-ajax', [CartController::class, 'clearAjax'])->name('cart.clearAjax');
+    Route::put('/cart', [CartController::class, 'updateAll'])->name('cart.updateAll');
+    require __DIR__.'/cart.php';
+
+
+
+
+
+});
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('admin/index', [HomeController::class, 'index'])->name('admin.index');
-
-
 //categories
     Route::get('admin/categories',[CategorieController::class,'index'])->name('categories');
     Route::post('admin/categories/store', [CategorieController::class, 'store'])->name('categories.store');
@@ -50,7 +84,6 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('/brands/{brand}', [BrandController::class, 'destroy'])->name('brands.destroy');
     Route::post('brands/{id}/restore', [BrandController::class, 'restore'])->name('brands.restore');
     Route::post('admin/brands/restore-all', [BrandController::class, 'restoreAll'])->name('brands.restoreAll');
-    Route::delete('brands/{id}/force-delete', [BrandController::class, 'forceDelete'])->name('brands.forceDelete');
     Route::delete('admin/brands/force-delete-all', [BrandController::class, 'forceDeleteAll'])->name('brands.forceDeleteAll');
     Route::get('brands/trashed', [BrandController::class, 'trashed'])->name('brands.trashed');
     Route::delete('brands/{id}/force-delete', [BrandController::class, 'forceDelete'])->name('brands.forceDelete');
@@ -72,13 +105,6 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('admin/product/force-delete-all', [ProductController::class, 'forceDeleteAll'])->name('product.forceDeleteAll');
     Route::put('admin/product/{brand}', [ProductController::class, 'update'])->name('product.update');
     Route::get('admin/product-view/{id}',[ProductController::class,'view'])->name('product.view');
-
-
-
-
-
-
-
 //attributes
     Route::get('admin/attributes',[AttributesProduct::class,'index'])->name('attributes');
     Route::post('admin/attributes/store', [AttributesProduct::class, 'store'])->name('attributes.store');
