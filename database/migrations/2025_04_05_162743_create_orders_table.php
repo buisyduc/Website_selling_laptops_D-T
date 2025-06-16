@@ -16,7 +16,8 @@ return new class extends Migration
             // Liên kết với người dùng (khách hàng)
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             //Lienn ket voi bang giam gia de biet down hang do dang dung ma giam gia nao
-           $table->foreignId('coupon_id')->constrained('coupons')->onDelete('cascade');
+          $table->foreignId('coupon_id')->nullable()->constrained('coupons')->onDelete('cascade');
+
 
             // Mã đơn hàng
             $table->string('order_code')->unique(); // Mã đơn hàng, đảm bảo là duy nhất

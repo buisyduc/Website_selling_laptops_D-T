@@ -64,7 +64,8 @@
     </div>
 
     <div class="d-flex justify-content-end mt-3">
-        <a href="#" class="btn btn-primary">Tiến hành thanh toán</a>
+        
+       <a href="{{ route('checkout.form') }}" class="btn btn-primary" style="with:100%">Tiến hành thanh toán</a>
     </div>
 
     @else
