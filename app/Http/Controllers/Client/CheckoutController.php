@@ -9,25 +9,25 @@ use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    public function index()
-    {
-        $user = auth()->user();
+   public function index()
+{
+    $user = auth()->user();
 
-        if (!$user || !$user->cart) {
-            return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
-        }
-
-        $cart = $user->cart()->with(['items.variant.product'])->first();
-
-        $total = $cart->items->sum(function ($item) {
-            return $item->quantity * $item->variant->price;
-        });
-
-        return view('client.checkout.index', [
-            'cartItems' => $cart->items,
-            'total' => $total
-        ]);
+    if (!$user || !$user->cart) {
+        return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
     }
+
+    $cart = $user->cart()->with(['items.variant.product'])->first();
+
+    $total = $cart->items->sum(function ($item) {
+        return $item->quantity * $item->variant->price;
+    });
+
+    return view('client.checkout.index', [
+        'cartItems' => $cart->items,
+        'total' => $total
+    ]);
+}
 
 
 
