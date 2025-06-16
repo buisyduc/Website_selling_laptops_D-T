@@ -10,7 +10,7 @@
         </div>
         <ul class="list-inline mb-0">
             <li class="list-inline-item mr-0 u-header-topbar__nav-item u-header-topbar__nav-item-border">
-                <a href="contact-v2.html" class="u-header-topbar__nav-link"><i class="ec ec-map-pointer mr-1"></i>
+                <a href="https://www.google.com/maps?q=21.038132,105.747109" class="u-header-topbar__nav-link"><i class="ec ec-map-pointer mr-1"></i>
                     Vị Trí cửa hàng</a>
             </li>
             <li class="list-inline-item mr-0 u-header-topbar__nav-item">
@@ -153,11 +153,11 @@
                                     <ul class="list-inline mb-0">
                                         <li class="list-inline-item pr-3">
                                             <a class="u-header-sidebar__footer-link text-gray-90"
-                                                href="#">Privacy</a>
+                                                href="#">Riêng tư</a>
                                         </li>
                                         <li class="list-inline-item pr-3">
                                             <a class="u-header-sidebar__footer-link text-gray-90"
-                                                href="#">Terms</a>
+                                                href="#">Điều khoản</a>
                                         </li>
                                         <li class="list-inline-item">
                                             <a class="u-header-sidebar__footer-link text-gray-90" href="#">

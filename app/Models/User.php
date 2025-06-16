@@ -52,9 +52,9 @@ class User extends Authenticatable
 
 
 
- public function cart()
-    {
-        return $this->hasOne(Cart::class);
-    }
+public function cart()
+{
+    return $this->hasOne(\App\Models\Cart::class);
+}
 
 }
