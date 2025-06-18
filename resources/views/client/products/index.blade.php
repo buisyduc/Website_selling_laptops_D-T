@@ -1,4 +1,4 @@
-@extends('client.layouts.app')
+@extends('client.layouts.layout')
 
 @section('title', 'Danh sách sản phẩm')
 
@@ -17,9 +17,9 @@
         <h4>{{ $product->name }}</h4>
         <p>{{ number_format($product->price, 0, ',', '.') }} đ</p>
         <p>{{ Str::limit($product->description, 60) }}</p>
-        <a href="<a href=" {{ route('client.products.show', $product->slug) }}>
+        <a href="{{ route('client.products.show', $product->id) }}">
             {{ $product->name }}
-        </a>">Xem chi tiết</a>
+        </a>Xem chi tiết</a>
     </div>
     @endforeach
 </div>

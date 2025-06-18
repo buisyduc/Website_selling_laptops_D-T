@@ -7,129 +7,128 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
-
 class ProductController extends Controller
 {
-public function show($id)
-{
-    $product = Product::with([
-        'variants.options.attribute',
-        'variants.options.option',
-        'images',
-        'brand',
-        'category'
-    ])->findOrFail($id);
+    public function show($id)
+    {
+        $product = Product::with([
+            'variants.options.attribute',
+            'variants.options.option',
+            'images',
+            'brand',
+            'category'
+        ])->findOrFail($id);
 
-    // Tìm ID của thuộc tính RAM
-    $ramAttr = \App\Models\variant_attributes::where('name', 'RAM')->first();
-    $ramAttrId = $ramAttr ? $ramAttr->id : null;
+        // Tìm ID của thuộc tính RAM
+        $ramAttr = \App\Models\variant_attributes::where('name', 'RAM')->first();
+        $ramAttrId = $ramAttr ? $ramAttr->id : null;
 
-    // Dữ liệu phục vụ cho JavaScript
- $variantsForJs = $product->variants->map(function ($variant) {
-    return [
-        'id' => $variant->id,
-        'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity,
-        'options' => $variant->options->mapWithKeys(function ($opt) {
-            return [$opt->attribute_id => $opt->option_id];
-        }),
-    ];
-})->toArray();
-
-
-
-    // Cấu trúc dạng readable như yêu cầu
-    $variantGroupsReadable = [];
-
-    foreach ($product->variants as $variant) {
-        $ramValue = null;
-        $otherOptions = [];
-
-        foreach ($variant->options as $option) {
-            $attrName = $option->attribute->name;
-            $optValue = $option->option->value;
-
-            if (strtolower($attrName) === 'ram') {
-                $ramValue = $optValue;
-            } else {
-                $otherOptions[$attrName][] = $optValue;
-            }
-        }
-
-        if ($ramValue) {
-            $variantGroupsReadable[] = [
+        // Dữ liệu phục vụ cho JavaScript
+        $variantsForJs = $product->variants->map(function ($variant) {
+            return [
                 'id' => $variant->id,
                 'price' => $variant->price,
                 'stock_quantity' => $variant->stock_quantity,
-                'options' => [
-                    $ramValue => $otherOptions
-                ]
+                'options' => $variant->options->mapWithKeys(function ($opt) {
+                    return [$opt->attribute_id => $opt->option_id];
+                }),
             ];
-        }
-    }
+        })->toArray();
 
 
-    // Breadcrumbs
-    $breadcrumbs = $product->category->getBreadcrumbs();
 
-    // Danh sách thuộc tính kèm giá rẻ nhất và tồn kho
-    $attributeOptionsWithPrices = [];
-    foreach ($product->variants as $variant) {
-        foreach ($variant->options as $option) {
-            $attrId = $option->attribute->id;
-            $attrName = $option->attribute->name;
-            $optId = $option->option->id;
-            $optValue = $option->option->value;
-            $price = $variant->price;
-            $stock = $variant->stock_quantity;
+        // Cấu trúc dạng readable như yêu cầu
+        $variantGroupsReadable = [];
 
-            if (!isset($attributeOptionsWithPrices[$attrId])) {
-                $attributeOptionsWithPrices[$attrId] = [
-                    'name' => $attrName,
-                    'options' => []
-                ];
+        foreach ($product->variants as $variant) {
+            $ramValue = null;
+            $otherOptions = [];
+
+            foreach ($variant->options as $option) {
+                $attrName = $option->attribute->name;
+                $optValue = $option->option->value;
+
+                if (strtolower($attrName) === 'ram') {
+                    $ramValue = $optValue;
+                } else {
+                    $otherOptions[$attrName][] = $optValue;
+                }
             }
 
-            if (!isset($attributeOptionsWithPrices[$attrId]['options'][$optId])) {
-                $attributeOptionsWithPrices[$attrId]['options'][$optId] = [
-                    'value' => $optValue,
-                    'price' => $price,
-                    'stock' => $stock
+            if ($ramValue) {
+                $variantGroupsReadable[] = [
+                    'id' => $variant->id,
+                    'price' => $variant->price,
+                    'stock_quantity' => $variant->stock_quantity,
+                    'options' => [
+                        $ramValue => $otherOptions
+                    ]
                 ];
-            } else {
-                $existing = $attributeOptionsWithPrices[$attrId]['options'][$optId];
-                if ($price < $existing['price']) {
-                    $attributeOptionsWithPrices[$attrId]['options'][$optId]['price'] = $price;
-                    $attributeOptionsWithPrices[$attrId]['options'][$optId]['stock'] = $stock;
+            }
+        }
+
+
+        // Breadcrumbs
+        $breadcrumbs = $product->category->getBreadcrumbs();
+
+        // Danh sách thuộc tính kèm giá rẻ nhất và tồn kho
+        $attributeOptionsWithPrices = [];
+        foreach ($product->variants as $variant) {
+            foreach ($variant->options as $option) {
+                $attrId = $option->attribute->id;
+                $attrName = $option->attribute->name;
+                $optId = $option->option->id;
+                $optValue = $option->option->value;
+                $price = $variant->price;
+                $stock = $variant->stock_quantity;
+
+                if (!isset($attributeOptionsWithPrices[$attrId])) {
+                    $attributeOptionsWithPrices[$attrId] = [
+                        'name' => $attrName,
+                        'options' => []
+                    ];
+                }
+
+                if (!isset($attributeOptionsWithPrices[$attrId]['options'][$optId])) {
+                    $attributeOptionsWithPrices[$attrId]['options'][$optId] = [
+                        'value' => $optValue,
+                        'price' => $price,
+                        'stock' => $stock
+                    ];
+                } else {
+                    $existing = $attributeOptionsWithPrices[$attrId]['options'][$optId];
+                    if ($price < $existing['price']) {
+                        $attributeOptionsWithPrices[$attrId]['options'][$optId]['price'] = $price;
+                        $attributeOptionsWithPrices[$attrId]['options'][$optId]['stock'] = $stock;
+                    }
                 }
             }
         }
+
+        // Sắp xếp variant theo giá
+        $product->variants = $product->variants->sortBy('price');
+
+        // Sản phẩm liên quan
+        $relatedProducts = Product::with(['images', 'variants'])
+            ->where('id', '!=', $product->id)
+            ->where('status', true)
+            ->where(function ($query) use ($product) {
+                $query->where('category_id', $product->category_id)
+                      ->orWhere('brand_id', $product->brand_id);
+            })
+            ->limit(4)
+            ->get();
+
+        return view('client.products.show', compact(
+            'product',
+            'relatedProducts',
+            'breadcrumbs',
+            'variantsForJs',
+            'ramAttrId',
+            'attributeOptionsWithPrices',
+            'variantGroupsReadable'
+        ));
     }
-
-    // Sắp xếp variant theo giá
-    $product->variants = $product->variants->sortBy('price');
-
-    // Sản phẩm liên quan
-    $relatedProducts = Product::with(['images', 'variants'])
-        ->where('id', '!=', $product->id)
-        ->where('status', true)
-        ->where(function ($query) use ($product) {
-            $query->where('category_id', $product->category_id)
-                  ->orWhere('brand_id', $product->brand_id);
-        })
-        ->limit(4)
-        ->get();
-
-    return view('client.products.show', compact(
-        'product',
-        'relatedProducts',
-        'breadcrumbs',
-        'variantsForJs',
-        'ramAttrId',
-        'attributeOptionsWithPrices',
-        'variantGroupsReadable'
-    ));
-}
 
 
     public function index(Request $request)
@@ -199,9 +198,19 @@ public function show($id)
 
         $products = $query->paginate(12);
 
-        return view('products.index', compact('products'));
+        return view('client.products.index', compact('products'));
     }
 
+    public function searchPr(Request $request)
+    {
+        $query = $request->input('query');
+
+        $products = Product::where('name', 'like', "%{$query}%")
+                            ->orWhere('description', 'like', "%{$query}%")
+                            ->get();
+
+        return view('products.search', compact('products', 'query'));
+    }
     /**
      * Search products via AJAX
      */

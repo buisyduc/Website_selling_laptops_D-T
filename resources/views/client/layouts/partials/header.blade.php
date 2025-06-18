@@ -185,16 +185,19 @@
                 <form class="js-focus-state">
                     <label class="sr-only" for="searchproduct">Tìm Kiếm</label>
                     <div class="input-group">
-                        <input type="email"
-                            class="form-control py-2 pl-5 font-size-15 border-right-0 height-40 border-width-2 rounded-left-pill border-primary"
-                            name="email" id="searchproduct-item" placeholder="Tìm Kiếm"
-                            aria-label="Search for Products" aria-describedby="searchProduct1" required>
-                        <div class="input-group-append">
-                            <button class="btn btn-primary height-40 py-2 px-3 rounded-right-pill" type="button"
-                                id="searchProduct1">
-                                <span class="ec ec-search font-size-24"></span>
-                            </button>
-                        </div>
+                        <form action="{{ route('client.products.searchPr') }}" method="GET">
+                            <input type="text"
+                                class="form-control py-2 pl-5 font-size-15 border-right-0 height-40 border-width-2 rounded-left-pill border-primary"
+                                name="query" id="searchproduct-item" placeholder="Tìm Kiếm"
+                                aria-label="Search for Products" aria-describedby="searchProduct1" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary height-40 py-2 px-3 rounded-right-pill" type="submit"
+                                    id="searchProduct1">
+                                    <span class="ec ec-search font-size-24"></span>
+                                </button>
+                            </div>
+                        </form>
+
                     </div>
                 </form>
             </div>

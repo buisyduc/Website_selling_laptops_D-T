@@ -42,6 +42,9 @@ Route::get('/products', [ClientProductController::class, 'index'])->name('client
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
 Route::post('/products/{product}/comments', [ProductCommentController::class, 'store'])->middleware('auth')->name('comments.store');
 
+//search
+Route::get('/products/search', [ProductController::class, 'searcPr'])->name('client.products.searchPr');
+
 
 
 // // Product routes
