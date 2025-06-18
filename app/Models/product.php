@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 class product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable=[
+    protected $fillable = [
             'name',
             'slug',
             'description',
@@ -56,13 +56,17 @@ class product extends Model
     {
         return $this->hasMany(product_image::class);
     }
-       public function variants()
+    public function variants()
     {
         return $this->hasMany(product_variants::class);
     }
     public function coupons()
-{
-    return $this->belongsToMany(Coupon::class, 'coupon_product');
-}
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_product');
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
+    }
 
 }
