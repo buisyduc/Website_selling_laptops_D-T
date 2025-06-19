@@ -274,28 +274,31 @@
                             <h5>Bình luận ({{ $product->comments->count() }})</h5>
                         </div>
                         <div class="card-body">
-                            @foreach ($product->comments as $comment)
-                                <div>
-                                    <strong>{{ $comment->user->name }}</strong>
-                                    ({{ $comment->created_at->diffForHumans() }})
-                                    <p>{{ $comment->content }}</p>
+                            @foreach ($product->comments()->where('is_active', true)->latest()->get() as $comment)
+                                <div style="margin-bottom: 10px;">
+                                    <strong>{{ $comment->user_name }}</strong>
+                                     •
+                                    {{ $comment->created_at->diffForHumans() }}<br>
+                                    <span>{{ $comment->content }}</span>
                                 </div>
                             @endforeach
-                            @auth
-                                <form action="{{ route('comments.store', $product) }}" method="POST">
-                                    @csrf
-                                    <textarea name="content" placeholder="Viết bình luận..." required style="width: 100%;"></textarea>
+                        </div>
+                        <div class="card-header">
+                            <h5>Nhập thông tin</h5>
+                            <form method="POST" action="{{ route('comments.store', $product) }}">
+                                @csrf
+                                <label>Họ tên:</label><br>
+                                <input type="text" name="user_name" required><br><br>
 
-                                    @error('content')
-                                        <span>{{ $message }}</span>
-                                    @enderror
+                                <label>Nội dung:</label><br>
+                                <textarea name="content" required></textarea><br><br>
 
-                                    <button type="submit">Gửi bình luận</button>
-                                </form>
-                            @else
-                                <p>Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.</p>
-                            @endauth
+                                <button type="submit">Gửi bình luận</button>
+                            </form>
 
+                            @if (session('success'))
+                                <p style="color:green">{{ session('success') }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>

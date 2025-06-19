@@ -15,13 +15,13 @@ class ProductCommentController extends Controller
             'content' => 'required|min:5|max:1000',
         ]);
 
-        Comment::create([
-            'user_id' => auth()->id(),
-            'product_id' => $product->id,
-            'content' => $request->content,
+        $product->comments()->create([
+            'user_name' => $request->input('user_name'),
+            'content' => $request->input('content'),
+            'is_active' => true, // mặc định hiển thị
         ]);
 
-        return back()->with('success', 'Bình luận đã được thêm.');
+        return redirect()->back()->with('success', 'Đã bình luận thành công!');
     }
 }
 
