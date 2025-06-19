@@ -61,8 +61,10 @@
             @endif
 
 
-
-    @include('client.layouts.partials.footer')
+         @hasSection('footer')
+            @yield('footer')
+        @endif
+    {{-- @include('client.layouts.partials.footer') --}}
     <!-- ========== END FOOTER ========== -->
 
     <!-- ========== SECONDARY CONTENTS ========== -->

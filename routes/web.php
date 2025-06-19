@@ -3,10 +3,12 @@
 use App\Http\Controllers\Admin\AttributesProduct;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategorieController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 
@@ -47,7 +49,6 @@ Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('cl
 // Route::get('/api/products/{id}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
 
 
-
 Route::middleware(['auth', 'is_customer'])->group(function () {
 // CART
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -57,6 +58,18 @@ Route::middleware(['auth', 'is_customer'])->group(function () {
     Route::delete('/cart/clear-ajax', [CartController::class, 'clearAjax'])->name('cart.clearAjax');
     Route::put('/cart', [CartController::class, 'updateAll'])->name('cart.updateAll');
     require __DIR__.'/cart.php';
+      Route::post('/cart/buy-now', [CartController::class, 'buyNow'])->name('cart.buyNow');
+//checkout
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+        ->middleware(['auth', 'is_customer', 'ensure.cart.not.empty'])
+        ->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/payment/{orderId}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::post('/checkout/payment/{orderId}/complete', [CheckoutController::class, 'completePayment'])->name('checkout.complete');
+    Route::post('/checkout/payment/store', [CheckoutController::class, 'paymentStore'])->name('checkout.paymentStore');
+    Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+
+
 
 
 
@@ -108,6 +121,10 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 //attributes
     Route::get('admin/attributes',[AttributesProduct::class,'index'])->name('attributes');
     Route::post('admin/attributes/store', [AttributesProduct::class, 'store'])->name('attributes.store');
+//coupons
+    Route::get('admin/coupons',[CouponController::class,'index'])->name('coupons-list');
+    Route::post('admin/coupons-store', [CouponController::class, 'store'])->name('admin.coupons.store');
+
 
 
 

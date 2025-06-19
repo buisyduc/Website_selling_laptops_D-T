@@ -204,9 +204,8 @@
                             <button class="btn btn-danger btn-lg flex-md-fill" onclick="openLoginModal()" id="addToCartBtn">
                                 <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ Hàng
                             </button>
-                            <button class="btn btn-danger btn-lg flex-md-fill" onclick="openLoginModal()" id="buyNowBtn">
-                                Mua ngay
-                            </button>
+                            <button onclick="openLoginModal()" class="btn btn-danger btn-lg flex-md-fill">Mua ngay</button>
+
                         @endauth
                     </div>
                 </div>
@@ -564,7 +563,57 @@
                     element.classList.add('border-primary');
                 }
             </script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                function buyNow() {
+                    const variantId = selectedVariantId;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    if (!variantId) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thiếu thông tin',
+                            text: 'Vui lòng chọn đầy đủ các phiên bản sản phẩm trước khi mua!',
+                            confirmButtonText: 'Đã hiểu',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        return;
+                    }
+
+                    // Tạo form ẩn để submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = "{{ route('cart.buyNow') }}";
+
+                    // CSRF
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = csrfToken;
+                    form.appendChild(csrf);
+
+                    // variant_id
+                    const variantInput = document.createElement('input');
+                    variantInput.type = 'hidden';
+                    variantInput.name = 'variant_id';
+                    variantInput.value = variantId;
+                    form.appendChild(variantInput);
+
+                    // quantity
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'hidden';
+                    qtyInput.name = 'quantity';
+                    qtyInput.value = 1;
+                    form.appendChild(qtyInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            </script>
 
 
 
+  @section('footer')
+     @include('client.layouts.partials.footer')
+@endsection
         @endsection

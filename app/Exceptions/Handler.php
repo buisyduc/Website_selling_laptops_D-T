@@ -21,18 +21,19 @@ class Handler extends ExceptionHandler
         });
     }
 
-    // 👉 Thêm phương thức này vào đây
-    protected function unauthenticated($request, \Illuminate\Auth\AuthenticationException $exception)
+
+protected function unauthenticated($request, AuthenticationException $exception)
 {
     if ($request->expectsJson()) {
         return response()->json(['message' => 'Unauthenticated.'], 401);
     }
 
-    // Flash thông báo vào session để JS biết cần mở popup login
+    // Nếu không phải JSON, bạn có thể flash thông báo để hiển thị modal ở view
     session()->flash('show_login_popup', true);
     session()->flash('message', 'Vui lòng đăng nhập để tiếp tục.');
 
-    return redirect()->back(); // quay lại trang trước (ví dụ: /cart)
+    return redirect()->guest(route('login')); // hoặc redirect()->back() nếu bạn thực sự cần quay lại
 }
+
 
 }

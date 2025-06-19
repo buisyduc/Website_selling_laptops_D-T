@@ -715,5 +715,8 @@
             </div>
         </div>
     </main>
+    @section('footer')
+     @include('client.layouts.partials.footer')
+@endsection
 @endsection
 

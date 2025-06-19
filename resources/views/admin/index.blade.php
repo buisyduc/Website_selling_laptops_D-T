@@ -750,6 +750,7 @@
                                             <a href="{{ route('product.create')}}" class="nav-link" data-key="t-create-product">Create Product</a>
                                         </li>
 
+
                                     </ul>
                                 </div>
                             </li>
@@ -838,7 +839,7 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a href="coupons.html" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span data-key="t-coupons">Coupons</span> </a>
+                                <a href="{{route('coupons-list')}}" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span data-key="t-coupons">Coupons</span> </a>
                             </li>
                             <li class="nav-item">
                                 <a href="reviews-ratings.html" class="nav-link menu-link"><i class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews & Ratings</span></a>

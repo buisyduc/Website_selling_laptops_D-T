@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Cart;
+use App\Models\cart_item;
+
 
 class User extends Authenticatable
 {
@@ -52,9 +55,13 @@ class User extends Authenticatable
 
 
 
- public function cart()
+
+    public function cart()
     {
         return $this->hasOne(Cart::class);
     }
-
+    public function cartItems()
+    {
+        return $this->hasManyThrough(cart_item::class, Cart::class, 'user_id', 'cart_id', 'id', 'id');
+    }
 }

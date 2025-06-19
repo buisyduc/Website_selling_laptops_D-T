@@ -252,5 +252,42 @@ public function summary()
     ]);
 }
 
+public function buyNow(Request $request)
+{
+    $user = auth()->user();
+
+    $variantId = $request->input('variant_id');
+    $quantity = (int) $request->input('quantity', 1);
+
+    if (!$variantId || $quantity < 1) {
+        return redirect()->back()->with('error', 'Dữ liệu không hợp lệ.');
+    }
+
+    // Lấy giỏ hàng hoặc tạo mới
+    $cart = $user->cart;
+
+    if (!$cart) {
+        $cart = Cart::create([
+            'user_id' => $user->id,
+        ]);
+    }
+
+    // Cập nhật hoặc thêm mới sản phẩm
+    $item = $cart->items()->where('variant_id', $variantId)->first();
+
+    if ($item) {
+        $item->quantity += $quantity;
+        $item->save();
+    } else {
+        $cart->items()->create([
+            'variant_id' => $variantId,
+            'quantity'   => $quantity,
+        ]);
+    }
+
+    return redirect()->route('cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
+}
+
+
 
 }

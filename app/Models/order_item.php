@@ -9,7 +9,7 @@ class order_item extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'order_id','product_id','quantity','price',
+        'order_id','product_id','quantity','variant_id','product_name','price',
     ];
     public function order()
     {
@@ -20,5 +20,9 @@ class order_item extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+     public function variant()
+    {
+        return $this->belongsTo(product_variants::class, 'variant_id');
     }
 }
