@@ -7,9 +7,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('name')->after('user_id');
-            $table->string('email')->after('name');
-            $table->string('phone')->after('email');
+            // $table->string('name')->after('user_id');
+            // $table->string('email')->after('name');
+            // $table->string('phone')->after('email');
             $table->string('shipping_method')->nullable()->after('shipping_address');
             $table->decimal('shipping_fee', 10, 2)->default(0)->after('shipping_method');
             $table->decimal('discount_amount', 10, 2)->default(0)->after('shipping_fee');
@@ -26,9 +26,9 @@ return new class extends Migration {
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn([
-                'name',
-                'email',
-                'phone',
+                // 'name',
+                // 'email',
+                // 'phone',
                 'shipping_method',
                 'shipping_fee',
                 'discount_amount',

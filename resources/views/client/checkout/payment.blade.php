@@ -148,29 +148,29 @@
                 </div>
             </div>
 
-            <div id="paymentModal" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="z-index: 1055;">
-                <div class="d-flex justify-content-center align-items-center h-100">
-                    <div class="bg-white rounded p-5 shadow" style="width: 800px; max-width: 95%; min-height: 400px;">
-                        <h5 class="mb-3 text-center">Chọn phương thức thanh toán</h5>
-                        <div class="list-group" id="paymentOptions">
-                            <button type="button" class="list-group-item list-group-item-action" data-method="cod">
-                                Thanh toán khi nhận hàng (COD)
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action"
-                                data-method="bank_transfer">
-                                Chuyển khoản ngân hàng
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action" data-method="momo">
-                                Ví MoMo
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action" data-method="vnpay">
-                                VNPay
-                            </button>
-                        </div>
-                        <button class="btn btn-danger mt-3 w-100" onclick="closePaymentModal()">Huỷ</button>
-                    </div>
-                </div>
+           <div id="paymentModal" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="z-index: 1055;">
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="bg-white rounded p-5 shadow" style="width: 800px; max-width: 95%; min-height: 400px;">
+            <h5 class="mb-3 text-center">Chọn phương thức thanh toán</h5>
+            <div class="list-group" id="paymentOptions">
+                <button type="button" class="list-group-item list-group-item-action" data-method="cod">
+                    Thanh toán khi nhận hàng (COD)
+                </button>
+                <button type="button" class="list-group-item list-group-item-action" data-method="bank_transfer">
+                    Chuyển khoản ngân hàng
+                </button>
+                <button type="button" class="list-group-item list-group-item-action" data-method="momo">
+                    Ví MoMo
+                </button>
+                <button type="button" class="list-group-item list-group-item-action" data-method="vnpay">
+                    VNPay
+                </button>
             </div>
+            <button class="btn btn-danger mt-3 w-100" onclick="closePaymentModal()">Huỷ</button>
+        </div>
+    </div>
+</div>
+
 
             <!-- THÔNG TIN NHẬN HÀNG -->
             <div class="mb-4">

@@ -762,17 +762,10 @@
                                 <div class="collapse menu-dropdown" id="sidebarOrders">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="orders-list-view.html" class="nav-link" data-key="t-list-view">List View</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="orders-overview.html" class="nav-link" data-key="t-overview">Overview</a>
+                                            <a href="{{ route('admin.orders.index') }}" class="nav-link">Danh sách đơn hàng</a>
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="calendar.html" class="nav-link menu-link"><i class="bi bi-calendar-week"></i> <span data-key="t-calendar">Calendar</span> </a>
                             </li>
 
                             <li class="nav-item">

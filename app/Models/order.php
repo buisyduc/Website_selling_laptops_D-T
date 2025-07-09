@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class order extends Model
 {
     use HasFactory;
@@ -46,8 +45,12 @@ class order extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function coupon()
-{
-    return $this->belongsTo(\App\Models\Coupon::class);
-}
+    public function coupon()    
+    {
+        return $this->belongsTo(\App\Models\Coupon::class);
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(order_item::class);
+    }
 }
