@@ -204,9 +204,8 @@
                             <button class="btn btn-danger btn-lg flex-md-fill" onclick="openLoginModal()" id="addToCartBtn">
                                 <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ Hàng
                             </button>
-                            <button class="btn btn-danger btn-lg flex-md-fill" onclick="openLoginModal()" id="buyNowBtn">
-                                Mua ngay
-                            </button>
+                            <button onclick="openLoginModal()" class="btn btn-danger btn-lg flex-md-fill">Mua ngay</button>
+
                         @endauth
                     </div>
                 </div>
@@ -229,7 +228,7 @@
                     @endif
 
                     <!-- Reviews Section -->
-                    <div class="card">
+                    {{-- <div class="card">
                         <div class="card-header">
                             <h5>Đánh giá sản phẩm ({{ $product->reviews->count() }})</h5>
                         </div>
@@ -267,6 +266,128 @@
                                 <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
                             @endif
                         </div>
+                    </div> --}}
+                    <!-- resources/views/products/show.blade.php -->
+
+                    <!-- Thêm vào phần hiển thị sản phẩm -->
+                    <div class="card">
+                        <section class="product-reviews mt-5">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="mb-0">Đánh giá sản phẩm</h3>
+                                <div class="rating-summary">
+                                    <div class="d-flex align-items-center">
+                                        <div class="average-rating me-3">
+                                            <span
+                                                class="display-4 fw-bold">{{ number_format($product->approvedReviews()->avg('rating'), 1) }}</span>
+                                            <span class="text-muted">/5</span>
+                                        </div>
+                                        <div>
+                                            <div class="rating-stars mb-1">
+                                                @php
+                                                    $avgRating = $product->approvedReviews()->avg('rating');
+                                                    $fullStars = floor($avgRating);
+                                                    $halfStar = ceil($avgRating - $fullStars);
+                                                    $emptyStars = 5 - $fullStars - $halfStar;
+                                                @endphp
+
+                                                @for ($i = 0; $i < $fullStars; $i++)
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @endfor
+
+                                                @for ($i = 0; $i < $halfStar; $i++)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @endfor
+
+                                                @for ($i = 0; $i < $emptyStars; $i++)
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endfor
+                                            </div>
+                                            <div class="text-muted">
+                                                {{ $product->approvedReviews()->count() }} đánh giá
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phần viết đánh giá -->
+                            @auth
+                                @if ($canReview = auth()->user()->canReviewProduct($product))
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Viết đánh giá của bạn</h5>
+                                            <p class="card-text">Bạn đã mua sản phẩm này vào
+                                                {{ $canReview['order']->completed_at->format('d/m/Y') }}</p>
+                                            <a href="{{ route('reviews.create', ['order' => $canReview['order'], 'product' => $product]) }}"
+                                                class="btn btn-primary">
+                                                Viết đánh giá
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endauth
+
+                            <!-- Bộ lọc đánh giá -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="mb-3">Lọc theo đánh giá</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @for ($i = 5; $i >= 1; $i--)
+                                                    <a href="?rating={{ $i }}"
+                                                        class="btn btn-sm btn-outline-secondary">
+                                                        {{ $i }} sao
+                                                        ({{ $product->approvedReviews()->where('rating', $i)->count() }})
+                                                    </a>
+                                                @endfor
+                                                <a href="?" class="btn btn-sm btn-outline-primary">Tất cả</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="mb-3">Sắp xếp</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <a href="?sort=newest" class="btn btn-sm btn-outline-secondary">Mới
+                                                    nhất</a>
+                                                <a href="?sort=highest" class="btn btn-sm btn-outline-secondary">Đánh giá
+                                                    cao</a>
+                                                <a href="?sort=lowest" class="btn btn-sm btn-outline-secondary">Đánh giá
+                                                    thấp</a>
+                                                <a href="?sort=with_images" class="btn btn-sm btn-outline-secondary">Có
+                                                    hình
+                                                    ảnh</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Danh sách đánh giá -->
+                            <div id="reviews-container">
+                                @isset($reviews)
+                                    @include('client.products.partials.reviews', ['reviews' => $reviews])
+                                @else
+                                    <p>No reviews available.</p>
+                                @endisset
+                            </div>
+
+                            <!-- Nút tải thêm -->
+                            @if (isset($reviews) && $reviews->count())
+                                @include('client.products.partials.reviews', ['reviews' => $reviews])
+
+                                @if ($reviews->hasMorePages())
+                                    <div class="text-center mt-4">
+                                        <button id="load-more-reviews" class="btn btn-outline-primary"
+                                            data-url="{{ route('api.products.reviews', $product) }}" data-page="2">
+                                            <i class="fas fa-spinner fa-spin d-none"></i>
+                                            Xem thêm đánh giá
+                                        </button>
+                                    </div>
+                                @endif
+                            @else
+                                <p>Chưa có đánh giá nào.</p>
+                            @endif
+                        </section>
                     </div>
                     {{-- Hiển thị bình luận --}}
                     <div class="card mt-4 mb-3">
@@ -277,7 +398,7 @@
                             @foreach ($product->comments()->where('is_active', true)->latest()->get() as $comment)
                                 <div style="margin-bottom: 10px;">
                                     <strong>{{ $comment->user_name }}</strong>
-                                     •
+                                    •
                                     {{ $comment->created_at->diffForHumans() }}<br>
                                     <span>{{ $comment->content }}</span>
                                 </div>
@@ -597,7 +718,57 @@
                     element.classList.add('border-primary');
                 }
             </script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                function buyNow() {
+                    const variantId = selectedVariantId;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    if (!variantId) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thiếu thông tin',
+                            text: 'Vui lòng chọn đầy đủ các phiên bản sản phẩm trước khi mua!',
+                            confirmButtonText: 'Đã hiểu',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        return;
+                    }
+
+                    // Tạo form ẩn để submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = "{{ route('cart.buyNow') }}";
+
+                    // CSRF
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = csrfToken;
+                    form.appendChild(csrf);
+
+                    // variant_id
+                    const variantInput = document.createElement('input');
+                    variantInput.type = 'hidden';
+                    variantInput.name = 'variant_id';
+                    variantInput.value = variantId;
+                    form.appendChild(variantInput);
+
+                    // quantity
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'hidden';
+                    qtyInput.name = 'quantity';
+                    qtyInput.value = 1;
+                    form.appendChild(qtyInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            </script>
 
 
 
+        @section('footer')
+            @include('client.layouts.partials.footer')
         @endsection
+    @endsection

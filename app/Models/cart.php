@@ -9,7 +9,7 @@ class Cart extends Model
 {
     protected $fillable = ['user_id'];
 
-   // App\Models\Cart.php
+    // App\Models\Cart.php
     public function items()
     {
         return $this->hasMany(\App\Models\cart_item::class, 'cart_id');
@@ -20,6 +20,13 @@ class Cart extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
+    public function variants()
+    {
+        return $this->hasMany(product_variants::class);
+    }
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+    
 }

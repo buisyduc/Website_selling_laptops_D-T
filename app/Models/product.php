@@ -68,5 +68,22 @@ class product extends Model
     {
         return $this->hasMany(Comment::class)->latest();
     }
+    public function approvedReviews()
+    {
+        return $this->hasMany(ProductReview::class)->approved();
+    }
+
+    public function pendingReviews()
+    {
+        return $this->hasMany(ProductReview::class)->pending();
+    }
+
+    public function updateAverageRating()
+    {
+        $this->update([
+            'average_rating' => $this->approvedReviews()->avg('rating'),
+            'review_count' => $this->approvedReviews()->count()
+        ]);
+    }
 
 }

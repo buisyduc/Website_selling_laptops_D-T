@@ -920,33 +920,29 @@
                                             data-key="t-create-product">Create Product</a>
                                     </li>
 
-                                </ul>
-                            </div>
-                        </li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarOrders" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarOrders">
-                                <i class="bi bi-cart4"></i> <span data-key="t-orders">Orders</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarOrders">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="orders-list-view.html" class="nav-link" data-key="t-list-view">List
-                                            View</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="orders-overview.html" class="nav-link"
-                                            data-key="t-overview">Overview</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarOrders" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarOrders">
+                                    <i class="bi bi-cart4"></i> <span data-key="t-orders">Orders</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarOrders">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="orders-list-view.html" class="nav-link" data-key="t-list-view">List View</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="orders-overview.html" class="nav-link" data-key="t-overview">Overview</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                        <li class="nav-item">
-                            <a href="calendar.html" class="nav-link menu-link"><i class="bi bi-calendar-week"></i>
-                                <span data-key="t-calendar">Calendar</span> </a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="calendar.html" class="nav-link menu-link"><i class="bi bi-calendar-week"></i> <span data-key="t-calendar">Calendar</span> </a>
+                            </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarSellers" data-bs-toggle="collapse"
@@ -1008,41 +1004,33 @@
                                     List</span> </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarShipping" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarShipping">
-                                <i class="bi bi-truck"></i> <span data-key="t-shipping">Shipping</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarShipping">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="shipping-list.html" class="nav-link"
-                                            data-key="t-shipping-list">Shipping List</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="shipments.html" class="nav-link"
-                                            data-key="t-shipments">Shipments</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a href="coupons.html" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span
-                                    data-key="t-coupons">Coupons</span> </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i
-                                    class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews &
-                                    Ratings</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span
-                                    data-key="t-brands">Brands</span> </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="statistics.html" class="nav-link menu-link"><i class="bi bi-pie-chart"></i>
-                                <span data-key="t-statistics">Statistics</span> </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarShipping" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarShipping">
+                                    <i class="bi bi-truck"></i> <span data-key="t-shipping">Shipping</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarShipping">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="shipping-list.html" class="nav-link" data-key="t-shipping-list">Shipping List</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="shipments.html" class="nav-link" data-key="t-shipments">Shipments</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a href="coupons.html" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span data-key="t-coupons">Coupons</span> </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="reviews-ratings.html" class="nav-link menu-link"><i class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews & Ratings</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span data-key="t-brands">Brands</span> </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="statistics.html" class="nav-link menu-link"><i class="bi bi-pie-chart"></i> <span data-key="t-statistics">Statistics</span> </a>
+                            </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarLocalization" data-bs-toggle="collapse"

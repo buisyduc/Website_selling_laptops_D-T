@@ -67,6 +67,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'is_customer' => \App\Http\Middleware\IsCustomer::class,
+        'ensure.cart.not.empty' => \App\Http\Middleware\EnsureCartNotEmpty::class,
+        'checkout.info' => \App\Http\Middleware\EnsureCheckoutInfoCompleted::class,
+
 
     ];
 }

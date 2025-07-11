@@ -13,8 +13,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        ProductReview::class => ProductReviewPolicy::class,
     ];
+    
 
     /**
      * Register any authentication / authorization services.
@@ -23,4 +24,5 @@ class AuthServiceProvider extends ServiceProvider
     {
         //
     }
+    
 }

@@ -122,4 +122,8 @@
         </div>
         <!-- End Footer-copy-right -->
         </footer>
+<<<<<<< HEAD
         <!-- ========== END FOOTER ========== -->
+=======
+        <!-- ========== END FOOTER ========== -->
+>>>>>>> d37259272ba0a1bdd11a96c5ec3aad7f1fe5cc22

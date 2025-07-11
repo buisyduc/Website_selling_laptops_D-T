@@ -85,7 +85,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ route('index') }}" class="btn btn-outline-secondary">← Tiếp tục mua hàng</a>
                     <div>
-                        {{-- <a href="{{ route('checkout.index') }}" class="btn btn-success">Mua ngay</a> --}}
+                        <a href="{{ route('checkout.index') }}" class="btn btn-success">Mua ngay</a>
                     </div>
                 </div>
             </form>
@@ -94,5 +94,7 @@
         @endif
     </div>
 
-
+  @section('footer')
+     @include('client.layouts.partials.footer')
+@endsection
 @endsection

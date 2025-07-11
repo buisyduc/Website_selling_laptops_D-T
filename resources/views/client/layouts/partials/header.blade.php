@@ -232,8 +232,12 @@
                     </span>
                 </a>
             </div>
-
-
+            <div class="col-auto">
+    <a href="{{ route('client.orders.index') }}" id="order-button"
+        class="text-dark position-relative d-flex align-items-center">
+        <i class="fas fas fa-clipboard-list fa-lg"></i>
+    </a>
+</div>
 
 
         </div>
