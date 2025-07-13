@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\Controller;
 use App\Models\order;
 use App\Models\product;
 use App\Models\ProductReview;
@@ -18,9 +19,10 @@ class ProductReviewController extends Controller
     public function __construct()
     {
         $this->middleware('auth')->except(['index', 'show']);
-        $this->middleware('can:review,order,product')->only(['create', 'store']);
-        $this->middleware('can:update,review')->only(['edit', 'update']);
-        $this->middleware('can:delete,review')->only('destroy');
+        // $this->middleware('auth')->except(['index', 'show']);
+        // $this->middleware('can:review,order,product')->only(['create', 'store']);
+        // $this->middleware('can:update,review')->only(['edit', 'update']);
+        // $this->middleware('can:delete,review')->only('destroy');
     }
 
     // Danh sách đánh giá (API)
@@ -45,13 +47,33 @@ class ProductReviewController extends Controller
     // Form tạo đánh giá
     public function create(Order $order, Product $product)
     {
+        // // Kiểm tra user có quyền review sản phẩm trong đơn hàng này không
+        // if (!$order->products->contains($product) || !$order->isDelivered()) {
+        //     abort(403, 'Bạn không thể đánh giá sản phẩm này.');
+        // }
         return view('client.reviews.create', compact('order', 'product'));
     }
 
     // Lưu đánh giá
     public function store(Request $request, Order $order, Product $product)
     {
-        $validated = $this->validateReview($request);
+        // // Kiểm tra tương tự như create()
+        // if (!$order->products->contains($product) || !$order->isDelivered()) {
+        //     abort(403, 'Bạn không thể đánh giá sản phẩm này.');
+        // }
+        // Kiểm tra xem user đã review sản phẩm này trong đơn hàng chưa
+    $existingReview = ProductReview::where([
+        'user_id' => auth()->id(),
+        'product_id' => $product->id,
+        'order_id' => $order->id
+    ])->exists(); 
+
+    if ($existingReview) {
+        return back()->with('error', 'Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi');
+    }
+
+    // Tiếp tục xử lý tạo review mới...
+    $validated = $this->validateReview($request);
         
         // Xử lý upload ảnh
         $images = $this->handleImageUpload($request);
@@ -62,8 +84,9 @@ class ProductReviewController extends Controller
             'rating' => $validated['rating'],
             'comment' => $validated['comment'] ?? null,
             'images' => $images,
-            'is_approved' => config('reviews.auto_approve', false)
+            'is_approved' => config('reviews.auto_approve', false),
         ]);
+        $review->save();
         
         // Cập nhật rating trung bình
         $product->updateAverageRating();
@@ -71,7 +94,7 @@ class ProductReviewController extends Controller
         // Gửi thông báo
         event(new \App\Events\ProductReviewed($review));
         
-        return redirect()->route('orders.show', $order)
+        return redirect()->route('client.orders.show', $order)
             ->with('success', __('Đánh giá của bạn đã được gửi thành công!'));
     }
 
@@ -116,7 +139,7 @@ class ProductReviewController extends Controller
         // Cập nhật rating trung bình
         $review->product->updateAverageRating();
         
-        return redirect()->route('products.show', $review->product)
+        return redirect()->route('client.products.show', $review->product)
             ->with('success', __('Đánh giá của bạn đã được cập nhật!'));
     }
 

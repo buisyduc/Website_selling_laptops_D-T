@@ -43,6 +43,12 @@ class product extends Model
     {
         return $this->reviews()->avg('rating') ?? 0; // Nếu không có đánh giá, trả về 0
     }
+    public function orders()
+    {
+        return $this->belongsToMany(order::class)
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
+    }
     public function orderItems()
     {
         return $this->hasMany(order_item::class, 'product_id');

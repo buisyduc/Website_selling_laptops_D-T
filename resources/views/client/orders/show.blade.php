@@ -76,13 +76,7 @@
                 <span class="text-danger">{{ number_format($order->total_amount) }}₫</span>
             </div>
         </div>
-
-        <div class="text-center mt-4">
-            <a href="{{ route('client.orders.index') }}" class="btn btn-outline-secondary">⬅ Quay lại danh sách đơn
-                hàng</a>
-        </div>
         <!-- resources/views/orders/show.blade.php -->
-
         @if ($order->status === 'completed')
             <div class="card mt-4">
                 <div class="card-header">Đánh giá sản phẩm</div>
@@ -96,32 +90,49 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($order->orderItems as $item)
+                                @forelse ($order->orderItems as $item)
+                                    @php
+                                        $product = $item->product;
+                                        $productId = $product->id;
+                                        $canReview = $order->canReviewProduct($productId) ?? false;
+                                        $review = $order->reviews->where('product_id', $productId)->first();
+                                    @endphp
+
                                     <tr>
-                                        <td>{{ $item->product->name }}</td>
+                                        <td>{{ $product->name }}</td>
                                         <td>
-                                            @if ($order->canReviewProduct($item->product_id))
-                                                <a href="{{ route('reviews.create', ['order' => $order, 'product' => $item->product]) }}"
+                                            @if ($canReview && !$review)
+                                                <a href="{{ route('reviews.create', ['order' => $order, 'product' => $product]) }}"
                                                     class="btn btn-sm btn-outline-primary">
                                                     Viết đánh giá
                                                 </a>
-                                            @elseif($review = $order->reviews->where('product_id', $item->product_id)->first())
+                                            @elseif($review)
                                                 <a href="{{ route('reviews.edit', $review) }}"
                                                     class="btn btn-sm btn-outline-secondary">
                                                     Xem/Sửa đánh giá
                                                 </a>
                                             @else
-                                                <span class="text-muted">Hết hạn đánh giá</span>
+                                                <span class="text-muted">
+                                                    Không thể đánh giá
+                                                </span>
                                             @endif
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center">Không có sản phẩm nào trong đơn hàng</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         @endif
+        <div class="text-center mt-4">
+            <a href="{{ route('client.orders.index') }}" class="btn btn-outline-secondary">⬅ Quay lại danh sách đơn
+                hàng</a>
+        </div>
     </div>
 @endsection
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ProductCommentController;
 use App\Http\Controllers\Client\ProductReviewController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use Illuminate\Support\Facades\Route;
@@ -85,28 +86,25 @@ Route::middleware(['auth', 'is_customer'])->group(function () {
     Route::delete('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
     //rate
-    Route::middleware(['auth', 'verified'])->group(function () {
-    // Đánh giá sản phẩm
-    Route::get('/orders/{order}/products/{product}/review', 
-        [ProductReviewController::class, 'create'])
-        ->name('reviews.create');
-    
-    Route::post('/orders/{order}/products/{product}/review', 
-        [ProductReviewController::class, 'store'])
-        ->name('reviews.store');
-    
-    Route::get('/reviews/{review}/edit', 
-        [ProductReviewController::class, 'edit'])
-        ->name('reviews.edit');
-    
-    Route::put('/reviews/{review}', 
-        [ProductReviewController::class, 'update'])
-        ->name('reviews.update');
-    
-    Route::delete('/reviews/{review}', 
-        [ProductReviewController::class, 'destroy'])
-        ->name('reviews.destroy');
-});
+    // Route cho create và store với order/product
+    Route::middleware(['auth'])->prefix('orders/{order}/products/{product}')->group(function () {
+        Route::controller(ProductReviewController::class)->group(function () {
+            Route::get('/review', 'create')->name('reviews.create');
+            Route::post('/review', 'store')->name('reviews.store');
+        });
+    });
+
+    // Route cho edit, update, destroy với review ID
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('reviews', ProductReviewController::class)
+            ->only(['edit', 'update', 'destroy'])
+            ->parameters(['reviews' => 'review']) // Thêm dòng này nếu bạn muốn thống nhất parameter name
+            ->names([
+                'edit' => 'reviews.edit',
+                'update' => 'reviews.update',
+                'destroy' => 'reviews.destroy'
+            ]);
+    });
 
     // API routes
     Route::get('/api/products/{product}/reviews', 
@@ -158,8 +156,19 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 //attributes
     Route::get('admin/attributes',[AttributesProduct::class,'index'])->name('attributes');
     Route::post('admin/attributes/store', [AttributesProduct::class, 'store'])->name('attributes.store');
+    //order
+    Route::get('admin/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('admin/orders/{id}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('admin/orders/{id}/edit', [App\Http\Controllers\Admin\OrderController::class, 'edit'])->name('admin.orders.edit');
+    Route::put('admin/orders/{id}', [App\Http\Controllers\Admin\OrderController::class, 'update'])->name('admin.orders.update');
+    Route::delete('admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
 
-
+    Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+        Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+        Route::patch('comments/toggle/{comment}', [CommentController::class, 'toggleVisibility'])->name('comments.toggle');
+        Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
+        
+    });
 
 
 

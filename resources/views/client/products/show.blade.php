@@ -347,15 +347,23 @@
                                         <div class="col-md-6">
                                             <h6 class="mb-3">Sắp xếp</h6>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <a href="?sort=newest" class="btn btn-sm btn-outline-secondary">Mới
-                                                    nhất</a>
-                                                <a href="?sort=highest" class="btn btn-sm btn-outline-secondary">Đánh giá
-                                                    cao</a>
-                                                <a href="?sort=lowest" class="btn btn-sm btn-outline-secondary">Đánh giá
-                                                    thấp</a>
-                                                <a href="?sort=with_images" class="btn btn-sm btn-outline-secondary">Có
-                                                    hình
-                                                    ảnh</a>
+                                                <a href="?sort=newest" class="btn btn-sm btn-outline-secondary sort-btn"
+                                                    data-sort="newest">
+                                                    <i class="fas fa-clock me-1"></i>Mới nhất
+                                                </a>
+                                                <a href="?sort=highest" class="btn btn-sm btn-outline-secondary sort-btn"
+                                                    data-sort="highest">
+                                                    <i class="fas fa-star me-1"></i>Đánh giá cao
+                                                </a>
+                                                <a href="?sort=lowest" class="btn btn-sm btn-outline-secondary sort-btn"
+                                                    data-sort="lowest">
+                                                    <i class="fas fa-star-half-alt me-1"></i>Đánh giá thấp
+                                                </a>
+                                                <a href="?sort=with_images"
+                                                    class="btn btn-sm btn-outline-secondary sort-btn"
+                                                    data-sort="with_images">
+                                                    <i class="fas fa-camera me-1"></i>Có hình ảnh
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -364,31 +372,45 @@
 
                             <!-- Danh sách đánh giá -->
                             <div id="reviews-container">
-                                @isset($reviews)
-                                    @include('client.products.partials.reviews', ['reviews' => $reviews])
-                                @else
-                                    <p>No reviews available.</p>
-                                @endisset
+                                @forelse($reviews ?? [] as $review)
+                                    @include('client.products.partials.reviews', ['review' => $review])
+                                @empty
+                                    <div class="alert alert-info text-center py-4">
+                                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                        <h5>Chưa có đánh giá nào</h5>
+                                        <p class="mb-0">Hãy là người đầu tiên đánh giá sản phẩm này</p>
+                                    </div>
+                                @endforelse
                             </div>
 
-                            <!-- Nút tải thêm -->
-                            @if (isset($reviews) && $reviews->count())
-                                @include('client.products.partials.reviews', ['reviews' => $reviews])
-
-                                @if ($reviews->hasMorePages())
-                                    <div class="text-center mt-4">
-                                        <button id="load-more-reviews" class="btn btn-outline-primary"
-                                            data-url="{{ route('api.products.reviews', $product) }}" data-page="2">
-                                            <i class="fas fa-spinner fa-spin d-none"></i>
-                                            Xem thêm đánh giá
-                                        </button>
-                                    </div>
-                                @endif
-                            @else
-                                <p>Chưa có đánh giá nào.</p>
+                            <!-- Nút tải thêm (chỉ hiển thị nếu có nhiều trang) -->
+                            @if(($reviews ?? null)?->hasMorePages())
+                                <div class="text-center mt-4">
+                                    <button id="load-more-reviews" class="btn btn-outline-primary px-4"
+                                        data-url="{{ route('api.products.reviews', $product) }}" 
+                                        data-page="2"
+                                        aria-label="Xem thêm đánh giá">
+                                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                        <i class="fas fa-plus-circle me-2"></i>Xem thêm đánh giá
+                                    </button>
+                                </div>
                             @endif
                         </section>
                     </div>
+                    @push('styles')
+                    <style>
+                        .rating-filter:hover, .rating-filter.active {
+                            background-color: #fff3cd;
+                            border-color: #ffc107;
+                        }
+                        .sort-btn:hover, .sort-btn.active {
+                            background-color: #f8f9fa;
+                        }
+                        #load-more-reviews .spinner-border {
+                            vertical-align: middle;
+                        }
+                    </style>
+@endpush
                     {{-- Hiển thị bình luận --}}
                     <div class="card mt-4 mb-3">
                         <div class="card-header">
@@ -765,10 +787,75 @@
                     form.submit();
                 }
             </script>
+            @push('scripts')
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Highlight filter/sort đang active
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const currentRating = urlParams.get('rating');
+                        const currentSort = urlParams.get('sort');
+
+                        if (currentRating) {
+                            document.querySelectorAll(`.rating-filter[data-rating="${currentRating}"]`)
+                                .forEach(el => el.classList.add('active'));
+                        }
+
+                        if (currentSort) {
+                            document.querySelectorAll(`.sort-btn[data-sort="${currentSort}"]`)
+                                .forEach(el => el.classList.add('active'));
+                        }
+
+                        // Xử lý tải thêm đánh giá
+                        const loadMoreBtn = document.getElementById('load-more-reviews');
+                        if (loadMoreBtn) {
+                            loadMoreBtn.addEventListener('click', async function() {
+                                const btn = this;
+                                const spinner = btn.querySelector('.spinner-border');
+                                const icon = btn.querySelector('i');
+                                const url = btn.dataset.url;
+                                const page = btn.dataset.page;
+
+                                // Hiển thị loading
+                                icon.classList.add('d-none');
+                                spinner.classList.remove('d-none');
+                                btn.disabled = true;
+
+                                try {
+                                    const response = await fetch(`${url}?page=${page}`);
+                                    const data = await response.json();
+
+                                    if (data.data.length) {
+                                        // Thêm reviews mới vào container
+                                        const container = document.getElementById('reviews-container');
+                                        data.data.forEach(review => {
+                                            container.insertAdjacentHTML('beforeend',
+                                                `<div class="review-item">${review.html}</div>`);
+                                        });
+
+                                        // Cập nhật page tiếp theo hoặc ẩn nút
+                                        if (data.meta.current_page < data.meta.last_page) {
+                                            btn.dataset.page = parseInt(page) + 1;
+                                        } else {
+                                            btn.remove();
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.error('Error loading more reviews:', error);
+                                    alert('Có lỗi xảy ra khi tải thêm đánh giá');
+                                } finally {
+                                    // Ẩn loading
+                                    spinner.classList.add('d-none');
+                                    icon.classList.remove('d-none');
+                                    btn.disabled = false;
+                                }
+                            });
+                        }
+                    });
+                </script>
+            @endpush
 
 
-
-        @section('footer')
-            @include('client.layouts.partials.footer')
+            @section('footer')
+                @include('client.layouts.partials.footer')
+            @endsection
         @endsection
-    @endsection

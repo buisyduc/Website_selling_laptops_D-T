@@ -930,12 +930,7 @@
                                 </a>
                                 <div class="collapse menu-dropdown" id="sidebarOrders">
                                     <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a href="orders-list-view.html" class="nav-link" data-key="t-list-view">List View</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="orders-overview.html" class="nav-link" data-key="t-overview">Overview</a>
-                                        </li>
+                                        <a href="{{ route('admin.orders.index') }}" class="nav-link">Danh sách đơn hàng</a>
                                     </ul>
                                 </div>
                             </li>
@@ -1023,7 +1018,7 @@
                                 <a href="coupons.html" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span data-key="t-coupons">Coupons</span> </a>
                             </li>
                             <li class="nav-item">
-                                <a href="reviews-ratings.html" class="nav-link menu-link"><i class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews & Ratings</span></a>
+                                <a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews & Ratings</span></a>
                             </li>
                             <li class="nav-item">
                                 <a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span data-key="t-brands">Brands</span> </a>

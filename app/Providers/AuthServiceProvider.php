@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        ProductReview::class => ProductReviewPolicy::class,
+        // ProductReview::class => ProductReviewPolicy::class,
     ];
     
 
@@ -22,7 +22,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+    //     Gate::define('review-product', function (User $user, Order $order, Product $product) {
+    //     return $order->user_id === $user->id
+    //         && $order->status === 'completed'
+    //         && $order->orderItems->contains('product_id', $product->id)
+    //         && !$order->reviews->where('product_id', $product->id)->count();
+    // });
     }
     
 }
