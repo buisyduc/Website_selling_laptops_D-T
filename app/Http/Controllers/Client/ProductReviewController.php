@@ -47,56 +47,54 @@ class ProductReviewController extends Controller
     // Form tạo đánh giá
     public function create(Order $order, Product $product)
     {
-        // // Kiểm tra user có quyền review sản phẩm trong đơn hàng này không
-        // if (!$order->products->contains($product) || !$order->isDelivered()) {
-        //     abort(403, 'Bạn không thể đánh giá sản phẩm này.');
-        // }
         return view('client.reviews.create', compact('order', 'product'));
     }
 
     // Lưu đánh giá
     public function store(Request $request, Order $order, Product $product)
     {
-        // // Kiểm tra tương tự như create()
-        // if (!$order->products->contains($product) || !$order->isDelivered()) {
-        //     abort(403, 'Bạn không thể đánh giá sản phẩm này.');
-        // }
-        // Kiểm tra xem user đã review sản phẩm này trong đơn hàng chưa
-    $existingReview = ProductReview::where([
-        'user_id' => auth()->id(),
-        'product_id' => $product->id,
-        'order_id' => $order->id
-    ])->exists(); 
+        try {
+            // Kiểm tra giới hạn review trước khi tạo
+            $reviewsToday = ProductReview::where('user_id', auth()->id())
+                ->whereDate('created_at', today())
+                ->count();
 
-    if ($existingReview) {
-        return back()->with('error', 'Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi');
-    }
+            if ($reviewsToday >= 10) {
+                return redirect()->back()
+                    ->with('error', 'Bạn chỉ được đánh giá tối đa 10 lần/ngày')
+                    ->withInput();
+            }
 
-    // Tiếp tục xử lý tạo review mới...
-    $validated = $this->validateReview($request);
-        
-        // Xử lý upload ảnh
-        $images = $this->handleImageUpload($request);
-        
-        $review = $order->reviews()->create([
-            'user_id' => auth()->id(),
-            'product_id' => $product->id,
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
-            'images' => $images,
-            'is_approved' => config('reviews.auto_approve', false),
-        ]);
-        $review->save();
-        
-        // Cập nhật rating trung bình
-        $product->updateAverageRating();
-        
-        // Gửi thông báo
-        event(new \App\Events\ProductReviewed($review));
-        
-        return redirect()->route('client.orders.show', $order)
-            ->with('success', __('Đánh giá của bạn đã được gửi thành công!'));
+            $validated = $this->validateReview($request);
+            
+            // Xử lý upload ảnh
+            $images = $this->handleImageUpload($request); 
+            
+            // Tạo review
+            $review = $order->reviews()->create([
+                'user_id' => auth()->id(),
+                'product_id' => $product->id,
+                'rating' => $validated['rating'],
+                'comment' => $validated['comment'] ?? null,
+                'images' => $images,
+                'is_approved' => config('reviews.auto_approve', false),
+            ]);
+            
+            // Cập nhật rating trung bình
+            $product->updateAverageRating();
+            
+            // Gửi thông báo
+            event(new \App\Events\ProductReviewed($review));
+            
+            return redirect()->route('client.orders.show', $order)
+                ->with('success', 'Đánh giá của bạn đã được gửi thành công!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Review submission error: '.$e->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra: '.$e->getMessage())->withInput();
+        }
     }
+    
 
     // Hiển thị chi tiết đánh giá
     public function show(ProductReview $review)
@@ -116,11 +114,7 @@ class ProductReviewController extends Controller
 
     // Cập nhật đánh giá
     public function update(Request $request, ProductReview $review)
-    {
-        if (!$review->canBeEdited()) {
-            return back()->with('error', __('Bạn chỉ có thể chỉnh sửa đánh giá trong vòng 3 ngày'));
-        }
-        
+    {   
         $validated = $this->validateReview($request);
         
         // Xử lý ảnh
@@ -139,13 +133,17 @@ class ProductReviewController extends Controller
         // Cập nhật rating trung bình
         $review->product->updateAverageRating();
         
-        return redirect()->route('client.products.show', $review->product)
+        // Thống nhất chuyển hướng về trang đơn hàng
+        return redirect()->route('client.orders.show', $review->order_id)
             ->with('success', __('Đánh giá của bạn đã được cập nhật!'));
     }
 
     // Xóa đánh giá
     public function destroy(ProductReview $review)
     {
+        // Lưu lại order_id trước khi xóa
+        $orderId = $review->order_id;
+        
         // Xóa ảnh đính kèm
         if ($review->images) {
             foreach ($review->images as $image) {
@@ -159,16 +157,18 @@ class ProductReviewController extends Controller
         // Cập nhật rating trung bình
         $product->updateAverageRating();
         
-        return back()->with('success', __('Đánh giá đã được xóa thành công!'));
+        // Chuyển hướng về trang chi tiết đơn hàng cụ thể
+        return redirect()->route('client.orders.show', $orderId)
+            ->with('success', __('Đánh giá đã được xóa thành công!'));
     }
 
     // Validate đánh giá
     protected function validateReview(Request $request)
     {
         return $request->validate([
-            'rating' => ['required', 'integer', 'between:1,5'],
-            'comment' => ['nullable', 'string', 'max:1000'],
-            'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'rating' => 'required|integer|between:1,5',
+            'comment' => 'nullable|string|max:1000',
+            'images.*' => 'nullable|image|max:2048',
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['string']
         ]);
@@ -176,30 +176,37 @@ class ProductReviewController extends Controller
 
     // Xử lý upload ảnh
     protected function handleImageUpload(Request $request, array $currentImages = [])
-    {
-        $images = $currentImages;
-        
-        // Xóa ảnh được chọn
-        if ($request->remove_images) {
-            foreach ($request->remove_images as $image) {
-                if (($key = array_search($image, $images)) !== false) {
-                    Storage::delete($image);
-                    unset($images[$key]);
-                }
-            }
-            $images = array_values($images);
-        }
-        
-        // Thêm ảnh mới
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                if (count($images) >= config('reviews.max_images', 5)) break;
+{
+    $images = $currentImages;
+    
+    // Xóa ảnh được chọn
+    if ($request->has('remove_images')) {
+        foreach ($request->remove_images as $imageToRemove) {
+            // Kiểm tra xem ảnh có tồn tại trong mảng hiện tại không
+            if (in_array($imageToRemove, $images)) {
+                // Xóa ảnh từ storage
+                Storage::delete($imageToRemove);
                 
-                $path = $image->store('reviews');
-                $images[] = $path;
+                // Xóa ảnh khỏi mảng
+                $images = array_filter($images, function($image) use ($imageToRemove) {
+                    return $image !== $imageToRemove;
+                });
             }
         }
-        
-        return $images ?: null;
+        // Đảm bảo mảng được đánh lại index
+        $images = array_values($images);
     }
+    
+    // Thêm ảnh mới
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            if (count($images) >= config('reviews.max_images', 5)) break;
+            
+            $path = $image->store('reviews');
+            $images[] = $path;
+        }
+    }
+    
+    return !empty($images) ? $images : null;
+}
 }

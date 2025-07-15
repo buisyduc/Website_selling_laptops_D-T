@@ -77,6 +77,9 @@ class ProductReview extends Model
     // Kiểm tra có thể chỉnh sửa
     public function canBeEdited()
     {
+        // Luôn trả về true để cho phép chỉnh sửa bất kỳ lúc nào
+        return true;
+        
         return $this->created_at->addDays(3) > now();
     }
 }

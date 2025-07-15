@@ -1018,7 +1018,19 @@
                                 <a href="coupons.html" class="nav-link menu-link"> <i class="bi bi-tag"></i> <span data-key="t-coupons">Coupons</span> </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i class="bi bi-star"></i> <span data-key="t-reviews-ratings">Reviews & Ratings</span></a>
+                                <a class="nav-link menu-link" href="#sidebarRates" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarRates">
+                                    <i class="bi bi-star"></i> <span data-key="t-orders">Reviews $ Comments</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarRates">
+                                    <ul class="nav nav-sm flex-column">
+                                        <a href="{{ route('admin.reviews.index') }}" class="nav-link">Danh sách đánh giá</a>
+                                    </ul>
+                                </div>
+                                <div class="collapse menu-dropdown" id="sidebarRates">
+                                    <ul class="nav nav-sm flex-column">
+                                        <a href="{{ route('admin.comments.index') }}" class="nav-link">Danh sách bình luận</a>
+                                    </ul>
+                                </div>
                             </li>
                             <li class="nav-item">
                                 <a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span data-key="t-brands">Brands</span> </a>
