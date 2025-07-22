@@ -66,7 +66,17 @@ class HomeController extends Controller
                                    ->where('category_id', $pcCategory->id)
                                    ->with(['category', 'brand', 'images', 'variants'])
                                    ->latest('id')
-                                   ->limit(4)
+                                   ->limit(5)
+                                   ->get();
+        }
+        $screenCategory = categorie::where('slug', 'man-hinh')->first();
+        $screenProducts = collect();
+        if ($screenCategory) {
+            $screenProducts = product::where('status', 1)
+                                   ->where('category_id', $screenCategory->id)
+                                   ->with(['category', 'brand', 'images', 'variants'])
+                                   ->latest('id')
+                                   ->limit(5)
                                    ->get();
         }
 
@@ -110,10 +120,11 @@ class HomeController extends Controller
             'featuredProducts',
             'newProducts',
             'bestSellingProducts',
+            'pcProducts',
             'topRatedProducts',
             'categories',
             'brands',
-            'pcProducts',
+            'screenProducts',
             'laptopProducts',
             'recentReleases',
             'totalProducts',

@@ -108,7 +108,7 @@ public function update(Request $request, Brand $brand)
 {
     $request->validate([
         'name' => 'required|string|max:255',
-        'slug' => 'required|string|max:255|unique:brands,slug,' . $brand->id, 
+        'slug' => 'required|string|max:255|unique:brands,slug,' . $brand->id,
         'description' => 'nullable|string',
         'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);

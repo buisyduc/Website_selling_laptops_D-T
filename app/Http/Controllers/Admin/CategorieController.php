@@ -112,14 +112,32 @@ class CategorieController extends Controller
         return redirect()->route('categories.trashed') // route xem danh mục đã xóa mềm
                         ->with('message', 'Khôi phục danh mục thành công');
     }
-    public function forceDelete($id)
-    {
-        $category = Categorie::withTrashed()->findOrFail($id);
-        $category->forceDelete();
+   public function forceDelete($id)
+{
+    $category = Categorie::withTrashed()->with('products')->findOrFail($id);
 
+    // Nếu danh mục còn sản phẩm thì không cho xoá
+    if ($category->products->count() > 0) {
         return redirect()->route('categories.trashed')
-                        ->with('message', 'Đã xóa vĩnh viễn danh mục');
+            ->with('error', 'Không thể xoá vì danh mục vẫn còn sản phẩm.');
     }
+
+    $hasProductInChildren = Categorie::withTrashed()
+        ->where('parent_id', $category->id)
+        ->whereHas('products')
+        ->exists();
+
+    if ($hasProductInChildren) {
+        return redirect()->route('categories.trashed')
+            ->with('error', 'Không thể xoá vì có danh mục con chứa sản phẩm.');
+    }
+
+    $category->forceDelete();
+
+    return redirect()->route('categories.trashed')
+        ->with('message', 'Đã xóa vĩnh viễn danh mục.');
+}
+
 
     public function edit(Categorie $category)
     {
@@ -160,16 +178,29 @@ class CategorieController extends Controller
 
         return redirect()->back()->with('success', 'Tất cả danh mục đã được khôi phục thành công.');
     }
+
+
     public function forceDeleteAll()
     {
-        $categories = Categorie::onlyTrashed()->get();
+        // Lấy tất cả danh mục đã bị soft delete
+        $categories = Categorie::onlyTrashed()->with('products')->get();
+
+        $deletedCount = 0;
+        $skippedCount = 0;
 
         foreach ($categories as $category) {
-            $category->forceDelete();
+            if ($category->products->count() === 0) {
+                $category->forceDelete(); // Xóa vĩnh viễn nếu không có sản phẩm
+                $deletedCount++;
+            } else {
+                $skippedCount++;
+            }
         }
 
-        return redirect()->back()->with('success', 'Đã xóa vĩnh viễn tất cả danh mục đã xoá mềm.');
+        return redirect()->route('categories.trashed')
+            ->with('message', "Đã xoá $deletedCount danh mục. Bỏ qua $skippedCount danh mục vì còn sản phẩm.");
     }
+
 
 
 

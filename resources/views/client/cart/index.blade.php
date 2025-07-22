@@ -21,6 +21,20 @@
                 @method('PUT')
 
                 <div class="table-responsive">
+                    <!-- Toast container góc phải -->
+                    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+                        <div id="cartToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
+                            aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body" id="cartToastBody">
+                                   <div class="text-danger small mt-1 qty-error" style="display:none;"></div>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                    aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
                             <tr>
@@ -59,8 +73,8 @@
                                         <input type="number" name="quantities[{{ $item->variant_id }}]"
                                             value="{{ $qty }}" min="1" class="form-control update-quantity"
                                             data-variant-id="{{ $item->variant_id }}">
-
                                     </td>
+
                                     <td class="text-end item-total">{{ number_format($itemTotal, 0, ',', '.') }}₫</td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-sm btn-danger delete-item">Xoá</button>
@@ -93,8 +107,53 @@
             <div class="alert alert-info">Giỏ hàng của bạn đang trống.</div>
         @endif
     </div>
+ <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+  const toastEl = document.getElementById('cartToast');
+  const toastBody = document.getElementById('cartToastBody');
+  // Khởi tạo toast với delay 5000ms và autohide = true
+  const bsToast = new bootstrap.Toast(toastEl, { delay: 5000, autohide: true });
 
-  @section('footer')
-     @include('client.layouts.partials.footer')
+  document.querySelectorAll('.update-quantity').forEach(input => {
+    input.addEventListener('change', function() {
+      const variantId = this.dataset.variantId;
+      const quantity = parseInt(this.value, 10);
+
+      fetch('/cart/update-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ variant_id: variantId, quantity: quantity })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          // Hiển thị toast góc phải với nội dung lỗi
+          toastBody.textContent = data.message;
+          bsToast.show();
+
+          // reset input về số kho cho phép
+          this.value = data.allowed_quantity;
+        } else {
+          // Cập nhật lại UI khi thành công
+          const row = this.closest('tr');
+          row.querySelector('.item-total').textContent = data.item_total;
+          document.getElementById('cart-total-in-table').textContent = data.cart_total;
+        }
+      });
+    });
+  });
+});
+
+</script>
+
+
+
+
+@section('footer')
+    @include('client.layouts.partials.footer')
 @endsection
 @endsection

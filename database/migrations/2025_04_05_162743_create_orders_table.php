@@ -25,7 +25,7 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
 
             // Trạng thái đơn hàng (ví dụ: pending, processing, completed, canceled)
-            $table->enum('status', ['pending', 'processing', 'completed', 'canceled', 'failed'])->default('pending');
+            $table->enum('status', allowed: ['pending', 'processing', 'completed', 'canceled', 'failed'])->default('pending');
 
             // Phương thức thanh toán (ví dụ: credit card, cash on delivery, etc.)
             $table->string('payment_method');

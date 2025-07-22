@@ -1,239 +1,139 @@
 <!-- ========== HEADER ========== -->
-<header class="bg-warning py-2">
-    <!-- Topbar -->
-    <div class="container d-none d-xl-flex justify-content-between align-items-center">
-        <div class="text-dark small">
-            <div class="topbar-left">
-                <a href="#" class="text-gray-110 font-size-13 hover-on-dark">Chào Mừng bạn đến với website bán
-                    laptop D&T</a>
-            </div>
-        </div>
-        <ul class="list-inline mb-0">
-            <li class="list-inline-item mr-0 u-header-topbar__nav-item u-header-topbar__nav-item-border">
-                <a href="contact-v2.html" class="u-header-topbar__nav-link"><i class="ec ec-map-pointer mr-1"></i>
-                    Vị Trí cửa hàng</a>
-            </li>
-            <li class="list-inline-item mr-0 u-header-topbar__nav-item">
-                @auth
-                    <div class="dropdown">
-                        <a href="{{ route('management') }}" class="u-header-topbar__nav-link">
-                            <i class="ec ec-user mr-1"></i> {{ Auth::user()->name }}
-                        </a>
-
-                    </div>
-                @else
-                    <!-- Account Sidebar Toggle Button -->
-                    <a id="sidebarNavToggler" href="javascript:;" role="button" class="u-header-topbar__nav-link"
-                        aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false" data-unfold-event="click"
-                        data-unfold-hide-on-scroll="false" data-unfold-target="#sidebarContent"
-                        data-unfold-type="css-animation" data-unfold-animation-in="fadeInRight"
-                        data-unfold-animation-out="fadeOutRight" data-unfold-duration="500">
-                        <i class="ec ec-user mr-1"></i> Đăng Ký <span class="text-gray-50">or</span> Đăng Nhập
-                    </a>
-                    <!-- End Account Sidebar Toggle Button -->
-                @endauth
-            </li>
-
-        </ul>
-    </div>
-
-    <!-- Logo, Search, Icons -->
-    <div class="container py-2">
-        <div class="row align-items-center">
-            <!-- Logo -->
+<header class="fixed-top shadow-sm" style="background-color: #dc3545;">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <!-- Left Section: Logo & Category -->
             <div class="col-auto">
                 <div class="d-flex align-items-center">
                     <!-- Logo -->
                     <a href="/" class="navbar-brand font-weight-bold text-dark mr-3" style="font-size: 28px;">
-                        <span>D&T</span>
+                        <span style="color: floralwhite">D&T</span>
                     </a>
-
-                    <!-- Fullscreen Toggle Button -->
-                    <button id="sidebarHeaderInvokerMenu" type="button" class="navbar-toggler d-block btn u-hamburger"
-                        aria-controls="sidebarHeader" aria-haspopup="true" aria-expanded="false"
-                        data-unfold-event="click" data-unfold-hide-on-scroll="false"
-                        data-unfold-target="#sidebarHeader1" data-unfold-type="css-animation"
-                        data-unfold-animation-in="fadeInLeft" data-unfold-animation-out="fadeOutLeft"
-                        data-unfold-duration="500">
-                        <span id="hamburgerTriggerMenu" class="u-hamburger__box">
-                            <span class="u-hamburger__inner"></span>
-                        </span>
-                    </button>
-                    <aside id="sidebarHeader1" class="u-sidebar u-sidebar--left" aria-labelledby="sidebarHeaderInvoker">
-                        <div class="u-sidebar__scroller">
-                            <div class="u-sidebar__container">
-                                <div class="u-header-sidebar__footer-offset">
-                                    <!-- Toggle Button -->
-                                    <div class="position-absolute top-0 right-0 z-index-2 pt-4 pr-4 bg-white">
-                                        <button type="button" class="close ml-auto" aria-controls="sidebarHeader"
-                                            aria-haspopup="true" aria-expanded="false" data-unfold-event="click"
-                                            data-unfold-hide-on-scroll="false" data-unfold-target="#sidebarHeader1"
-                                            data-unfold-type="css-animation" data-unfold-animation-in="fadeInLeft"
-                                            data-unfold-animation-out="fadeOutLeft" data-unfold-duration="500">
-                                            <span aria-hidden="true"><i
-                                                    class="ec ec-close-remove text-gray-90 font-size-20"></i></span>
-                                        </button>
-                                    </div>
-                                    <!-- End Toggle Button -->
-
-                                    <!-- Content -->
-                                    <div class="js-scrollbar u-sidebar__body">
-                                        <div id="headerSidebarContent"
-                                            class="u-sidebar__content u-header-sidebar__content">
-                                            <!-- Logo -->
-                                            <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center mb-3"
-                                                href="/" aria-label="PC365">
-                                                <img
-                                                    src="https://www.shutterstock.com/image-vector/dt-initial-logo-ampersand-monogram-260nw-335528063.jpg">
-                                            </a>
-                                            <!-- End Logo -->
-
-                                            <!-- List -->
-                                            <ul id="headerSidebarList" class="u-header-collapse__nav">
-                                                <!-- Value of the Day -->
-                                                <li class="">
-                                                    <a class="u-header-collapse__nav-link font-weight-bold"
-                                                        href="#">Sản phẩm của ngày</a>
-                                                </li>
-                                                <!-- End Value of the Day -->
-
-                                                <!-- Top 100 Offers -->
-                                                <li class="">
-                                                    <a class="u-header-collapse__nav-link font-weight-bold"
-                                                        href="#">100 ưu đãi hành đầu</a>
-                                                </li>
-                                                <!-- End Top 100 Offers -->
-
-                                                <!-- New Arrivals -->
-                                                <li class="">
-                                                    <a class="u-header-collapse__nav-link font-weight-bold"
-                                                        href="#">Sản phẩm mới</a>
-                                                </li>
-                                                <!-- End New Arrivals -->
-
-                                                <!-- Computers & Accessories -->
-                                                <li class="u-has-submenu u-header-collapse__submenu">
-                                                    <a class="u-header-collapse__nav-link font-weight-bold u-header-collapse__nav-pointer"
-                                                        href="javascript:;"
-                                                        data-target="#headerSidebarComputersCollapse" role="button"
-                                                        data-toggle="collapse" aria-expanded="false"
-                                                        aria-controls="headerSidebarComputersCollapse">
-                                                        LapTop
-                                                    </a>
-
-                                                    <div id="headerSidebarComputersCollapse" class="collapse"
-                                                        data-parent="#headerSidebarContent">
-                                                        <ul class="u-header-collapse__nav-list">
-                                                            <li class=""><a
-                                                                    class="u-header-collapse__submenu-nav-link"
-                                                                    href="#">Gaming</a></li>
-                                                            <li class=""><a
-                                                                    class="u-header-collapse__submenu-nav-link"
-                                                                    href="#">Business</a></li>
-                                                            <li class=""><a
-                                                                    class="u-header-collapse__submenu-nav-link"
-                                                                    href="#">Student / Office</a></li>
-                                                            <li class=""><a
-                                                                    class="u-header-collapse__submenu-nav-link"
-                                                                    href="#">Workstation</a></li>
-                                                            <li class=""><a
-                                                                    class="u-header-collapse__submenu-nav-link"
-                                                                    href="#">Convertible / 2-in-1</a></li>
-                                                    </div>
-                                                </li>
-                                                <!-- End Computers & Accessories -->
-
-                                                <!-- Cameras, Audio & Video -->
-                                        </div>
-                                    </div>
-                                    <!-- End Content -->
-                                </div>
-                                <!-- Footer -->
-                                <footer id="SVGwaveWithDots" class="svg-preloader u-header-sidebar__footer">
-                                    <ul class="list-inline mb-0">
-                                        <li class="list-inline-item pr-3">
-                                            <a class="u-header-sidebar__footer-link text-gray-90"
-                                                href="#">Privacy</a>
-                                        </li>
-                                        <li class="list-inline-item pr-3">
-                                            <a class="u-header-sidebar__footer-link text-gray-90"
-                                                href="#">Terms</a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a class="u-header-sidebar__footer-link text-gray-90" href="#">
-                                                <i class="fas fa-info-circle"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-
-                                    <!-- SVG Background Shape -->
-                                    <div class="position-absolute right-0 bottom-0 left-0 z-index-n1">
-                                        <img class="js-svg-injector"
-                                            src="https://transvelo.github.io/electro-html/2.0/assets/svg/components/wave-bottom-with-dots.svg"
-                                            alt="Image Description" data-parent="#SVGwaveWithDots">
-                                    </div>
-                                    <!-- End SVG Background Shape -->
-                                </footer>
-                                <!-- End Footer -->
-                            </div>
-                        </div>
-                    </aside>
+                    <!-- Category -->
+                    <button class="navbar__item button__menu" fdprocessedid="a8tkuu"><svg width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.7041 4H10.7041V10H4.7041V4Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                        <path d="M14.7041 4H20.7041V10H14.7041V4Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                        <path d="M4.7041 14H10.7041V20H4.7041V14Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                        <path
+                            d="M14.7041 17C14.7041 17.7956 15.0202 18.5587 15.5828 19.1213C16.1454 19.6839 16.9085 20 17.7041 20C18.4998 20 19.2628 19.6839 19.8254 19.1213C20.388 18.5587 20.7041 17.7956 20.7041 17C20.7041 16.2044 20.388 15.4413 19.8254 14.8787C19.2628 14.3161 18.4998 14 17.7041 14C16.9085 14 16.1454 14.3161 15.5828 14.8787C15.0202 15.4413 14.7041 16.2044 14.7041 17Z"
+                            stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg> <span class="navbar__item-text">Danh mục</span> <svg width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6.7041 9L12.7041 15L18.7041 9" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                    </svg></button>
                 </div>
             </div>
-            <!-- Search -->
             <div class="col d-none d-xl-block">
                 <form class="js-focus-state">
-                    <label class="sr-only" for="searchproduct">Tìm Kiếm</label>
-                    <div class="input-group">
-                        <input type="email"
-                            class="form-control py-2 pl-5 font-size-15 border-right-0 height-40 border-width-2 rounded-left-pill border-primary"
-                            name="email" id="searchproduct-item" placeholder="Tìm Kiếm"
-                            aria-label="Search for Products" aria-describedby="searchProduct1" required>
-                        <div class="input-group-append">
-                            <button class="btn btn-primary height-40 py-2 px-3 rounded-right-pill" type="button"
-                                id="searchProduct1">
-                                <span class="ec ec-search font-size-24"></span>
-                            </button>
+                    <div class="cps-group-input is-flex">
+                        <div class="input-group-btn"><button type="submit"
+                                class="border-0 shadow-none outline-none text-dark" fdprocessedid="pg7eio"><svg
+                                    width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_4895_10933)">
+                                        <path
+                                            d="M3.7041 10C3.7041 10.9193 3.88516 11.8295 4.23694 12.6788C4.58873 13.5281 5.10434 14.2997 5.75435 14.9497C6.40436 15.5998 7.17604 16.1154 8.02532 16.4672C8.8746 16.8189 9.78485 17 10.7041 17C11.6234 17 12.5336 16.8189 13.3829 16.4672C14.2322 16.1154 15.0038 15.5998 15.6538 14.9497C16.3039 14.2997 16.8195 13.5281 17.1713 12.6788C17.523 11.8295 17.7041 10.9193 17.7041 10C17.7041 9.08075 17.523 8.1705 17.1713 7.32122C16.8195 6.47194 16.3039 5.70026 15.6538 5.05025C15.0038 4.40024 14.2322 3.88463 13.3829 3.53284C12.5336 3.18106 11.6234 3 10.7041 3C9.78485 3 8.8746 3.18106 8.02532 3.53284C7.17604 3.88463 6.40436 4.40024 5.75435 5.05025C5.10434 5.70026 4.58873 6.47194 4.23694 7.32122C3.88516 8.1705 3.7041 9.08075 3.7041 10Z"
+                                            stroke="#1D1D20" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round"></path>
+                                        <path d="M21.7041 21L15.7041 15" stroke="#1D1D20" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_4895_10933">
+                                            <rect width="24" height="24" fill="white"
+                                                transform="translate(0.704102)"></rect>
+                                        </clipPath>
+                                    </defs>
+                                </svg></button></div> <input id="inp$earch" type="text"
+                            placeholder="Bạn muốn mua gì hôm nay?" autocomplete="off" value="" class="cps-input"
+                            fdprocessedid="aonpa"> <span id="btn-close-search" style="display:none;">×</span>
+
+                        <div id="suggestSearch" class="suggest-search" style="display:none;"><!----> <!----> <!---->
                         </div>
                     </div>
                 </form>
-            </div>
-            <!-- Cart -->
-            @php
-                use App\Models\Cart;
-
-                $totalQty = 0;
-                $totalPrice = 0;
-
-                if (auth()->check()) {
-                    $cart = Cart::with('items.variant')
-                        ->where('user_id', auth()->id())
-                        ->first();
-                    if ($cart) {
-                        $totalQty = $cart->items->sum('quantity');
-                        $totalPrice = $cart->items->sum(fn($item) => $item->quantity * ($item->variant->price ?? 0));
-                    }
-                }
-            @endphp
-
-            <div class="col-auto">
-                <a href="{{ route('cart.index') }}" id="cart-button"
-                    class="text-dark position-relative d-flex align-items-center">
-                    <i class="fas fa-shopping-cart fa-lg"></i>
-                    <span id="cart-count"
-                        class="badge badge-danger position-absolute top-0 start-100 translate-middle rounded-circle">
-                        {{ $totalQty }}
-                    </span>
-                    <span class="d-none d-xl-inline ml-2 font-weight-bold" id="cart-total">
-                        {{ number_format($totalPrice, 0, ',', '.') }}₫
-                    </span>
-                </a>
+                <div id="overlaySearch" class="header-overlay"></div>
             </div>
 
+            <!-- Cart and Authentication Section -->
+            <div class="col-auto ml-auto">
+                <div class="d-flex align-items-center">
+                    <!-- Cart -->
+                    @php
+                        use App\Models\Cart;
+
+                        $totalQty = 0;
+                        $totalPrice = 0;
+
+                        if (auth()->check()) {
+                            $cart = Cart::with('items.variant')
+                                ->where('user_id', auth()->id())
+                                ->first();
+                            if ($cart) {
+                                $totalQty = $cart->items->sum('quantity');
+                                $totalPrice = $cart->items->sum(
+                                    fn($item) => $item->quantity * ($item->variant->price ?? 0),
+                                );
+                            }
+                        }
+                    @endphp
+
+                    <a href="{{ route('cart.index') }}" id="cart-button"
+                        class="cart-btn position-relative d-flex align-items-center mr-3 text-decoration-none">
+                        Giỏ hàng <i class="fas fa-shopping-cart fa-lg ml-1"></i>
+                        <span id="cart-count"
+                            class="badge badge-danger position-absolute top-0 start-100 translate-middle rounded-circle">
+                            {{ $totalQty }}
+                        </span>
+                        <span class="d-none d-xl-inline ml-2 font-weight-bold" id="cart-total">
+                            {{ number_format($totalPrice, 0, ',', '.') }}đ
+                        </span>
+                    </a>
 
 
+                    <!-- Authentication -->
+                    @auth
+                        <div class="dropdown">
+                            <a href="{{ route('management') }}"
+                                class="d-flex align-items-center text-decoration-none font-weight-bold"
+                                style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white; font-size: 20px;">
+                                {{ Auth::user()->name }} <i class="fas fa-user-circle ml-1" style="font-size: 20px; color: white;"></i>
+                            </a>
+                        </div>
+                    @else
+                        <!-- Account Sidebar Toggle Button -->
+                        <a id="sidebarNavToggler" href="javascript:;" role="button"
+                            style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white;"
+                            class="d-flex align-items-center text-decoration-none font-weight-bold"
+                            aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false"
+                            data-unfold-event="click" data-unfold-hide-on-scroll="false"
+                            data-unfold-target="#sidebarContent" data-unfold-type="css-animation"
+                            data-unfold-animation-in="fadeInRight" data-unfold-animation-out="fadeOutRight"
+                            data-unfold-duration="500">
+                            Đăng nhập <i class="fas fa-user-circle mr-1" style="font-size: 20px; color: white;"></i>
+                        </a>
 
+
+                        <!-- End Account Sidebar Toggle Button -->
+                    @endauth
+                </div>
+            </div>
         </div>
     </div>
-
 </header>
+
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header.fixed-top');
+        if (header) {
+            const headerHeight = header.offsetHeight;
+            document.body.style.paddingTop = headerHeight + 'px';
+        }
+    });
+</script>

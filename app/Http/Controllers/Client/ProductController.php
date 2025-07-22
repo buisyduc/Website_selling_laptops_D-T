@@ -25,16 +25,17 @@ public function show($id)
     $ramAttrId = $ramAttr ? $ramAttr->id : null;
 
     // Dữ liệu phục vụ cho JavaScript
- $variantsForJs = $product->variants->map(function ($variant) {
+$variantsForJs = $product->variants->map(function ($variant) {
     return [
         'id' => $variant->id,
         'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity,
+        'stock_quantity' => $variant->stock_quantity, 
         'options' => $variant->options->mapWithKeys(function ($opt) {
             return [$opt->attribute_id => $opt->option_id];
         }),
     ];
 })->toArray();
+
 
 
 

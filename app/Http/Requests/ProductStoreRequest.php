@@ -19,19 +19,18 @@ class ProductStoreRequest extends FormRequest
    public function rules(): array
 {
     return [
-        'name' => 'required|string|max:255',
-        'slug' => 'nullable|string|max:255',
-        'description' => 'nullable|string',
+          'name' => 'required|string|max:255',
+        'slug' => 'required|string|max:255|unique:products,slug',
+        'description' => 'required|string|min:10',
         'brand_id' => 'required|exists:brands,id',
         'category_id' => 'required|exists:categories,id',
         'image' => 'nullable|image',
         'images.*' => 'nullable|image',
-        'release_date' => 'nullable|date',
+        'release_date' => 'nullable|date|after_or_equal:today',
         'status' => 'required|boolean',
 
         // Biến thể sản phẩm
         'variants' => 'nullable|array',
-        'variants.*.sku' => 'required|string|max:100',
         'variants.*.price' => 'required|numeric|min:0',
         'variants.*.stock_quantity' => 'required|integer|min:0',
         'variants.*.compare_price' => 'nullable|numeric',
@@ -40,8 +39,6 @@ class ProductStoreRequest extends FormRequest
         'variants.*.length' => 'nullable|numeric',
         'variants.*.width' => 'nullable|numeric',
         'variants.*.height' => 'nullable|numeric',
-
-        // Đây là phần bạn đang thiếu
         'variants.*.attributes' => 'nullable|array',
         'variants.*.attributes.*.attribute_id' => 'nullable|integer',
         'variants.*.attributes.*.options' => 'nullable|array',

@@ -13,7 +13,6 @@ class product_variants extends Model
         'product_id',
         'price',
         'stock_quantity',
-        'sku',
         'status'
     ];
 

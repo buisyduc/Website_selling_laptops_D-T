@@ -41,7 +41,6 @@ class ProductUpdateRequest extends FormRequest
             // Validation cho variants
             'variants' => 'nullable|array',
             'variants.*.id' => 'nullable|integer|exists:product_variants,id',
-            'variants.*.sku' => 'nullable|string|max:100',
             'variants.*.price' => 'required_with:variants|numeric|min:0',
             'variants.*.compare_price' => 'nullable|numeric|min:0',
             'variants.*.cost_price' => 'nullable|numeric|min:0',

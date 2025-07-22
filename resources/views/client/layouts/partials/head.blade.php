@@ -31,15 +31,29 @@
     <link rel="stylesheet" href="<?php echo e(asset('client/vendor/slick-carousel/slick/slick.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('client/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')); ?>">
     <!-- Bootstrap 5 + Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+<!-- ✅ jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<!-- ✅ Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
 
 
     <!-- CSS Electro Template -->
-    <link rel="stylesheet" href="<?php echo e(asset('client/css/theme.css')); ?>">
+     <link rel="stylesheet" href="<?php echo e(asset('client/css/theme.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('client/css/layouts/sidebar.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('client/css/layouts/header.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('client/css/products/index.css')); ?>">
+
+
 </head>

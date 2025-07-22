@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AttributesProduct;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategorieController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 
+use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +52,11 @@ Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('cl
 
 
 Route::middleware(['auth', 'is_customer'])->group(function () {
+//wishlist
+Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
+    ->middleware('auth')
+    ->name('wishlist.store');
+
 // CART
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -121,9 +128,21 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 //attributes
     Route::get('admin/attributes',[AttributesProduct::class,'index'])->name('attributes');
     Route::post('admin/attributes/store', [AttributesProduct::class, 'store'])->name('attributes.store');
+    Route::delete('admin/attributes/delete/{variant_attributes}', [AttributesProduct::class, 'destroy'])->name('attributes.destroy');
+    Route::get('admin/attributes/trashed', [AttributesProduct::class, 'trashed'])->name('attributes.trashed');
+    Route::post('admin/attributes/restore/{id}', [AttributesProduct::class, 'restore'])->name('attributes.restore');
+    Route::delete('admin/attributes/force-delete/{id}', [AttributesProduct::class, 'forceDelete'])->name('attributes.forceDelete');
+    Route::post('admin/attributes/restore-all', [AttributesProduct::class, 'restoreAll'])->name('attributes.restoreAll');
+    Route::delete('admin/attributes/force-delete-all', [AttributesProduct::class, 'forceDeleteAll'])->name('attributes.forceDeleteAll');
+    Route::get('admin/attributes/edit/{id}', [AttributesProduct::class, 'edit'])->name('attributes.edit');
+    Route::put('admin/attributes/update/{id}', [AttributesProduct::class, 'update'])->name('attributes.update');
 //coupons
     Route::get('admin/coupons',[CouponController::class,'index'])->name('coupons-list');
     Route::post('admin/coupons-store', [CouponController::class, 'store'])->name('admin.coupons.store');
+//oder
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::post('/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
 
 

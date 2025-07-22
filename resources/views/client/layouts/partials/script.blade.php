@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
     // ✅ Nút Đăng nhập trong modal → HIỂN THỊ form đăng nhập
     if (loginButton) {
         loginButton.addEventListener('click', function () {
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.style.display = 'flex'; // bạn đang dùng flex trong CSS
     }
 
-    // Có thể gọi openLoginModal() khi người dùng nhấn nút "Thêm vào giỏ"
+
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -489,8 +490,263 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Tự động cập nhật khi trang load
         document.addEventListener("DOMContentLoaded", updateCartIcon);
+
+
     </script>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Remove preload class after page loads
+        window.addEventListener('load', function() {
+            document.body.classList.remove('preload');
+        });
+
+        // Optimized carousel and menu interaction
+        const carousel = document.getElementById('mainCarousel');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        let isTransitioning = false;
+        let carouselInstance;
+
+        // Initialize carousel instance
+        document.addEventListener('DOMContentLoaded', function() {
+            carouselInstance = new bootstrap.Carousel(carousel, {
+                interval: 4000,
+                wrap: true,
+                touch: true
+            });
+        });
+
+        // Function to update active menu item
+        function updateActiveMenuItem(slideIndex) {
+            menuItems.forEach((item, index) => {
+                if (index === slideIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle menu item clicks
+        menuItems.forEach((item, index) => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (isTransitioning) return;
+
+                // Update active state immediately for better UX
+                updateActiveMenuItem(index);
+
+                // Go to corresponding carousel slide
+                if (carouselInstance) {
+                    carouselInstance.to(index);
+                }
+            });
+        });
+
+        // Handle carousel slide start
+        carousel.addEventListener('slide.bs.carousel', function(e) {
+            isTransitioning = true;
+
+            // Get the index of the slide we're transitioning to
+            const nextSlideIndex = parseInt(e.to);
+
+            // Update menu immediately when slide starts
+            updateActiveMenuItem(nextSlideIndex);
+        });
+
+        // Handle carousel slide completion
+        carousel.addEventListener('slid.bs.carousel', function(e) {
+            // Get the current active slide index
+            const activeSlide = carousel.querySelector('.carousel-item.active');
+            const activeSlideIndex = Array.from(carouselItems).indexOf(activeSlide);
+
+            // Double-check menu state after slide completes
+            updateActiveMenuItem(activeSlideIndex);
+
+            // Reset transition flag
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 100);
+        });
+
+        // Handle automatic carousel progression
+        carousel.addEventListener('slide.bs.carousel', function(e) {
+            // Ensure menu stays in sync during automatic slides
+            const toIndex = parseInt(e.to);
+            if (!isNaN(toIndex)) {
+                updateActiveMenuItem(toIndex);
+            }
+        });
+
+        // Add touch/swipe support for better mobile experience
+        let startX = 0;
+        let endX = 0;
+
+        carousel.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        carousel.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const threshold = 50;
+            const diff = startX - endX;
+
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    carouselInstance?.next();
+                } else {
+                    // Swipe right - previous slide
+                    carouselInstance?.prev();
+                }
+            }
+        }
+
+        // Ensure initial state is correct
+        window.addEventListener('load', function() {
+            // Set initial active menu item based on active carousel slide
+            const activeSlide = carousel.querySelector('.carousel-item.active');
+            const activeSlideIndex = Array.from(carouselItems).indexOf(activeSlide);
+            updateActiveMenuItem(activeSlideIndex);
+        });
+    </script>
 
 
+<script>
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const dropdownMenus = document.querySelectorAll('.dropdown-menu-custom');
+    const dropdownWrapper = document.querySelector('.dropdown-wrapper');
+
+    let currentDropdown = null;
+
+    sidebarItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            // Ẩn tất cả menu con
+            dropdownMenus.forEach(menu => menu.style.display = 'none');
+
+            // Hiển thị menu tương ứng
+            const dropdownId = item.getAttribute('data-dropdown');
+            currentDropdown = document.getElementById('dropdown-' + dropdownId);
+            if (currentDropdown) currentDropdown.style.display = 'block';
+
+            // Hiển thị wrapper
+            dropdownWrapper.style.display = 'block';
+        });
+    });
+
+    // Ẩn khi rời khỏi wrapper
+    dropdownWrapper.addEventListener('mouseleave', () => {
+        dropdownMenus.forEach(menu => menu.style.display = 'none');
+        dropdownWrapper.style.display = 'none';
+    });
+
+    // Ẩn khi rời khỏi sidebar
+    const sidebar = document.querySelector('.sidebar-col');
+    sidebar.addEventListener('mouseleave', () => {
+        // Delay một chút để người dùng kịp di chuột vào dropdown
+        setTimeout(() => {
+            if (!dropdownWrapper.matches(':hover')) {
+                dropdownMenus.forEach(menu => menu.style.display = 'none');
+                dropdownWrapper.style.display = 'none';
+            }
+        }, 150);
+    });
+</script>
+<script>
+    const isLoggedIn = {!! json_encode(auth()->check()) !!};
+</script>
+
+
+<script>
+    function handleFavoriteClick(event, element) {
+    event.preventDefault();
+
+    const productId = element.getAttribute('data-product-id');
+
+    if (!isLoggedIn) {
+        openLoginModal();
+        return;
+    }
+
+    fetch(`/wishlist/${productId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const icon = element.querySelector('.icon-toggle');
+            if (icon) {
+                // Chuyển đổi icon heart ↔ heart-fill
+                icon.classList.toggle('bi-heart');
+                icon.classList.toggle('bi-heart-fill');
+            }
+
+            // Thông báo
+            Swal.fire({
+                toast: true,
+                position: 'top',
+                icon: data.status === 'added' ? 'success' : 'info',
+                title: data.message,
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'custom-toast-center'
+                }
+            });
+        } else {
+            Swal.fire({
+                toast: true,
+                position: 'top',
+                icon: 'error',
+                title: data.message || 'Có lỗi xảy ra!',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'custom-toast-center'
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        Swal.fire({
+            toast: true,
+            position: 'top',
+            icon: 'error',
+            title: 'Đã xảy ra lỗi!',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'custom-toast-center'
+            }
+        });
+    });
+}
+
+</script>
+
+
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const header = document.querySelector('header.fixed-top');
+        if (header) {
+            const headerHeight = header.offsetHeight;
+            document.body.style.paddingTop = headerHeight + 'px';
+        }
+    });
+</script>

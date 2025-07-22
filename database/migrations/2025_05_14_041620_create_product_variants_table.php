@@ -17,7 +17,6 @@ return new class extends Migration
 
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity')->default(0);
-            $table->string('sku')->nullable(); // Mã kho
             $table->enum('status', ['active', 'inactive'])->default('active');
             // Thêm cột deleted_at để hỗ trợ xóa mềm
             $table->softDeletes();

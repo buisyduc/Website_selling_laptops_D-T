@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class variant_attributes extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $fillable = ['name', 'parent_id'];
  public function children()
 {

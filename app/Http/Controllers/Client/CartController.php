@@ -107,25 +107,37 @@ public function add(Request $request)
     }
 }
 
-    public function updateItem(Request $request)
+ public function updateItem(Request $request)
 {
     $user = auth()->user();
     $cart = $user->cart;
+
     $variantId = $request->input('variant_id');
     $quantity = max((int) $request->input('quantity'), 1);
 
     $item = $cart->items()->where('variant_id', $variantId)->first();
+
     if (!$item) {
         return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại trong giỏ']);
     }
 
+    $variant = $item->variant;
+
+
+   if ($quantity > $variant->stock_quantity) {
+    return response()->json([
+        'success' => false,
+        'message' => 'Chỉ còn ' . $variant->stock_quantity . ' sản phẩm trong kho.',
+        'allowed_quantity' => $variant->stock_quantity,
+    ]);
+}
+
+    // ✅ Cập nhật nếu hợp lệ
     $item->quantity = $quantity;
     $item->save();
 
-    // Tính lại tổng từng dòng
-    $itemTotal = $item->quantity * $item->variant->price;
+    $itemTotal = $item->quantity * $variant->price;
 
-    // Tính lại tổng giỏ
     $grandTotal = $cart->items()->with('variant')->get()->sum(function ($i) {
         return $i->quantity * $i->variant->price;
     });
@@ -136,7 +148,6 @@ public function add(Request $request)
         'cart_total' => number_format($grandTotal, 0, ',', '.') . '₫',
     ]);
 }
-
 
     // Xoá 1 sản phẩm khỏi giỏ (AJAX)
     public function remove($variantId)

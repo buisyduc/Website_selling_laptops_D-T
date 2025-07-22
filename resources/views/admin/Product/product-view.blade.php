@@ -338,78 +338,7 @@
         </div>
     </div>
 </div>
-
 @endsection
 
-@push('styles')
-<style>
-    .card {
-        border: none;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
 
-    .page-title-box {
-        border-left: 4px solid #0d6efd;
-    }
 
-    .badge {
-        font-size: 0.75rem;
-    }
-
-    .modal-header {
-        border-bottom: none;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #dee2e6;
-    }
-
-    .table th {
-        border-top: none;
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .btn {
-        border-radius: 0.375rem;
-    }
-
-    .border {
-        border-color: #dee2e6 !important;
-    }
-
-    .bg-light {
-        background-color: #f8f9fa !important;
-    }
-</style>
-@endpush
-
-@push('scripts')
-<script>
-$(document).ready(function() {
-    // Auto-hide alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
-
-    // Tooltip initialization
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-    // Confirm delete
-    $('#deleteModal form').on('submit', function(e) {
-        e.preventDefault();
-
-        if (confirm('Are you absolutely sure you want to delete this product?')) {
-            this.submit();
-        }
-    });
-});
-</script>
-@endpush
