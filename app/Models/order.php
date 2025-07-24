@@ -47,7 +47,11 @@ class order extends Model
         return $this->belongsTo(User::class);
     }
     public function coupon()
-{
-    return $this->belongsTo(\App\Models\Coupon::class);
-}
+    {
+        return $this->belongsTo(\App\Models\Coupon::class);
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(order_item::class);
+    }
 }

@@ -8,7 +8,7 @@ use App\Models\Order;
 
 class AdminOrderController extends Controller
 {
-     public function index()
+    public function index()
     {
         $orders = Order::latest()->paginate(20);
         return view('admin.orders.index', compact('orders'));
@@ -23,9 +23,8 @@ class AdminOrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:pending,processing,completed,cancelled,failed,unprocessed,processing_seller',
         ]);
-
         $order->update(['status' => $request->status]);
 
         return redirect()->back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');

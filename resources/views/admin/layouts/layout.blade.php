@@ -710,9 +710,6 @@
                                         <li class="nav-item">
                                             <a href="{{route('admin.orders.index')}}" class="nav-link" data-key="t-list-view">List View</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="orders-overview.html" class="nav-link" data-key="t-overview">Overview</a>
-                                        </li>
                                     </ul>
                                 </div>
                             </li>

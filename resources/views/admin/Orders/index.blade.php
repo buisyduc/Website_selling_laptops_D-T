@@ -194,12 +194,6 @@
                                            show
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-success"
-                                                data-bs-toggle="tooltip"
-                                                title="Cập nhật trạng thái">
-                                                 status
-                                            <i class="fas fa-edit"></i>
-                                        </button>
                                         <button class="btn btn-sm btn-outline-info"
                                                 data-bs-toggle="tooltip"
                                                 title="In hóa đơn">

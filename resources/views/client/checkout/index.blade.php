@@ -8,31 +8,36 @@
             <!-- Right Column: Order Summary -->
             <div class="col-lg-5 order-lg-1">
                 <div class="content-wrapper summary-wrapper">
-                    <h3 class="fw-bold mb-4 fs-5">Order Summary</h3>
+                    <h3 class="fw-bold mb-4 fs-5 text-danger">Order Summary</h3>
 
                     <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-muted">Subtotal</span>
-                        <span class="fw-bold" id="order-subtotal">
+                        <span class="text-dark">Subtotal</span>
+                        <span class="fw-bold text-danger" id="order-subtotal">
                             {{ number_format($cartTotal ?? $totalAmount, 0, ',', '.') }}đ
                         </span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Delivery/Shipping</span>
-                        <span class="fw-bold">Free</span>
+
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-dark">Delivery/Shipping</span>
+                        <span class="fw-bold text-dark">Free</span>
                     </div>
+
                     <div class="d-flex justify-content-between align-items-center" id="order-discount-row"
                         style="display: none;">
-                        <span class="text-muted" id="order-discount-label"></span>
+                        <span class="text-dark" id="order-discount-label"></span>
                         <span class="fw-bold text-danger" id="order-discount-amount"></span>
                     </div>
+
                     <div class="my-2">
-                        <p class="text-success mb-1">You qualify for free shipping!</p>
+                        <p class="text-dark fw-semibold">You qualify for free shipping!</p>
                         <div class="shipping-progress-bar"></div>
                     </div>
+
                     <hr>
+
                     <div class="d-flex justify-content-between align-items-center py-2 mb-4">
-                        <span class="fw-bold fs-5">Total</span>
-                        <span class="fw-bold fs-4">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
+                        <span class="fw-bold fs-5 text-dark">Total</span>
+                        <span class="fw-bold fs-4 text-danger">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
                     </div>
 
                     @foreach ($cartItems as $item)
@@ -44,25 +49,26 @@
                             <p class="fw-bold mb-2">Arrives {{ now()->format('D, M d') }}</p>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-4" style="width: 180px; height:180px; margin-right: 10px;">
-                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}" class="img-fluid"
-                                        style="border-radius: 12px;">
+                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}"
+                                        class="img-fluid" style="border-radius: 12px;">
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="fw-bold mb-1">{{ $product->name }}</p>
-                                    <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
+                                    <p class="text-dark mb-1">Qty {{ $item->quantity }}</p>
                                     @foreach ($item->variant->options as $opt)
-                                        <p class="text-muted mb-1">{{ $opt->attribute->name }}:
+                                        <p class="text-dark mb-1">{{ $opt->attribute->name }}:
                                             {{ $opt->option->value }}
                                         </p>
                                     @endforeach
-                                    <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ
-                                    </p>
+                                    <p class="fw-bold text-danger mb-0">
+                                        {{ number_format($item->variant->price, 0, ',', '.') }}đ</p>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
+
             <!-- Left Column -->
             <div class="col-lg-7 order-lg-2 mb-4 mb-lg-0">
                 <div class="content-wrapper delivery-wrapper">
@@ -152,14 +158,14 @@
 
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>
-                            <input type="text" name="note" class="form-control form-control-custom" style="height: 100px;"
-                                value="{{ old('note', $order->note ?? '') }}">
+                            <input type="text" name="note" class="form-control form-control-custom"
+                                style="height: 100px;" value="{{ old('note', $order->note ?? '') }}">
                             @error('note')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <button type="button" class="btn payment-btn w-100 mt-3"
+                        <button type="button" class="btn btn-danger w-100 py-3"
                             onclick="handleContinueToPayment()">CONTINUE TO PAYMENT</button>
 
 
@@ -173,8 +179,8 @@
                         <!-- Nhập mã giảm giá thủ công -->
                         <div id="manual-coupon-input">
                             <div class="rounded-3 px-3 py-2 d-flex justify-content-between align-items-center fw-medium">
-                                <input id="coupon_input" type="text" class="form-control border-0" name="coupon_input"
-                                    placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
+                                <input id="coupon_input" type="text" class="form-control border-0"
+                                    name="coupon_input" placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
                                 <button type="button" class="btn btn-outline-success btn-sm" id="manualApplyBtn"
                                     onclick="applyManualCoupon()" disabled>Áp dụng</button>
                             </div>
@@ -238,14 +244,15 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-danger w-100 py-3" onclick="submitPaymentForm()">
+                        <button type="submit" class="btn btn-danger w-100 py-3">
                             Đặt hàng
                         </button>
 
 
                         <!-- Payment Modal -->
                         <!-- Payment Modal -->
-                        <div id="paymentModal" class="position-absolute d-none" style="top: 50%; left: 50%; transform: translate(-50%, -50%);
+                        <div id="paymentModal" class="position-absolute d-none"
+                            style="top: 50%; left: 50%; transform: translate(-50%, -50%);
                                 z-index: 1055;
                                 width: 100%; height: 100%; border-radius: 8px;">
 
@@ -260,11 +267,9 @@
                                             data-method="cod">
                                             Thanh toán khi nhận hàng (COD)
                                         </button>
-
-
                                         <button type="button" class="list-group-item list-group-item-action"
                                             data-method="vnpay">
-                                            VNPay
+                                            Thanh toán VnPay
                                         </button>
                                     </div>
 
@@ -299,7 +304,8 @@
                                                     class="border rounded p-3 mb-3 d-flex align-items-start{{ $isDisabled ? ' bg-light text-muted coupon-disabled' : '' }}">
                                                     <div class="flex-grow-1 text-start">
                                                         <div class="mb-1">
-                                                            <strong class="text-dark fw-bold d-block">{{ $coupon->code }}</strong>
+                                                            <strong
+                                                                class="text-dark fw-bold d-block">{{ $coupon->code }}</strong>
                                                         </div>
                                                         <div class="mb-1">
                                                             Giảm <strong
@@ -319,8 +325,9 @@
                                                         @endif
                                                     </div>
                                                     <div class="ms-3">
-                                                        <input class="form-check-input mt-1" type="radio" name="selected_coupon"
-                                                            value="{{ $coupon->id }}" {{ $isDisabled ? 'disabled' : '' }}>
+                                                        <input class="form-check-input mt-1" type="radio"
+                                                            name="selected_coupon" value="{{ $coupon->id }}"
+                                                            {{ $isDisabled ? 'disabled' : '' }}>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -459,6 +466,21 @@
             cursor: not-allowed !important;
             pointer-events: none;
         }
+
+        .summary-wrapper {
+            background-color: #fff0e6 !important;
+            color: #5c1a00;
+            /* Màu chữ chính */
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #cceeff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-wrapper .fw-bold {
+            color: #e53935;
+            /* Giá tiền, chữ đậm */
+        }
     </style>
 
 
@@ -591,13 +613,13 @@
             const formData = new FormData(form);
 
             fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            })
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
@@ -637,7 +659,7 @@
             if (btn) btn.disabled = !isValid;
         }
         // Listen for changes in required fields to enable/disable payment button
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const requiredFields = [
                 'name', 'email', 'phone', 'province',
                 'district', 'ward', 'address'
@@ -650,7 +672,7 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const stepper = document.querySelector('.checkout-stepper');
             const steps = document.querySelectorAll('.checkout-stepper .step');
             const form = document.querySelector('.checkout-form-custom');
@@ -658,7 +680,7 @@
             // Initialize stepper
             function initStepper() {
                 steps.forEach((step, index) => {
-                    step.addEventListener('click', function () {
+                    step.addEventListener('click', function() {
                         // Only allow clicking back to step 1, or step 2 if already validated
                         const currentStep = parseInt(stepper.getAttribute('data-current-step'));
                         if (index === 0) {
@@ -677,7 +699,7 @@
 
             // Handle form submission - only for step 2 (payment)
             if (form) {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     const currentStep = parseInt(stepper.getAttribute('data-current-step'));
 
                     if (currentStep === 1) {
@@ -694,7 +716,7 @@
             // Add input validation styling
             const inputs = document.querySelectorAll('input[required]');
             inputs.forEach(input => {
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     if (this.value.trim()) {
                         this.classList.remove('is-invalid');
                         this.classList.add('is-valid');
@@ -746,7 +768,7 @@
         }
 
         // Check if we should switch to payment tab on page load (after successful form submission)
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             @if (session('switch_to_payment'))
                 // Switch to payment tab if form was submitted successfully
                 switchToPaymentTab();
@@ -760,7 +782,7 @@
                     // alert('{{ session('success') }}');
                 @endif
             @endif
-            });
+        });
 
         // Update delivery information in payment form
         function updateDeliveryInfo() {
@@ -1057,10 +1079,10 @@
         }
 
         // Enable/disable manual coupon apply button
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const couponInput = document.getElementById('coupon_input');
             if (couponInput) {
-                couponInput.addEventListener('input', function () {
+                couponInput.addEventListener('input', function() {
                     const btn = document.getElementById('manualApplyBtn');
                     if (btn) {
                         btn.disabled = this.value.trim() === '';
@@ -1077,7 +1099,7 @@
             // Add event listeners to payment options
             const paymentButtons = document.querySelectorAll('#paymentOptions button');
             paymentButtons.forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const method = this.dataset.method;
                     const text = this.textContent.trim();
                     const icon = iconMap[method] || '💳';
@@ -1129,7 +1151,7 @@
             }
         }
         // Listen for changes in required fields to update payment step state
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const requiredFields = [
                 'name', 'email', 'phone', 'province',
                 'district', 'ward', 'address'
@@ -1154,7 +1176,7 @@
             var modal = document.getElementById('paymentModal');
             if (modal) modal.classList.add('d-none');
         }
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // 1. Khởi tạo stepper
             initStepper();
 
@@ -1178,15 +1200,15 @@
                 updateDeliveryInfo();
             @endif
 
-                // 4. Sự kiện chọn phương thức thanh toán
-                const iconMap = {
+            // 4. Sự kiện chọn phương thức thanh toán
+            const iconMap = {
                 cod: '💳',
                 vnpay: '🌐'
             };
 
             const paymentButtons = document.querySelectorAll('#paymentOptions button');
             paymentButtons.forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const method = this.dataset.method;
                     const text = this.textContent.trim();
                     const icon = iconMap[method] || '💳';
@@ -1207,7 +1229,7 @@
             // 5. Sự kiện nhập mã coupon
             const couponInput = document.getElementById('coupon_input');
             if (couponInput) {
-                couponInput.addEventListener('input', function () {
+                couponInput.addEventListener('input', function() {
                     const btn = document.getElementById('manualApplyBtn');
                     if (btn) {
                         btn.disabled = this.value.trim() === '';

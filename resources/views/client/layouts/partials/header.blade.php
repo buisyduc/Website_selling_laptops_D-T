@@ -11,21 +11,21 @@
                     </a>
                     <!-- Category -->
                     <button class="navbar__item button__menu" fdprocessedid="a8tkuu"><svg width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.7041 4H10.7041V10H4.7041V4Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round"></path>
-                        <path d="M14.7041 4H20.7041V10H14.7041V4Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round"></path>
-                        <path d="M4.7041 14H10.7041V20H4.7041V14Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round"></path>
-                        <path
-                            d="M14.7041 17C14.7041 17.7956 15.0202 18.5587 15.5828 19.1213C16.1454 19.6839 16.9085 20 17.7041 20C18.4998 20 19.2628 19.6839 19.8254 19.1213C20.388 18.5587 20.7041 17.7956 20.7041 17C20.7041 16.2044 20.388 15.4413 19.8254 14.8787C19.2628 14.3161 18.4998 14 17.7041 14C16.9085 14 16.1454 14.3161 15.5828 14.8787C15.0202 15.4413 14.7041 16.2044 14.7041 17Z"
-                            stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg> <span class="navbar__item-text">Danh mục</span> <svg width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6.7041 9L12.7041 15L18.7041 9" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round"></path>
-                    </svg></button>
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.7041 4H10.7041V10H4.7041V4Z" stroke="white" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M14.7041 4H20.7041V10H14.7041V4Z" stroke="white" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M4.7041 14H10.7041V20H4.7041V14Z" stroke="white" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path
+                                d="M14.7041 17C14.7041 17.7956 15.0202 18.5587 15.5828 19.1213C16.1454 19.6839 16.9085 20 17.7041 20C18.4998 20 19.2628 19.6839 19.8254 19.1213C20.388 18.5587 20.7041 17.7956 20.7041 17C20.7041 16.2044 20.388 15.4413 19.8254 14.8787C19.2628 14.3161 18.4998 14 17.7041 14C16.9085 14 16.1454 14.3161 15.5828 14.8787C15.0202 15.4413 14.7041 16.2044 14.7041 17Z"
+                                stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg> <span class="navbar__item-text">Danh mục</span> <svg width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.7041 9L12.7041 15L18.7041 9" stroke="white" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg></button>
                 </div>
             </div>
             <div class="col d-none d-xl-block">
@@ -94,37 +94,42 @@
                             {{ number_format($totalPrice, 0, ',', '.') }}đ
                         </span>
                     </a>
-
-
-                    <!-- Authentication -->
-                    @auth
-                        <div class="dropdown">
-                            <a href="{{ route('management') }}"
-                                class="d-flex align-items-center text-decoration-none font-weight-bold"
-                                style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white; font-size: 20px;">
-                                {{ Auth::user()->name }} <i class="fas fa-user-circle ml-1" style="font-size: 20px; color: white;"></i>
-                            </a>
-                        </div>
-                    @else
-                        <!-- Account Sidebar Toggle Button -->
-                        <a id="sidebarNavToggler" href="javascript:;" role="button"
-                            style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white;"
-                            class="d-flex align-items-center text-decoration-none font-weight-bold"
-                            aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false"
-                            data-unfold-event="click" data-unfold-hide-on-scroll="false"
-                            data-unfold-target="#sidebarContent" data-unfold-type="css-animation"
-                            data-unfold-animation-in="fadeInRight" data-unfold-animation-out="fadeOutRight"
-                            data-unfold-duration="500">
-                            Đăng nhập <i class="fas fa-user-circle mr-1" style="font-size: 20px; color: white;"></i>
+                        <a href="{{ route('client.orders.index') }}" id="order-button"
+                            class="cart-btn position-relative d-flex align-items-center mr-3 text-decoration-none">
+                            <i class="fas fas fa-clipboard-list fa-lg"></i>
                         </a>
 
 
-                        <!-- End Account Sidebar Toggle Button -->
-                    @endauth
+                        <!-- Authentication -->
+                        @auth
+                            <div class="dropdown">
+                                <a href="{{ route('management') }}"
+                                    class="d-flex align-items-center text-decoration-none font-weight-bold"
+                                    style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white; font-size: 20px;">
+                                    {{ Auth::user()->name }} <i class="fas fa-user-circle ml-1"
+                                        style="font-size: 20px; color: white;"></i>
+                                </a>
+                            </div>
+                        @else
+                            <!-- Account Sidebar Toggle Button -->
+                            <a id="sidebarNavToggler" href="javascript:;" role="button"
+                                style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white;"
+                                class="d-flex align-items-center text-decoration-none font-weight-bold"
+                                aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false"
+                                data-unfold-event="click" data-unfold-hide-on-scroll="false"
+                                data-unfold-target="#sidebarContent" data-unfold-type="css-animation"
+                                data-unfold-animation-in="fadeInRight" data-unfold-animation-out="fadeOutRight"
+                                data-unfold-duration="500">
+                                Đăng nhập <i class="fas fa-user-circle mr-1" style="font-size: 20px; color: white;"></i>
+                            </a>
+
+
+                            <!-- End Account Sidebar Toggle Button -->
+                        @endauth
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </header>
 
 
