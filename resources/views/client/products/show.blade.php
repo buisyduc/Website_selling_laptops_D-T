@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container" >
+    <div class="container">
         <!-- BREADCRUMB -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb mb-0">
@@ -182,8 +182,7 @@
                             <div class="d-flex gap-3 align-items-start p-3 rounded-4 shadow-sm bg-light h-100">
                                 <div class="d-flex justify-content-center align-items-center rounded-3"
                                     style="background-color: #E41727; width: 20px; height: 20px; ">
-                                    <svg width="24" height="24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M2.25 7.5H3.75M2.25 10.5H3.75M7.5 2.25V3.75M10.5 2.25V3.75M15.75 7.5H14.25M15.75 10.5H14.25M10.5 15.75V14.25M7.5 15.75V14.25M5.75 14.25H12.25C13.3546 14.25 14.25 13.3546 14.25 12.25V5.75C14.25 4.64543 13.3546 3.75 12.25 3.75H5.75C4.64543 3.75 3.75 4.64543 3.75 5.75V12.25C3.75 13.3546 4.64543 14.25 5.75 14.25ZM7.75 11.25H10.25C10.8023 11.25 11.25 10.8023 11.25 10.25V7.75C11.25 7.19772 10.8023 6.75 10.25 6.75H7.75C7.19772 6.75 6.75 7.19772 6.75 7.75V10.25C6.75 10.8023 7.19772 11.25 7.75 11.25Z"
                                             stroke="white" stroke-width="1.5" stroke-linecap="round"
@@ -747,9 +746,11 @@
                     alt="{{ $product->name }}" class="img-fluid"
                     style="width: 40px; height: 40px; border-radius: 6px; margin-right: 8px;" />
                 <div>
-                    <div class="product-name" style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
+                    <div class="product-name"
+                        style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
                         <span>{{ $product->name }}</span>
-                        <span id="sticky-bar-stock" style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
+                        <span id="sticky-bar-stock"
+                            style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
                     </div>
                     <div id="sticky-selected-options" style="font-size: 11px; color: #666; margin-top: 1px;"></div>
                     <div style="font-size: 10px; color: #888;">
@@ -907,8 +908,172 @@
                     </div>
                 </div>
             @endif
+            {{-- Hiển thị bình luận --}}
+            {{-- <div class="card mt-4 mb-3">
+                <div class="card-header">
+                    <h5>Bình luận ({{ $product->comments->count() }})</h5>
+                </div>
+                <div class="card-body">
+                    @foreach ($product->comments as $comment)
+                        <div>
+                            <strong>{{ $comment->user->name }}</strong>
+                            ({{ $comment->created_at->diffForHumans() }})
+                            <p>{{ $comment->content }}</p>
+                        </div>
+                    @endforeach
+                    @auth
+                        <form action="{{ route('comments.store', $product) }}" method="POST">
+                            @csrf
+                            <textarea name="content" placeholder="Viết bình luận..." required style="width: 100%;"></textarea>
+
+                            @error('content')
+                                <span>{{ $message }}</span>
+                            @enderror
+
+                            <button type="submit">Gửi bình luận</button>
+                        </form>
+                    @else
+                        <p>Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.</p>
+                    @endauth
+
+                </div>
+            </div> --}}
+            <div class="card mt-4 mb-3">
+                <div class="card-header">
+                    <h5>Bình luận ({{ $product->comments->count() }})</h5>
+                </div>
+                <div class=" card-body comment-section">
+                    <div id="comments-list">
+                        <div id="comment-alert" class="alert" style="display: none;"></div>
+                        @foreach ($product->comments as $comment)
+                            @include('client.comments._item', ['comment' => $comment])
+                        @endforeach
+                    </div>
+                    <form id="comment-form" method="POST"
+                        action="{{ route('comments.store', ['id' => $product->id]) }}">
+                        @csrf
+                        <input type="hidden" name="post_id" value="{{ $product->id }}">
+                        <textarea id="comment-content" name="content" placeholder="Viết bình luận..." required style="width: 100%;"></textarea>
+                        <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                        <div id="loading" style="display: none;">Đang gửi...</div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+    <style>
+        .alert {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+    {{-- <script src="{{ asset('js/comment.js') }}"></script> --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const commentForm = document.getElementById('comment-form');
+
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(commentForm);
+                    const loadingIndicator = document.getElementById('loading');
+                    const submitButton = commentForm.querySelector('button[type="submit"]');
+                    const commentContent = document.getElementById('comment-content');
+                    const alertDiv = document.getElementById('comment-alert');
+
+                    // Ẩn thông báo cũ nếu có
+                    if (alertDiv) {
+                        alertDiv.style.display = 'none';
+                        alertDiv.textContent = '';
+                        alertDiv.className = 'alert';
+                    }
+
+                    // Hiển thị loading
+                    if (loadingIndicator) loadingIndicator.style.display = 'block';
+                    if (submitButton) submitButton.disabled = true;
+
+                    fetch(commentForm.action, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content
+                            },
+                            body: formData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                // Thêm comment mới vào đầu danh sách
+                                const commentsList = document.getElementById('comments-list');
+                                if (commentsList && data.html) {
+                                    const newComment = document.createElement('div');
+                                    newComment.innerHTML = data.html;
+                                    commentsList.insertBefore(newComment.firstChild, commentsList
+                                        .firstChild);
+                                }
+
+                                // Reset form
+                                if (commentContent) commentContent.value = '';
+
+                                // Hiển thị thông báo thành công trong form
+                                if (alertDiv && data.message) {
+                                    alertDiv.textContent = data.message;
+                                    alertDiv.classList.add('alert-success');
+                                    alertDiv.style.display = 'block';
+                                }
+                            } else if (alertDiv && data.message) {
+                                // Hiển thị thông báo lỗi
+                                alertDiv.textContent = data.message;
+                                alertDiv.classList.add('alert-danger');
+                                alertDiv.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            if (alertDiv) {
+                                alertDiv.textContent = 'Có lỗi xảy ra khi gửi bình luận';
+                                alertDiv.classList.add('alert-danger');
+                                alertDiv.style.display = 'block';
+                            }
+                        })
+                        .finally(() => {
+                            if (loadingIndicator) loadingIndicator.style.display = 'none';
+                            if (submitButton) submitButton.disabled = false;
+
+                            // Tự động ẩn thông báo sau 5 giây
+                            if (alertDiv) {
+                                setTimeout(() => {
+                                    alertDiv.style.display = 'none';
+                                }, 5000);
+                            }
+                        });
+                });
+            }
+        });
+    </script>
+
     <script>
         window.variantsForJs = @json($variantsForJs);
         window.attributeOptionsWithPrices = @json($attributeOptionsWithPrices);

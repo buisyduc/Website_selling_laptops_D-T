@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ProductCommentController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
@@ -44,7 +45,7 @@ Route::get('/account-management', [AuthController::class, 'management'])->name('
 //giao diện chung
 Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
-
+Route::post('/products/{id}/comments', [ProductCommentController::class, 'store'])->middleware('auth')->name('comments.store');
 
 
 // // Product routes
