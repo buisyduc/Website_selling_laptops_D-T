@@ -939,9 +939,20 @@
                 </div>
             </div> --}}
             <div class="card mt-4 mb-3">
-                <div class="card-header">
+                <div class="card-header mb-4">
                     <h5>Bình luận ({{ $product->comments->count() }})</h5>
                 </div>
+                <form class="ms-2 me-2" id="comment-form" method="POST" action="{{ route('comments.store', ['id' => $product->id]) }}"
+                    style="display: flex; gap: 10px; align-items: center;">
+                    @csrf
+                    <input type="hidden" name="post_id" value="{{ $product->id }}">
+                    <textarea id="comment-content" name="content" placeholder="Viết bình luận..." required
+                        style="flex: 1; height: 50px; border: 1px solid #ccc; border-radius: 10px; padding: 8px; resize: none; min-height: 40px;"></textarea>
+                    <button type="submit" class="btn btn-primary"
+                        style="border-radius: 25px; padding: 8px 15px; border: none; background-color: black; color: white; cursor: pointer; height: 50px;">Gửi
+                        bình luận</button>
+                    <div id="loading" style="display: none;">Đang gửi...</div>
+                </form>
                 <div class=" card-body comment-section">
                     <div id="comments-list">
                         <div id="comment-alert" class="alert" style="display: none;"></div>
@@ -949,14 +960,6 @@
                             @include('client.comments._item', ['comment' => $comment])
                         @endforeach
                     </div>
-                    <form id="comment-form" method="POST"
-                        action="{{ route('comments.store', ['id' => $product->id]) }}">
-                        @csrf
-                        <input type="hidden" name="post_id" value="{{ $product->id }}">
-                        <textarea id="comment-content" name="content" placeholder="Viết bình luận..." required style="width: 100%;"></textarea>
-                        <button type="submit" class="btn btn-primary">Gửi bình luận</button>
-                        <div id="loading" style="display: none;">Đang gửi...</div>
-                    </form>
                 </div>
             </div>
         </div>

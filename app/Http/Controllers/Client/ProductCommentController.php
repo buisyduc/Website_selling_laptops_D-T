@@ -26,8 +26,9 @@ class ProductCommentController extends Controller
             $product = Product::findOrFail($productId);
 
             $comment = $product->comments()->create([
-                'content' => $request->content,
-                'user_id' => auth()->id()
+                'user_name' => auth()->user()->name, // Lấy từ user đăng nhập
+                'content' => $request->input('content'),
+                'is_active' => true,
             ]);
 
             return response()->json([

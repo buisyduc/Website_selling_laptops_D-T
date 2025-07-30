@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
@@ -145,6 +146,12 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/admin/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+      //quản lý bình luận
+    Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+        Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+        Route::patch('comments/toggle/{comment}', [CommentController::class, 'toggleVisibility'])->name('comments.toggle');
+        Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show'); 
+    });
 });
 
 Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');
