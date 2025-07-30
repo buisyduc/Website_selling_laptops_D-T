@@ -36,7 +36,7 @@ class order extends Model
         'payment_response_data',
         'delivered_at',
         'cancelled_at',
-
+        'completed_at',
     ];
     public function items()
     {
@@ -53,5 +53,27 @@ class order extends Model
     public function orderItems()
     {
         return $this->hasMany(order_item::class);
+    }
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function isReviewable()
+    {
+        return $this->status === 'completed' 
+            && $this->completed_at 
+            && $this->completed_at->addDays(config('reviews.review_period_days', 30)) >= now();
+    }
+
+    public function canReviewProduct($productId)
+    {
+        // Kiểm tra tồn tại sản phẩm trong đơn
+    if (!$this->orderItems->contains('product_id', $productId)) {
+        return false;
+    }
+
+    // Kiểm tra chưa đánh giá
+    return !$this->reviews->where('product_id', $productId)->count();
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\VNPayController;
+use App\Http\Controllers\Client\ProductReviewController;
 use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -84,6 +85,36 @@ Route::middleware(['auth', 'is_customer'])->group(function () {
     Route::get('/order/thank-you/{orderId}', [CheckoutController::class, 'thankYou'])->name('checkout.thankYou');
     Route::delete('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+
+    //rate
+    Route::middleware(['auth', 'verified'])->group(function () {
+    // Đánh giá sản phẩm
+    Route::get('/orders/{order}/products/{product}/review', 
+        [ProductReviewController::class, 'create'])
+        ->name('reviews.create');
+    
+    Route::post('/orders/{order}/products/{product}/review', 
+        [ProductReviewController::class, 'store'])
+        ->name('reviews.store');
+    
+    Route::get('/reviews/{review}/edit', 
+        [ProductReviewController::class, 'edit'])
+        ->name('reviews.edit');
+    
+    Route::put('/reviews/{review}', 
+        [ProductReviewController::class, 'update'])
+        ->name('reviews.update');
+    
+    Route::delete('/reviews/{review}', 
+        [ProductReviewController::class, 'destroy'])
+        ->name('reviews.destroy');
+});
+
+    // API routes
+    Route::get('/api/products/{product}/reviews', 
+        [ProductReviewController::class, 'index'])
+        ->name('api.products.reviews');
+    
 });
 
 

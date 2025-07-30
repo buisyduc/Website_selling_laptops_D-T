@@ -66,4 +66,16 @@ class OrderController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Đã thêm lại sản phẩm vào giỏ hàng.');
     }
+     public function update(order $order)
+    {
+        // Khi cập nhật trạng thái thành completed
+        if ($request->status === 'completed') {
+            $order->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+        }
+        
+        return redirect()->back();
+    }
 }

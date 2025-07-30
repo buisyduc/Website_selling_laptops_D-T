@@ -42,7 +42,23 @@ class product extends Model
     {
         return $this->hasMany(review::class, 'product_id');
     }
+    public function approvedReviews()
+    {
+        return $this->hasMany(ProductReview::class)->approved();
+    }
 
+    public function pendingReviews()
+    {
+        return $this->hasMany(ProductReview::class)->pending();
+    }
+
+    public function updateAverageRating()
+    {
+        $this->update([
+            'average_rating' => $this->approvedReviews()->avg('rating'),
+            'review_count' => $this->approvedReviews()->count()
+        ]);
+    }
     public function averageRating()
     {
         return $this->reviews()->avg('rating') ?? 0;
@@ -51,6 +67,12 @@ class product extends Model
     public function orderItems()
     {
         return $this->hasMany(order_item::class, 'product_id');
+    }
+     public function orders()
+    {
+        return $this->belongsToMany(order::class)
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
     }
 
     public function totalSold()
@@ -91,4 +113,5 @@ class product extends Model
     {
         return $this->hasMany(Comment::class)->latest();
     }
+    
 }
