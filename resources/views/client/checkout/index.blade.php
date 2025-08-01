@@ -1,7 +1,5 @@
 @extends('client.layouts.layout')
 
-
-
 @section('content')
     <div class="container checkout-form-custom">
         <div class="row gx-lg-5">
@@ -44,8 +42,8 @@
                             <p class="fw-bold mb-2">Arrives {{ now()->format('D, M d') }}</p>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-4" style="width: 180px; height:180px; margin-right: 10px;">
-                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}" class="img-fluid"
-                                        style="border-radius: 12px;">
+                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}"
+                                        class="img-fluid" style="border-radius: 12px;">
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="fw-bold mb-1">{{ $product->name }}</p>
@@ -88,7 +86,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-custom"
-                                    value="{{ old('name', $order->name ?? (auth()->user()->name ?? '')) }}">
+                                    value="{{ old('name', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.name') : ($order->name ?? auth()->user()->name ?? '')) }}">
                                 @error('name')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -96,7 +94,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control form-control-custom"
-                                    value="{{ old('email', $order->email ?? (auth()->user()->email ?? '')) }}">
+                                    value="{{ old('email', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.email') : ($order->email ?? auth()->user()->email ?? '')) }}">
                                 @error('email')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -106,7 +104,7 @@
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
                             <input type="text" id="phone" name="phone" class="form-control form-control-custom"
-                                value="{{ old('phone', $order->phone ?? '') }}">
+                                value="{{ old('phone', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.phone') : ($order->phone ?? auth()->user()->phone ?? '')) }}">
                             @error('phone')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -116,7 +114,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tỉnh / Thành phố</label>
                                 <input type="text" name="province" class="form-control form-control-custom"
-                                    value="{{ old('province', $order->province ?? (auth()->user()->province ?? '')) }}">
+                                    value="{{ old('province', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.province') : ($order->province ?? '')) }}">
                                 @error('province')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -124,7 +122,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Quận / Huyện</label>
                                 <input type="text" name="district" class="form-control form-control-custom"
-                                    value="{{ old('district', $order->district ?? '') }}">
+                                    value="{{ old('district', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.district') : ($order->district ?? '')) }}">
                                 @error('district')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -135,7 +133,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Phường / Xã</label>
                                 <input type="text" name="ward" class="form-control form-control-custom"
-                                    value="{{ old('ward', $order->ward ?? '') }}">
+                                    value="{{ old('ward', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.ward') : ($order->ward ?? '')) }}">
                                 @error('ward')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -143,7 +141,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số nhà, tên đường</label>
                                 <input type="text" name="address" class="form-control form-control-custom"
-                                    value="{{ old('address', $order->address ?? '') }}">
+                                    value="{{ old('address', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.address') : ($order->address ?? '')) }}">
                                 @error('address')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -152,8 +150,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>
-                            <input type="text" name="note" class="form-control form-control-custom" style="height: 100px;"
-                                value="{{ old('note', $order->note ?? '') }}">
+                            <input type="text" name="note" class="form-control form-control-custom"
+                                style="height: 100px;" value="{{ old('note', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.note') : ($order->note ?? '')) }}">
                             @error('note')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -173,8 +171,8 @@
                         <!-- Nhập mã giảm giá thủ công -->
                         <div id="manual-coupon-input">
                             <div class="rounded-3 px-3 py-2 d-flex justify-content-between align-items-center fw-medium">
-                                <input id="coupon_input" type="text" class="form-control border-0" name="coupon_input"
-                                    placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
+                                <input id="coupon_input" type="text" class="form-control border-0"
+                                    name="coupon_input" placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
                                 <button type="button" class="btn btn-outline-success btn-sm" id="manualApplyBtn"
                                     onclick="applyManualCoupon()" disabled>Áp dụng</button>
                             </div>
@@ -245,7 +243,8 @@
 
                         <!-- Payment Modal -->
                         <!-- Payment Modal -->
-                        <div id="paymentModal" class="position-absolute d-none" style="top: 50%; left: 50%; transform: translate(-50%, -50%);
+                        <div id="paymentModal" class="position-absolute d-none"
+                            style="top: 50%; left: 50%; transform: translate(-50%, -50%);
                                 z-index: 1055;
                                 width: 100%; height: 100%; border-radius: 8px;">
 
@@ -295,11 +294,19 @@
                                                 @php
                                                     $isDisabled = $orderTotal < $coupon->min_order_amount;
                                                 @endphp
+                                                @php
+                                                    $isDisabled =
+                                                        $orderTotal < $coupon->min_order_amount ||
+                                                        ($coupon->per_user_limit !== null &&
+                                                            $coupon->used_count >= $coupon->per_user_limit);
+                                                @endphp
+
                                                 <div
                                                     class="border rounded p-3 mb-3 d-flex align-items-start{{ $isDisabled ? ' bg-light text-muted coupon-disabled' : '' }}">
                                                     <div class="flex-grow-1 text-start">
                                                         <div class="mb-1">
-                                                            <strong class="text-dark fw-bold d-block">{{ $coupon->code }}</strong>
+                                                            <strong
+                                                                class="text-dark fw-bold d-block">{{ $coupon->code }}</strong>
                                                         </div>
                                                         <div class="mb-1">
                                                             Giảm <strong
@@ -314,13 +321,22 @@
                                                             {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}
                                                         </div>
                                                         @if ($isDisabled)
-                                                            <div class="text-danger small mt-1">Không đủ điều kiện áp dụng
+                                                            <div class="text-danger small mt-1">
+                                                                @if ($orderTotal < $coupon->min_order_amount)
+                                                                    Không đủ điều kiện áp dụng
+                                                                @elseif ($coupon->per_user_limit !== null && $coupon->used_count >= $coupon->per_user_limit)
+                                                                    Mã đã đạt giới hạn sử dụng cho bạn
+                                                                @else
+                                                                    Không thể áp dụng mã giảm giá này
+                                                                @endif
                                                             </div>
                                                         @endif
+
                                                     </div>
                                                     <div class="ms-3">
-                                                        <input class="form-check-input mt-1" type="radio" name="selected_coupon"
-                                                            value="{{ $coupon->id }}" {{ $isDisabled ? 'disabled' : '' }}>
+                                                        <input class="form-check-input mt-1" type="radio"
+                                                            name="selected_coupon" value="{{ $coupon->id }}"
+                                                            {{ $isDisabled ? 'disabled' : '' }}>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -591,13 +607,13 @@
             const formData = new FormData(form);
 
             fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            })
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
@@ -637,7 +653,7 @@
             if (btn) btn.disabled = !isValid;
         }
         // Listen for changes in required fields to enable/disable payment button
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const requiredFields = [
                 'name', 'email', 'phone', 'province',
                 'district', 'ward', 'address'
@@ -650,7 +666,7 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const stepper = document.querySelector('.checkout-stepper');
             const steps = document.querySelectorAll('.checkout-stepper .step');
             const form = document.querySelector('.checkout-form-custom');
@@ -658,7 +674,7 @@
             // Initialize stepper
             function initStepper() {
                 steps.forEach((step, index) => {
-                    step.addEventListener('click', function () {
+                    step.addEventListener('click', function() {
                         // Only allow clicking back to step 1, or step 2 if already validated
                         const currentStep = parseInt(stepper.getAttribute('data-current-step'));
                         if (index === 0) {
@@ -677,7 +693,7 @@
 
             // Handle form submission - only for step 2 (payment)
             if (form) {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     const currentStep = parseInt(stepper.getAttribute('data-current-step'));
 
                     if (currentStep === 1) {
@@ -694,7 +710,7 @@
             // Add input validation styling
             const inputs = document.querySelectorAll('input[required]');
             inputs.forEach(input => {
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     if (this.value.trim()) {
                         this.classList.remove('is-invalid');
                         this.classList.add('is-valid');
@@ -746,7 +762,7 @@
         }
 
         // Check if we should switch to payment tab on page load (after successful form submission)
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             @if (session('switch_to_payment'))
                 // Switch to payment tab if form was submitted successfully
                 switchToPaymentTab();
@@ -760,7 +776,7 @@
                     // alert('{{ session('success') }}');
                 @endif
             @endif
-            });
+        });
 
         // Update delivery information in payment form
         function updateDeliveryInfo() {
@@ -803,13 +819,16 @@
             toast.innerText = message;
             toast.style.position = 'fixed';
             toast.style.top = '10%';
-            toast.style.right = '5%';
-            toast.style.backgroundColor = '#f44336';
-            toast.style.color = 'white';
+            toast.style.right = '0';
+            toast.style.left = 'auto';
+            toast.style.transform = 'none';
+            toast.style.background = 'rgba(220,53,69,0.97)';
+            toast.style.color = '#fff';
             toast.style.padding = '12px 16px';
-            toast.style.borderRadius = '8px';
-            toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-            toast.style.zIndex = '9999';
+            toast.style.borderRadius = '12px';
+            toast.style.fontSize = '0.9rem';
+            toast.style.zIndex = '99999';
+            toast.style.boxShadow = '0 4px 32px rgba(0,0,0,0.18)';
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.remove();
@@ -859,7 +878,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     },
                     body: JSON.stringify({
                         code
@@ -894,18 +913,16 @@
             toast.id = 'center-toast-error';
             toast.style.position = 'fixed';
             toast.style.top = '10%';
-            toast.style.right = '2%';
+            toast.style.right = '0';
             toast.style.left = 'auto';
             toast.style.transform = 'none';
             toast.style.background = 'rgba(220,53,69,0.97)';
             toast.style.color = '#fff';
-            toast.style.padding = '14px 20px';
+            toast.style.padding = '12px 16px';
             toast.style.borderRadius = '12px';
-            toast.style.fontSize = '1.2rem';
+            toast.style.fontSize = '0.9rem';
             toast.style.zIndex = '99999';
             toast.style.boxShadow = '0 4px 32px rgba(0,0,0,0.18)';
-            toast.innerHTML =
-                `<span>${message}</span><button style="margin-left:24px;background:transparent;border:none;color:#fff;font-weight:bold;font-size:1.2rem;cursor:pointer;" onclick="this.parentElement.remove()">&times;</button>`;
             document.body.appendChild(toast);
             setTimeout(() => {
                 if (toast.parentElement) toast.remove();
@@ -1057,10 +1074,10 @@
         }
 
         // Enable/disable manual coupon apply button
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const couponInput = document.getElementById('coupon_input');
             if (couponInput) {
-                couponInput.addEventListener('input', function () {
+                couponInput.addEventListener('input', function() {
                     const btn = document.getElementById('manualApplyBtn');
                     if (btn) {
                         btn.disabled = this.value.trim() === '';
@@ -1077,7 +1094,7 @@
             // Add event listeners to payment options
             const paymentButtons = document.querySelectorAll('#paymentOptions button');
             paymentButtons.forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const method = this.dataset.method;
                     const text = this.textContent.trim();
                     const icon = iconMap[method] || '💳';
@@ -1129,7 +1146,7 @@
             }
         }
         // Listen for changes in required fields to update payment step state
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const requiredFields = [
                 'name', 'email', 'phone', 'province',
                 'district', 'ward', 'address'
@@ -1154,7 +1171,7 @@
             var modal = document.getElementById('paymentModal');
             if (modal) modal.classList.add('d-none');
         }
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // 1. Khởi tạo stepper
             initStepper();
 
@@ -1178,15 +1195,16 @@
                 updateDeliveryInfo();
             @endif
 
-                // 4. Sự kiện chọn phương thức thanh toán
-                const iconMap = {
+            // 4. Sự kiện chọn phương thức thanh toán
+            const iconMap = {
                 cod: '💳',
                 vnpay: '🌐'
             };
 
+            // Add event listeners to payment options
             const paymentButtons = document.querySelectorAll('#paymentOptions button');
             paymentButtons.forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const method = this.dataset.method;
                     const text = this.textContent.trim();
                     const icon = iconMap[method] || '💳';
@@ -1198,7 +1216,9 @@
                     if (iconElement) iconElement.textContent = icon;
 
                     const paymentInput = document.getElementById('payment_method');
-                    if (paymentInput) paymentInput.value = method;
+                    if (paymentInput) {
+                        paymentInput.value = method;
+                    }
 
                     closePaymentModal();
                 });
@@ -1207,7 +1227,7 @@
             // 5. Sự kiện nhập mã coupon
             const couponInput = document.getElementById('coupon_input');
             if (couponInput) {
-                couponInput.addEventListener('input', function () {
+                couponInput.addEventListener('input', function() {
                     const btn = document.getElementById('manualApplyBtn');
                     if (btn) {
                         btn.disabled = this.value.trim() === '';

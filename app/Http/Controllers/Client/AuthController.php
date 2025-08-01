@@ -84,7 +84,7 @@ class AuthController extends Controller
 
         return redirect()->route('index'); // hoặc route('login') nếu muốn
     }
-   public function management()
+   public function purchaseOrder()
 {
     $user = Auth::user();
 
@@ -92,7 +92,7 @@ class AuthController extends Controller
     // $totalOrders = $user->orders()->count(); // Đếm tổng số đơn
     // $totalSpent = $user->orders()->where('status', 'completed')->sum('total_amount'); // Tổng tiền
 
-    return view('client.account.layoutManagement.layout', compact('user'));
+    return view('client/account/purchase_order', compact('user'));
 }
 
 }

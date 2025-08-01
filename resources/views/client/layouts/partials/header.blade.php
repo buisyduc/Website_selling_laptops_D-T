@@ -99,7 +99,7 @@
                     <!-- Authentication -->
                     @auth
                         <div class="dropdown">
-                            <a href="{{ route('management') }}"
+                            <a href="{{ route('client.orders.index') }}"
                                 class="d-flex align-items-center text-decoration-none font-weight-bold"
                                 style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white; font-size: 20px;">
                                 {{ Auth::user()->name }} <i class="fas fa-user-circle ml-1" style="font-size: 20px; color: white;"></i>

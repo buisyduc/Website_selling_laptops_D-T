@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\OrderController;
 
 use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -36,8 +37,8 @@ Route::get('/login', function () {
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('signup',[AuthController::class,'signup'])->name( 'signup');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/account-management', [AuthController::class, 'management'])->name('management');
+Route::post('/logout', action: [AuthController::class, 'logout'])->name('logout');
+// Route::get('/account-purchase-order', [AuthController::class, 'purchaseOrder'])->name(name:'purchase_order');
 
 
 //giao diện chung
@@ -77,7 +78,12 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 
 
-
+    // Orders - Đơn hàng
+    Route::get('/client/orders', [OrderController::class, 'index'])->name('client.orders.index');
+    Route::get('/client/orders/{id}', [OrderController::class, 'show'])->name('client.orders.show');
+    Route::get('/order/thank-you/{orderId}', [CheckoutController::class, 'thankYou'])->name('checkout.thankYou');
+    Route::delete('/client/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/client/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
 
 
 
@@ -140,9 +146,9 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('admin/coupons',[CouponController::class,'index'])->name('coupons-list');
     Route::post('admin/coupons-store', [CouponController::class, 'store'])->name('admin.coupons.store');
 //oder
-    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
-    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
-    Route::post('/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::get('admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::post('admin/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
 
 

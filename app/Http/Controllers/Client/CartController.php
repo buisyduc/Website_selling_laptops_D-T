@@ -68,9 +68,20 @@ public function add(Request $request)
         $cart = Cart::firstOrCreate(['user_id' => $user->id]);
 
         $cartItem = $cart->items()->where('variant_id', $variant->id)->first();
+        
+        // Kiểm tra tồn kho
+        $currentQuantityInCart = $cartItem ? $cartItem->quantity : 0;
+        $newTotalQuantity = $currentQuantityInCart + $request->quantity;
+        
+        if ($newTotalQuantity > $variant->stock_quantity) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không thể thêm sản phẩm. Chỉ còn ' . $variant->stock_quantity . ' sản phẩm trong kho, bạn đã có ' . $currentQuantityInCart . ' trong giỏ hàng.'
+            ]);
+        }
 
         if ($cartItem) {
-            $cartItem->quantity += $request->quantity;
+            $cartItem->quantity = $newTotalQuantity;
             $cartItem->save();
         } else {
             $cart->items()->create([
@@ -123,14 +134,31 @@ public function add(Request $request)
 
     $variant = $item->variant;
 
-
-   if ($quantity > $variant->stock_quantity) {
-    return response()->json([
-        'success' => false,
-        'message' => 'Chỉ còn ' . $variant->stock_quantity . ' sản phẩm trong kho.',
-        'allowed_quantity' => $variant->stock_quantity,
-    ]);
-}
+    if ($quantity > $variant->stock_quantity) {
+        // Cập nhật quantity về số lượng tối đa có thể
+        $item->quantity = $variant->stock_quantity;
+        $item->save();
+        
+        // Tính lại tổng giỏ hàng sau khi cập nhật
+        $cart->load('items.variant');
+        $totalQuantity = $cart->items()->sum('quantity');
+        $totalAmount = $cart->items->sum(function ($i) {
+            return $i->variant ? $i->quantity * $i->variant->price : 0;
+        });
+        
+        // Tính item total sau khi cập nhật
+        $itemTotal = $item->quantity * $variant->price;
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Chỉ còn ' . $variant->stock_quantity . ' sản phẩm trong kho.',
+            'allowed_quantity' => $variant->stock_quantity,
+            'item_total' => number_format($itemTotal, 0, ',', '.') . '₫',
+            'cart_total' => number_format($totalAmount, 0, ',', '.') . '₫',
+            'total_quantity' => $totalQuantity,
+            'total_amount' => number_format($totalAmount, 0, ',', '.') . '₫'
+        ]);
+    }
 
     // ✅ Cập nhật nếu hợp lệ
     $item->quantity = $quantity;
@@ -141,11 +169,16 @@ public function add(Request $request)
     $grandTotal = $cart->items()->with('variant')->get()->sum(function ($i) {
         return $i->quantity * $i->variant->price;
     });
+    
+    // Tính tổng số lượng cho header
+    $totalQuantity = $cart->items()->sum('quantity');
 
     return response()->json([
         'success' => true,
         'item_total' => number_format($itemTotal, 0, ',', '.') . '₫',
         'cart_total' => number_format($grandTotal, 0, ',', '.') . '₫',
+        'total_quantity' => $totalQuantity,
+        'total_amount' => number_format($grandTotal, 0, ',', '.') . '₫'
     ]);
 }
 
@@ -265,38 +298,92 @@ public function summary()
 
 public function buyNow(Request $request)
 {
-    $user = auth()->user();
+    try {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn cần đăng nhập.'
+            ], 401);
+        }
 
-    $variantId = $request->input('variant_id');
-    $quantity = (int) $request->input('quantity', 1);
+        $variantId = $request->input('variant_id');
+        $quantity = (int) $request->input('quantity', 1);
 
-    if (!$variantId || $quantity < 1) {
-        return redirect()->back()->with('error', 'Dữ liệu không hợp lệ.');
-    }
+        if (!$variantId || $quantity < 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Dữ liệu không hợp lệ.'
+            ]);
+        }
+        
+        // Kiểm tra variant có tồn tại không
+        $variant = product_variants::find($variantId);
+        if (!$variant) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Biến thể không tồn tại.'
+            ]);
+        }
 
-    // Lấy giỏ hàng hoặc tạo mới
-    $cart = $user->cart;
+        // Lấy giỏ hàng hoặc tạo mới
+        $cart = $user->cart;
 
-    if (!$cart) {
-        $cart = Cart::create([
-            'user_id' => $user->id,
+        if (!$cart) {
+            $cart = Cart::create([
+                'user_id' => $user->id,
+            ]);
+        }
+
+        // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+        $item = $cart->items()->where('variant_id', $variantId)->first();
+        
+        // Kiểm tra tồn kho
+        $currentQuantityInCart = $item ? $item->quantity : 0;
+        $newTotalQuantity = $currentQuantityInCart + $quantity;
+        
+        if ($newTotalQuantity > $variant->stock_quantity) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không thể thêm sản phẩm. Chỉ còn ' . $variant->stock_quantity . ' sản phẩm trong kho, bạn đã có ' . $currentQuantityInCart . ' trong giỏ hàng.'
+            ]);
+        }
+
+        // Cập nhật hoặc thêm mới sản phẩm
+        if ($item) {
+            $item->quantity = $newTotalQuantity;
+            $item->save();
+        } else {
+            $cart->items()->create([
+                'variant_id' => $variantId,
+                'quantity'   => $quantity,
+            ]);
+        }
+        
+        // Tính tổng số lượng và giá trị giỏ hàng
+        $cart->load('items.variant');
+        $totalQuantity = $cart->items()->sum('quantity');
+        $totalAmount = $cart->items->sum(function ($item) {
+            return $item->variant ? $item->quantity * $item->variant->price : 0;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đã thêm sản phẩm vào giỏ hàng!',
+            'redirect_url' => route('cart.index'),
+            'total_quantity' => $totalQuantity,
+            'total_amount' => number_format($totalAmount, 0, ',', '.') . '₫'
         ]);
+        
+    } catch (\Exception $e) {
+        Log::error('Lỗi khi mua ngay: ' . $e->getMessage());
+        
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Có lỗi xảy ra, vui lòng thử lại!'
+        ], 500);
     }
-
-    // Cập nhật hoặc thêm mới sản phẩm
-    $item = $cart->items()->where('variant_id', $variantId)->first();
-
-    if ($item) {
-        $item->quantity += $quantity;
-        $item->save();
-    } else {
-        $cart->items()->create([
-            'variant_id' => $variantId,
-            'quantity'   => $quantity,
-        ]);
-    }
-
-    return redirect()->route('cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
 }
 
 
