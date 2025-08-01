@@ -77,10 +77,6 @@
             </div>
         </div>
 
-        <div class="text-center mt-4">
-            <a href="{{ route('client.orders.index') }}" class="btn btn-outline-secondary">⬅ Quay lại danh sách đơn
-                hàng</a>
-        </div>
         @if ($order->status === 'completed')
             @php
                 // Eager load quan hệ cần thiết
@@ -96,55 +92,52 @@
                                 <tr>
                                     <th>Sản phẩm</th>
                                     <th>Đánh giá</th>
-                                    <th>Trạng thái</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($order->orderItems as $item)
+                                @forelse ($order->orderItems as $item)
                                     @php
-                                        $canReview = $order->canReviewProduct($item->product_id);
-                                        $existingReview = $order->reviews
-                                            ->where('product_id', $item->product_id)
-                                            ->first();
+                                        $product = $item->product;
+                                        $productId = $product->id;
+                                        $canReview = $order->canReviewProduct($productId) ?? false;
+                                        $review = $order->reviews->where('product_id', $productId)->first();
                                     @endphp
                                     <tr>
-                                        <td>{{ $item->product->name }}</td>
+                                        <td>{{ $product->name }}</td>
                                         <td>
-                                            @if ($canReview)
-                                                <a href="{{ route('reviews.create', ['order' => $order, 'product' => $item->product]) }}"
+                                            @if ($canReview && !$review)
+                                                <a href="{{ route('reviews.create', ['order' => $order, 'product' => $product]) }}"
                                                     class="btn btn-sm btn-outline-primary">
                                                     Viết đánh giá
                                                 </a>
-                                            @elseif($existingReview)
-                                                <a href="{{ route('reviews.edit', $existingReview) }}"
+                                            @elseif($review)
+                                                <a href="{{ route('reviews.edit', $review) }}"
                                                     class="btn btn-sm btn-outline-secondary">
                                                     Xem/Sửa đánh giá
                                                 </a>
                                             @else
-                                                <span class="text-muted">Không thể đánh giá</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($canReview)
-                                                <span class="badge bg-success">Có thể đánh giá</span>
-                                            @elseif(!$order->completed_at)
-                                                <span class="badge bg-warning">Chưa xác nhận hoàn thành</span>
-                                            @elseif($order->completed_at->addDays(config('reviews.review_period_days', 30)) < now())
-                                                <span class="badge bg-danger">Hết hạn đánh giá</span>
-                                            @elseif($existingReview)
-                                                <span class="badge bg-info">Đã đánh giá</span>
-                                            @else
-                                                <span class="badge bg-secondary">Không đủ điều kiện</span>
+                                                <span class="text-muted">
+                                                    Không thể đánh giá
+                                                </span>
                                             @endif
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center">Không có sản phẩm nào trong đơn hàng</td>
+                                    </tr>
+                                @endforelse
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         @endif
+        <div class="text-center mt-4">
+            <a href="{{ route('client.orders.index') }}" class="btn btn-outline-secondary">⬅ Quay lại danh sách đơn
+                hàng</a>
+        </div>
     </div>
 @endsection
 

@@ -82,7 +82,7 @@
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ route('products.show', $review->product) }}" class="btn btn-secondary me-md-2">
+                                <a href="{{ route('client.products.show', $review->product) }}" class="btn btn-secondary me-md-2">
                                     <i class="fas fa-arrow-left me-1"></i> Quay lại
                                 </a>
                                 <button type="submit" class="btn btn-primary">

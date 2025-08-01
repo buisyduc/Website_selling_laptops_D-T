@@ -86,34 +86,25 @@ Route::middleware(['auth', 'is_customer'])->group(function () {
     Route::delete('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
 
-    //rate
-    Route::middleware(['auth', 'verified'])->group(function () {
-    // Đánh giá sản phẩm
-    Route::get('/orders/{order}/products/{product}/review', 
-        [ProductReviewController::class, 'create'])
-        ->name('reviews.create');
-    
-    Route::post('/orders/{order}/products/{product}/review', 
-        [ProductReviewController::class, 'store'])
-        ->name('reviews.store');
-    
-    Route::get('/reviews/{review}/edit', 
-        [ProductReviewController::class, 'edit'])
-        ->name('reviews.edit');
-    
-    Route::put('/reviews/{review}', 
-        [ProductReviewController::class, 'update'])
-        ->name('reviews.update');
-    
-    Route::delete('/reviews/{review}', 
-        [ProductReviewController::class, 'destroy'])
-        ->name('reviews.destroy');
-});
+    // Route cho create và store với order/product
+    Route::middleware(['auth'])->prefix('orders/{order}/products/{product}')->group(function () {
+        Route::controller(ProductReviewController::class)->group(function () {
+            Route::get('/review', 'create')->name('reviews.create');
+            Route::post('/review', 'store')->name('reviews.store');
+        });
+    });
 
-    // API routes
-    Route::get('/api/products/{product}/reviews', 
-        [ProductReviewController::class, 'index'])
-        ->name('api.products.reviews');
+    // Route cho edit, update, destroy với review ID
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('reviews', ProductReviewController::class)
+            ->only(['edit', 'update', 'destroy'])
+            ->parameters(['reviews' => 'review']) // Thêm dòng này nếu bạn muốn thống nhất parameter name
+            ->names([
+                'edit' => 'reviews.edit',
+                'update' => 'reviews.update',
+                'destroy' => 'reviews.destroy'
+            ]);
+    });
     
 });
 

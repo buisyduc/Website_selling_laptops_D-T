@@ -76,4 +76,15 @@ class order extends Model
     // Kiểm tra chưa đánh giá
     return !$this->reviews->where('product_id', $productId)->count();
     }
+    public function products()
+    {
+        return $this->belongsToMany(product::class)
+        ->withPivot('quantity', 'price')
+        ->withTimestamps();;
+    }
+
+    public function isDelivered()
+    {
+        return $this->status === 'delivered';
+    }
 }
