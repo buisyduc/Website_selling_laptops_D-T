@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
@@ -173,6 +174,12 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
         Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
         Route::patch('comments/toggle/{comment}', [CommentController::class, 'toggleVisibility'])->name('comments.toggle');
         Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show'); 
+    }); 
+    // Rate
+    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Resource route cho reviews
+    Route::get('reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
     });
 });
 

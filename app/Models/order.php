@@ -68,23 +68,34 @@ class order extends Model
 
     public function canReviewProduct($productId)
     {
-        // Kiểm tra tồn tại sản phẩm trong đơn
-    if (!$this->orderItems->contains('product_id', $productId)) {
+        // Kiểm tra đơn hàng đã hoàn thành
+    if ($this->status !== 'completed') {
         return false;
     }
 
-    // Kiểm tra chưa đánh giá
-    return !$this->reviews->where('product_id', $productId)->count();
+    // Kiểm tra sản phẩm có trong đơn hàng
+    if (!$this->orderItems->contains('product_id', $productId)) {
+        return false;
+    }
     }
     public function products()
     {
-        return $this->belongsToMany(product::class)
-        ->withPivot('quantity', 'price')
-        ->withTimestamps();;
+        // Thêm điều kiện giới hạn số lần đánh giá nếu cần
+    $reviewCount = $this->reviews()
+        ->where('product_id', $productId)
+        ->where('user_id', auth()->id())
+        ->count();
+
+    // giới hạn tối đa 3 đánh giá/sản phẩm/đơn hàng
+    return $reviewCount < 3;
     }
 
     public function isDelivered()
     {
         return $this->status === 'delivered';
+    }
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
     }
 }

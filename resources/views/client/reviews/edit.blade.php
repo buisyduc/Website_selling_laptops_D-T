@@ -51,13 +51,10 @@
                                             <div class="position-relative" style="width: 100px; height: 100px;">
                                                 <img src="{{ Storage::url($image) }}"
                                                     class="img-thumbnail w-100 h-100 object-fit-cover">
-                                                <div class="position-absolute top-0 end-0 p-1">
+                                                <div class=" form-check position-absolute top-0 end-0 p-1">
                                                     <input type="checkbox" name="remove_images[]"
-                                                        value="{{ $image }}" id="remove-{{ $loop->index }}"
-                                                        class="d-none">
-                                                    <label for="remove-{{ $loop->index }}"
-                                                        class="btn btn-sm btn-danger rounded-circle p-0"
-                                                        style="width: 20px; height: 20px; line-height: 20px;">×</label>
+                                                        value="{{ $image }}"
+                                                        class="form-check-input bg-danger border-danger">
                                                 </div>
                                             </div>
                                         @endforeach
@@ -82,12 +79,29 @@
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ route('client.products.show', $review->product) }}" class="btn btn-secondary me-md-2">
+                                <!-- Form cập nhật (form chính) -->
+                                <form method="POST" action="{{ route('reviews.update', $review) }}">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-primary me-1">
+                                        <i class="fas fa-save me-1"></i> Cập nhật
+                                    </button>
+                                </form>
+
+                                <!-- Form xóa (riêng biệt) -->
+                                <form action="{{ route('reviews.destroy', $review) }}" method="POST" class="me-1">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('Bạn chắc chắn muốn xóa đánh giá này?')">
+                                        <i class="fas fa-trash me-1"></i> Xóa
+                                    </button>
+                                </form>
+
+                                <!-- Nút quay lại -->
+                                <a href="{{ route('client.orders.show', $review->order_id) }}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left me-1"></i> Quay lại
                                 </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-1"></i> Cập nhật
-                                </button>
                             </div>
                         </form>
                     </div>
