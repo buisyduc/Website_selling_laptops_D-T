@@ -64,6 +64,17 @@ class CheckoutController extends Controller
             })
             ->get();
 
+        // Xóa session reorder_shipping_info nếu không phải từ "Mua lại"
+        // Chỉ giữ session nếu có flag is_reorder và đây là lần đầu vào checkout
+        if (!session()->has('is_reorder') || session()->has('checkout_visited')) {
+            session()->forget('reorder_shipping_info');
+        }
+
+        // Đánh dấu đã vào trang checkout để lần sau sẽ xóa session
+        session(['checkout_visited' => true]);
+
+        $reorderInfo = session('reorder_shipping_info', []);
+
         return view('client.checkout.index', [
             'user' => $user,
             'cartItems' => $cart->items,
@@ -73,6 +84,7 @@ class CheckoutController extends Controller
             'appliedCoupon' => $appliedCoupon,
             'discountAmount' => $discountAmount,
             'availableCoupons' => $availableCoupons,
+            'reorderInfo' => $reorderInfo,
         ]);
     }
 
@@ -121,9 +133,9 @@ class CheckoutController extends Controller
             $request->province,
         ]));
 
-        // 🔍 Tìm đơn hàng `unprocessed` hiện tại (nếu có)
+        // 🔍 Tìm đơn hàng `pending` hiện tại (nếu có)
         $order = Order::where('user_id', $user->id)
-            ->where('status', 'unprocessed') // Chỉ lấy đơn hàng chưa xử lý
+            ->where('status', 'pending') // Chỉ lấy đơn hàng chưa xử lý
             ->latest()
             ->first();
 
@@ -153,7 +165,7 @@ class CheckoutController extends Controller
                 'coupon_id'        => null,
                 'order_code'       => strtoupper('OD' . now()->format('YmdHis') . rand(100, 999)),
                 'total_amount'     => null, // Tổng tiền sẽ được tính sau khi áp dụng mã giảm giá
-                'status'           => 'unprocessed', // Đặt trạng thái ban đầu là 'unprocessed'
+                'status'           => 'pending', // Đặt trạng thái ban đầu là 'pending'
                 'payment_method'   => null,
                 'payment_status'   => 'unpaid',
                 'shipping_address' => $shippingAddress,
@@ -260,7 +272,7 @@ class CheckoutController extends Controller
         $user = auth()->user();
 
         $order = Order::where('user_id', $user->id)
-            ->where('status', 'unprocessed')
+            ->where('status', 'pending')
             ->latest()
             ->firstOrFail();
 
@@ -280,35 +292,53 @@ class CheckoutController extends Controller
 
         $totalAmount = $cartTotal - $discountAmount;
 
-        // ✅ Xác định trạng thái theo phương thức thanh toán
-        $status = match ($request->payment_method) {
-            'cod' => 'pending',
-            default => 'processing_seller',
-        };
+        // 🚫 Kiểm tra VNPay TRƯỚC KHI tạo/cập nhật đơn hàng
+        if ($request->payment_method === 'vnpay') {
+            return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
+        }
 
+
+        // Kiểm tra tồn kho trước khi xử lý (nhưng chưa trừ kho)
+        foreach ($order->items as $item) {
+            $variant = $item->variant;
+            if ($variant && $variant->stock_quantity !== null) {
+                if ($variant->stock_quantity < $item->quantity) {
+                    return redirect()->route('checkout.payment', ['orderId' => $order->id])
+                        ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
+                }
+            }
+        }
+
+        // ✅ Xác định trạng thái và payment_status theo phương thức thanh toán
+        if ($request->payment_method === 'vnpay') {
+            // VNPay: Chỉ tạo đơn với status pending, chưa trừ kho
+            $status = 'pending';
+            $paymentStatus = 'unpaid';
+        } else {
+            // COD: Tạo đơn pending, chưa thanh toán
+            $status = 'pending';
+            $paymentStatus = 'unpaid';
+        }
+
+        // ✅ CHỈ cập nhật đơn hàng khi đã vượt qua tất cả validation
         $order->update([
             'total_amount'    => $totalAmount,
             'discount_amount' => $discountAmount,
             'shipping_fee'    => $request->shipping_fee ?? 0,
-            'shipping_method' => $request->shipping_method,
+            'shipping_method' => $request->shipping_method ?? $order->shipping_method ?? 'home_delivery',
             'payment_method'  => $request->payment_method,
-            'payment_status'  => $request->payment_method === 'cod' ? 'unpaid' : 'paid',
-            'status'          => $status, // 👈 cập nhật trạng thái đúng
+            'payment_status'  => $paymentStatus,
+            'status'          => $status,
             'coupon_id'       => $request->coupon_id,
             'note'            => $request->note,
             'confirmed_at'    => now(),
         ]);
 
-        // Trừ kho
+        // Chỉ xử lý COD: Trừ kho và xóa giỏ hàng
         foreach ($order->items as $item) {
             $variant = $item->variant;
             if ($variant && $variant->stock_quantity !== null) {
-                if ($variant->stock_quantity >= $item->quantity) {
-                    $variant->decrement('stock_quantity', $item->quantity);
-                } else {
-                    return redirect()->route('checkout.payment', ['orderId' => $order->id])
-                        ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
-                }
+                $variant->decrement('stock_quantity', $item->quantity);
             }
         }
 
@@ -323,12 +353,7 @@ class CheckoutController extends Controller
             $cart->delete();
         }
 
-        // Nếu chọn VNPay thì redirect sang VNPay
-        if ($request->payment_method === 'vnpay') {
-            return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
-        }
-
-        // Nếu COD thì chuyển thẳng tới trang cảm ơn
+        // COD: Chuyển thẳng tới trang cảm ơn
         return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Đặt hàng thành công!');
     }
 

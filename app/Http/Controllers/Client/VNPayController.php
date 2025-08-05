@@ -73,7 +73,7 @@ class VNPayController extends Controller
             ]);
             return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Thanh toán VNPay thành công!');
         } else {
-            return redirect()->route('checkout.payment', $order->id)->with('error', 'Thanh toán thất bại hoặc bị huỷ.');
+            return redirect()->route('cart.index')->with('error', 'Thanh toán thất bại hoặc bị huỷ.');
         }
     }
 }

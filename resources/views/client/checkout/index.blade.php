@@ -237,7 +237,7 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-danger w-100 py-3" onclick="submitPaymentForm()">
-                            Đặt hàng
+                            Thanh toán
                         </button>
 
 

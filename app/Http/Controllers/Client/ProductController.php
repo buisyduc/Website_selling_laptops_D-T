@@ -121,29 +121,6 @@ $variantsForJs = $product->variants->map(function ($variant) {
         ->limit(4)
         ->get();
 
-    // Debug: Kiểm tra dữ liệu attributeOptionsWithPrices
-    if ($product->id == 136) {
-        \Log::info('Product 136 Debug:', [
-            'variants_count' => $product->variants->count(),
-            'attributeOptionsWithPrices' => $attributeOptionsWithPrices,
-            'variantsForJs' => $variantsForJs
-        ]);
-        
-        // Debug từng variant
-        foreach ($product->variants as $variant) {
-            \Log::info('Variant ' . $variant->id . ' options:', [
-                'options' => $variant->options->map(function($opt) {
-                    return [
-                        'attribute_id' => $opt->attribute_id,
-                        'attribute_name' => $opt->attribute->name,
-                        'option_id' => $opt->option_id,
-                        'option_value' => $opt->option->value
-                    ];
-                })->toArray()
-            ]);
-        }
-    }
-
     return view('client.products.show', compact(
         'product',
         'relatedProducts',
