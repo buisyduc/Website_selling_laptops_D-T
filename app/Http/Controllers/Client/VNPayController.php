@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 
 class VNPayController extends Controller
 {
+
     public function redirectToVNPay($orderId)
     {
         $order = Order::findOrFail($orderId);
@@ -21,7 +24,7 @@ class VNPayController extends Controller
         $vnp_TxnRef = $order->order_code;
         $vnp_OrderInfo = 'Thanh toan don hang ' . $order->order_code;
         $vnp_OrderType = 'billpayment';
-        $vnp_Amount = $order->total_amount * 100;
+        $vnp_Amount = (int) round($order->total_amount * 100);
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = request()->ip();
@@ -55,25 +58,36 @@ class VNPayController extends Controller
 
         $vnp_Url .= '?' . $query . 'vnp_SecureHash=' . $vnp_SecureHash;
 
+        Log::info('VNPAY Debug:', [
+            'order_id' => $order->id,
+            'order_code' => $order->order_code,
+            'total_amount' => $order->total_amount,
+            'type' => gettype($order->total_amount),
+            'vnp_Amount' => (int) round((float)$order->total_amount * 100),
+        ]);
         return redirect($vnp_Url);
     }
 
 
     public function handleReturn(Request $request)
-    {
-        $vnp_ResponseCode = $request->get('vnp_ResponseCode');
-        $vnp_TxnRef = $request->get('vnp_TxnRef');
+{
+    $vnp_ResponseCode = $request->get('vnp_ResponseCode');
+    $vnp_TxnRef = $request->get('vnp_TxnRef');
 
-        $order = Order::where('order_code', $vnp_TxnRef)->firstOrFail();
+    $order = Order::where('order_code', $vnp_TxnRef)->firstOrFail();
 
-        if ($vnp_ResponseCode == '00') {
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-            ]);
-            return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Thanh toán VNPay thành công!');
-        } else {
-            return redirect()->route('cart.index')->with('error', 'Thanh toán thất bại hoặc bị huỷ.');
-        }
+    if ($vnp_ResponseCode == '00') {
+        $order->update([
+            'payment_status' => 'paid',
+            'status' => 'processing',
+        ]);
+
+        // 🧹 Xoá giỏ hàng của user
+        Cart::where('user_id', $order->user_id)->delete();
+
+        return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Thanh toán VNPay thành công!');
+    } else {
+        return redirect()->route('cart.index')->with('error', 'Thanh toán thất bại hoặc bị huỷ.');
     }
+}
 }

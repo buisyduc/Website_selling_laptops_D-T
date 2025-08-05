@@ -151,6 +151,7 @@ class CheckoutController extends Controller
                 'ward'             => $request->ward,
                 'address'          => $request->address,
                 'note'             => $request->note,
+                
             ]);
 
             // Xóa item cũ rồi thêm lại nếu cần (nếu bạn muốn cập nhật theo cart)
@@ -265,97 +266,86 @@ class CheckoutController extends Controller
         ));
     }
 
-    public function paymentStore(Request $request)
-    {
-        Log::info('Dữ liệu gửi vào request:', $request->all());
+ public function paymentStore(Request $request)
+{
+    Log::info('Dữ liệu gửi vào request:', $request->all());
 
-        $user = auth()->user();
+    $user = auth()->user();
 
-        $order = Order::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->latest()
-            ->firstOrFail();
+    $order = Order::where('user_id', $user->id)
+        ->where('status', 'pending')
+        ->latest()
+        ->firstOrFail();
 
-        $cartTotal = $order->items->sum(fn($item) => $item->variant->price * $item->quantity);
+    $cartTotal = $order->items->sum(fn($item) => $item->variant->price * $item->quantity);
 
-        // Tính giảm giá
-        $discountAmount = 0;
-        $coupon = null;
+    // Tính giảm giá
+    $discountAmount = 0;
+    $coupon = null;
 
-        if ($request->filled('coupon_id')) {
-            $coupon = Coupon::find($request->coupon_id);
-            if ($coupon) {
-                $discountAmount = round($cartTotal * ($coupon->discount_percent / 100));
-                $discountAmount = min($discountAmount, $coupon->max_discount);
-            }
+    if ($request->filled('coupon_id')) {
+        $coupon = Coupon::find($request->coupon_id);
+        if ($coupon) {
+            $discountAmount = round($cartTotal * ($coupon->discount_percent / 100));
+            $discountAmount = min($discountAmount, $coupon->max_discount);
         }
-
-        $totalAmount = $cartTotal - $discountAmount;
-
-        // 🚫 Kiểm tra VNPay TRƯỚC KHI tạo/cập nhật đơn hàng
-        if ($request->payment_method === 'vnpay') {
-            return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
-        }
-
-
-        // Kiểm tra tồn kho trước khi xử lý (nhưng chưa trừ kho)
-        foreach ($order->items as $item) {
-            $variant = $item->variant;
-            if ($variant && $variant->stock_quantity !== null) {
-                if ($variant->stock_quantity < $item->quantity) {
-                    return redirect()->route('checkout.payment', ['orderId' => $order->id])
-                        ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
-                }
-            }
-        }
-
-        // ✅ Xác định trạng thái và payment_status theo phương thức thanh toán
-        if ($request->payment_method === 'vnpay') {
-            // VNPay: Chỉ tạo đơn với status pending, chưa trừ kho
-            $status = 'pending';
-            $paymentStatus = 'unpaid';
-        } else {
-            // COD: Tạo đơn pending, chưa thanh toán
-            $status = 'pending';
-            $paymentStatus = 'unpaid';
-        }
-
-        // ✅ CHỈ cập nhật đơn hàng khi đã vượt qua tất cả validation
-        $order->update([
-            'total_amount'    => $totalAmount,
-            'discount_amount' => $discountAmount,
-            'shipping_fee'    => $request->shipping_fee ?? 0,
-            'shipping_method' => $request->shipping_method ?? $order->shipping_method ?? 'home_delivery',
-            'payment_method'  => $request->payment_method,
-            'payment_status'  => $paymentStatus,
-            'status'          => $status,
-            'coupon_id'       => $request->coupon_id,
-            'note'            => $request->note,
-            'confirmed_at'    => now(),
-        ]);
-
-        // Chỉ xử lý COD: Trừ kho và xóa giỏ hàng
-        foreach ($order->items as $item) {
-            $variant = $item->variant;
-            if ($variant && $variant->stock_quantity !== null) {
-                $variant->decrement('stock_quantity', $item->quantity);
-            }
-        }
-
-        // Cộng lượt dùng mã giảm giá
-        if ($request->filled('coupon_id') && $coupon) {
-            $coupon->increment('used_count');
-        }
-
-        // Xoá giỏ hàng
-        if ($cart = Cart::where('user_id', $user->id)->first()) {
-            $cart->items()->delete();
-            $cart->delete();
-        }
-
-        // COD: Chuyển thẳng tới trang cảm ơn
-        return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Đặt hàng thành công!');
     }
+
+    $totalAmount = $cartTotal - $discountAmount;
+
+    // Kiểm tra tồn kho
+    foreach ($order->items as $item) {
+        $variant = $item->variant;
+        if ($variant && $variant->stock_quantity !== null) {
+            if ($variant->stock_quantity < $item->quantity) {
+                return redirect()->route('checkout.payment', ['orderId' => $order->id])
+                    ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
+            }
+        }
+    }
+
+    // Xác định trạng thái và payment_status
+    $status = 'pending';
+    $paymentStatus = $request->payment_method === 'vnpay' ? 'unpaid' : 'unpaid';
+
+    // ✅ Cập nhật đơn hàng đầy đủ các trường cần thiết
+    $order->update([
+        'total_amount'     => $totalAmount,
+        'discount_amount'  => $discountAmount,
+        'shipping_fee'     => $request->shipping_fee ?? 0,
+        'shipping_method'  => $request->shipping_method ?? $order->shipping_method ?? 'home_delivery',
+        'payment_method'   => $request->payment_method,
+        'payment_status'   => $paymentStatus,
+        'status'           => $status,
+        'coupon_id'        => $request->coupon_id,
+        'confirmed_at'     => now(),
+    ]);
+
+    // Nếu là VNPay thì chuyển hướng sau khi đã cập nhật đơn
+    if ($request->payment_method === 'vnpay') {
+        return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
+    }
+
+    // Nếu là COD thì mới xử lý trừ kho và xoá giỏ hàng
+    foreach ($order->items as $item) {
+        $variant = $item->variant;
+        if ($variant && $variant->stock_quantity !== null) {
+            $variant->decrement('stock_quantity', $item->quantity);
+        }
+    }
+
+    if ($request->filled('coupon_id') && $coupon) {
+        $coupon->increment('used_count');
+    }
+
+    if ($cart = Cart::where('user_id', $user->id)->first()) {
+        $cart->items()->delete();
+        $cart->delete();
+    }
+
+    return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Đặt hàng thành công!');
+}
+
 
     /**
      * Hoàn tất thanh toán
