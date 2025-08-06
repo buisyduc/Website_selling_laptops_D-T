@@ -98,28 +98,14 @@
                     <h6 class="m-0 fw-bold text-primary">Danh sách đơn hàng</h6>
                     <div class="d-flex gap-2">
                         <form method="GET" action="{{ route('admin.orders.index') }}" class="d-flex">
-                            <div class="col-md-3" style="width: 250px;">
+                            <div class="col-md-3" style="width: 300px;">
                                 <input type="text" name="search" class="form-control"
-                                    placeholder="🔍 Tìm kiếm đơn hàng..." value="{{ request('search') }}">
-                                
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <input list="status-list" name="status_text" class="form-control form-control-sm"
-                                    placeholder="Nhập trạng thái..." value="{{ request('status_text') }}">
-                                <datalist id="status-list">
-                                    <option value="Chờ thanh toán">
-                                    <option value="Chờ lấy hàng">
-                                    <option value="Vận chuyển">
-                                    <option value="Chờ giao hàng">
-                                    <option value="Hoàn thành">
-                                    <option value="Đã hủy">
-                                    <option value="Trả hàng/Hoàn tiền">
-                                </datalist>
+                                    placeholder="🔍 Tìm kiếm mã đơn, trạng thái, số tiền..."
+                                    value="{{ request('search') }}">
                             </div>
                             <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search"></i> Tìm kiếm
-                                </button>
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
                         </form>
 
 
@@ -180,16 +166,15 @@
                                     <td>
                                         @php
                                             $statusMap = [
-                                                'unprocessed' => ['bg-secondary', 'Chưa xử lý'],
-                                                'pending' => ['bg-warning', 'Chờ xử lý'],
-                                                'processing_seller' => ['bg-primary', 'Người bán đang xử lý'],
-                                                'processing' => ['bg-info', 'Đang xử lý'],
-                                                'shipping' => ['bg-primary', 'Đang giao hàng'],
+                                                'pending' => ['bg-warning', 'Chờ thanh toán'],
+                                                'processing_seller' => ['bg-primary', 'Chờ lấy hàng'],
+                                                'confirmed' => ['bg-primary', 'Chờ lấy hàng'],
+                                                'shipping' => ['bg-info', 'Vận chuyển'],
+                                                'processing' => ['bg-secondary', 'Chờ giao hàng'],
                                                 'completed' => ['bg-success', 'Hoàn thành'],
+                                                'cancelled' => ['bg-danger', 'Đã hủy'],
                                                 'canceled' => ['bg-danger', 'Đã hủy'],
-                                                'cancelled' => ['bg-danger', 'Đã hủy'], // đồng nghĩa
-                                                'failed' => ['bg-dark', 'Thất bại'],
-                                                'returned' => ['bg-secondary', 'Đã hoàn trả'],
+                                                'returned' => ['bg-secondary', 'Trả hàng/Hoàn tiền'],
                                             ];
 
                                             [$statusClass, $statusText] = $statusMap[$order->status] ?? [

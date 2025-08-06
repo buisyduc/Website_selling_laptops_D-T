@@ -10,69 +10,62 @@ use Illuminate\Support\Facades\Mail;
 
 class AdminOrderController extends Controller
 {
- public function index(Request $request)
-{
-    $query = Order::query();
+    public function index(Request $request)
+    {
+        $query = Order::query();
 
-    // Tìm theo mã, tên, điện thoại
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('order_code', 'like', "%{$search}%")
-              ->orWhere('name', 'like', "%{$search}%")
-              ->orWhere('phone', 'like', "%{$search}%");
-        });
+        // Ánh xạ trạng thái tiếng Việt sang status code trong DB
+        $statusMap = [
+            'chờ thanh toán' => 'pending',
+            'chờ lấy hàng' => 'processing_seller',
+            'Chờ giao hàng' => 'processing',
+            'vận chuyển' => 'shipping',
+            'hoàn thành' => 'completed',
+            'đã hủy' => 'cancelled',
+            'đã hủy' => 'canceled',
+            'trả hàng/hoàn tiền' => 'returned',
+
+        ];
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $normalized = mb_strtolower($search);
+
+            $query->where(function ($q) use ($search, $normalized, $statusMap) {
+                $q->where('order_code', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+
+                // Nếu search giống trạng thái
+                if (array_key_exists($normalized, $statusMap)) {
+                    $q->orWhere('status', $statusMap[$normalized]);
+                }
+
+                // Nếu là số, tìm theo total_amount gần đúng
+                if (is_numeric($search)) {
+                    $q->orWhere('total_amount', '>=', $search - 10000) // cho sai số ±10k
+                        ->where('total_amount', '<=', $search + 10000);
+                }
+            });
+        }
+
+        $orders = $query->latest()->paginate(20);
+
+        // Thống kê
+        $totalOrders = Order::count();
+        $completedOrders = Order::where('status', 'completed')->count();
+        $processingOrders = Order::whereIn('status', ['pending', 'processing', 'processing_seller'])->count();
+        $monthlyRevenue = Order::where('status', 'completed')->sum('total_amount');
+
+        return view('admin.orders.index', compact(
+            'orders',
+            'totalOrders',
+            'completedOrders',
+            'processingOrders',
+            'monthlyRevenue'
+        ));
     }
 
-    // Ánh xạ trạng thái hiển thị sang key lưu trong db
-    $statusText = trim($request->input('status_text', ''));
-
-    $map = [
-        'Chờ thanh toán' => 'pending',
-        'pending' => 'pending',
-        'Chờ lấy hàng' => 'processing_seller',
-        'processing_seller' => 'processing_seller',
-        'Vận chuyển' => 'shipping',
-        'shipping' => 'shipping',
-        'Chờ giao hàng' => 'processing',
-        'processing' => 'processing',
-        'Hoàn thành' => 'completed',
-        'completed' => 'completed',
-        'Đã hủy' => 'cancelled',
-        'Đã hủy' => 'canceled',
-        'Trả hàng/Hoàn tiền' => 'returned',
-        'returned' => 'returned',
-    ];
-
-    if ($statusText !== '') {
-        // Chuẩn hóa: không phân biệt hoa thường, lược bỏ dấu
-        $normalized = mb_strtolower($statusText);
-        // đơn giản dò từng mapping bằng so sánh không phân biệt hoa
-        $matchedStatus = null;
-        foreach ($map as $label => $key) {
-            if (mb_strtolower($label) === $normalized) {
-                $matchedStatus = $key;
-                break;
-            }
-        }
-        if ($matchedStatus) {
-            $query->where('status', $matchedStatus);
-        }
-    }
-
-   $orders = $query->latest()->paginate(20);
-
-    // Thống kê
-    $totalOrders = Order::count();
-    $completedOrders = Order::where('status', 'completed')->count();
-    $processingOrders = Order::whereIn('status', ['pending', 'processing', 'processing_seller'])->count();
-    $monthlyRevenue = Order::where('status', 'completed')
-        ->sum('total_amount');
-
-    return view('admin.orders.index', compact(
-        'orders', 'totalOrders', 'completedOrders', 'processingOrders', 'monthlyRevenue'
-    ));
-}
 
 
 

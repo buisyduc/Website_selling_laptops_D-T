@@ -28,4 +28,5 @@ class product_variant_options extends Model
     {
         return $this->belongsTo(variant_options ::class);
     }
+    
 }

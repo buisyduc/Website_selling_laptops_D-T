@@ -53,11 +53,18 @@ class OrderController extends Controller
     }
 
 
-    public function show($id)
-    {
-        $order = Order::with('items')->where('user_id', Auth::id())->findOrFail($id);
-        return view('client.user.purchase.detail', compact('order'));
-    }
+   public function show($id)
+{
+    $order = Order::with([
+        'items.variant.options.attribute',
+        'items.variant.options.option',
+        'items.product'
+    ])->where('user_id', Auth::id())->findOrFail($id);
+
+    return view('client.user.purchase.detail', compact('order'));
+}
+
+
     public function cancel($id)
     {
         $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
@@ -92,7 +99,7 @@ class OrderController extends Controller
         foreach ($order->items as $item) {
             // Kiểm tra variant còn tồn tại và còn hàng không
             $variant = \App\Models\product_variants::find($item->variant_id);
-            
+
             if (!$variant) {
                 $outOfStockItems[] = $item->product_name . ' (sản phẩm không còn tồn tại)';
                 continue;
@@ -131,26 +138,26 @@ class OrderController extends Controller
             'phone' => $order->customer_phone ?? $order->phone,
             'address' => $order->customer_address ?? $order->address,
             'province' => $order->province,
-            'district' => $order->district, 
+            'district' => $order->district,
             'ward' => $order->ward,
             'note' => $order->note,
             'payment_method' => $order->payment_method
-        ];    
-        
+        ];
+
         session(['reorder_shipping_info' => $shippingInfo]);
         session(['is_reorder' => true]);
 
         // Tạo thông báo dựa trên kết quả
         $messages = [];
-        
+
         if (!empty($addedItems)) {
             $messages[] = 'Đã thêm thành công: ' . implode(', ', $addedItems);
         }
-        
+
         if (!empty($partiallyAddedItems)) {
             $messages[] = 'Thêm một phần: ' . implode(', ', $partiallyAddedItems);
         }
-        
+
         if (!empty($outOfStockItems)) {
             $messages[] = 'Không thể thêm: ' . implode(', ', $outOfStockItems);
         }
