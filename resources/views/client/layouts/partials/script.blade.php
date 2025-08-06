@@ -687,9 +687,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.success) {
             const icon = element.querySelector('.icon-toggle');
             if (icon) {
-                // Chuyển đổi icon heart ↔ heart-fill
-                icon.classList.toggle('bi-heart');
-                icon.classList.toggle('bi-heart-fill');
+                if (data.status === 'added') {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                } else {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
             }
 
             // Thông báo

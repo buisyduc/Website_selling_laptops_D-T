@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container" >
+    <div class="container">
         <!-- BREADCRUMB -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb mb-0">
@@ -182,8 +182,7 @@
                             <div class="d-flex gap-3 align-items-start p-3 rounded-4 shadow-sm bg-light h-100">
                                 <div class="d-flex justify-content-center align-items-center rounded-3"
                                     style="background-color: #E41727; width: 20px; height: 20px; ">
-                                    <svg width="24" height="24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M2.25 7.5H3.75M2.25 10.5H3.75M7.5 2.25V3.75M10.5 2.25V3.75M15.75 7.5H14.25M15.75 10.5H14.25M10.5 15.75V14.25M7.5 15.75V14.25M5.75 14.25H12.25C13.3546 14.25 14.25 13.3546 14.25 12.25V5.75C14.25 4.64543 13.3546 3.75 12.25 3.75H5.75C4.64543 3.75 3.75 4.64543 3.75 5.75V12.25C3.75 13.3546 4.64543 14.25 5.75 14.25ZM7.75 11.25H10.25C10.8023 11.25 11.25 10.8023 11.25 10.25V7.75C11.25 7.19772 10.8023 6.75 10.25 6.75H7.75C7.19772 6.75 6.75 7.19772 6.75 7.75V10.25C6.75 10.8023 7.19772 11.25 7.75 11.25Z"
                                             stroke="white" stroke-width="1.5" stroke-linecap="round"
@@ -352,7 +351,7 @@
                 </div>
 
                 @php
-                    $wgroupedAttributes = [];
+                    $groupedAttributes = [];
 
                     foreach ($product->variants as $variant) {
                         foreach ($variant->options as $option) {
@@ -390,6 +389,23 @@
                         <div class="box-title fw-bold mb-2">Màu sắc</div>
                         <div class="box-content d-flex flex-wrap gap-3">
                             @foreach ($attributeOptionsWithPrices[$colorAttributeId]['options'] as $optId => $option)
+                                @php
+                                    // Kiểm tra còn biến thể nào của màu này còn hàng không
+                                    $hasStock = false;
+                                    foreach ($product->variants as $variant) {
+                                        foreach ($variant->options as $opt) {
+                                            if (
+                                                $opt->attribute_id == $colorAttributeId &&
+                                                $opt->option_id == $optId &&
+                                                $variant->stock_quantity > 0
+                                            ) {
+                                                $hasStock = true;
+                                                break 2;
+                                            }
+                                        }
+                                    }
+
+                                @endphp
                                 <div class="option-box color-option-box position-relative d-flex align-items-center"
                                     data-attribute="{{ $colorAttributeId }}" data-option="{{ $optId }}"
                                     onclick="selectOption(this)"
@@ -401,15 +417,14 @@
                                         border: 1px solid rgba(0, 0, 0, 0.2);
                                         border-radius: 12px;
                                         background-color: #fff;
-                                        opacity: {{ $option['stock'] === 0 ? '0.4' : '1' }};
-                                        pointer-events: {{ $option['stock'] === 0 ? 'none' : 'auto' }};
+                                        opacity: {{ $hasStock ? '1' : '0.4' }};
+                                        pointer-events: {{ $hasStock ? 'auto' : 'none' }};
                                         transition: 0.2s ease;
                                     ">
                                     {{-- Ảnh bên trái --}}
                                     <img src="{{ $option['image'] ?? ($product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/80x60') }}"
                                         alt="{{ $option['value'] }}" class="me-3"
                                         style="width: 55px; height: 50px; object-fit: cover; border-radius: 6px;">
-
                                     {{-- Tên và giá bên phải --}}
                                     <div class="text-start">
                                         <div class="fw-bold">{{ $option['value'] }}</div>
@@ -574,7 +589,7 @@
                         </button>
                         <!-- Mua ngay -->
                         <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="buyNow()" id="buyNowBtn"
-                            {{ $product->variants->count() > 0 && $product->variants->first()->stock_quantity == 0 ? 'disabled' : '' }}
+                            {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
                             style="border-radius: 8px; background: linear-gradient(to bottom, #f42424, #c60000); border: none;">
                             MUA NGAY<br>
                             <small class="fw-normal">Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng</small>
@@ -747,9 +762,11 @@
                     alt="{{ $product->name }}" class="img-fluid"
                     style="width: 40px; height: 40px; border-radius: 6px; margin-right: 8px;" />
                 <div>
-                    <div class="product-name" style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
+                    <div class="product-name"
+                        style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
                         <span>{{ $product->name }}</span>
-                        <span id="sticky-bar-stock" style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
+                        <span id="sticky-bar-stock"
+                            style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
                     </div>
                     <div id="sticky-selected-options" style="font-size: 11px; color: #666; margin-top: 1px;"></div>
                     <div style="font-size: 10px; color: #888;">
@@ -763,9 +780,12 @@
             <!-- Price & Actions -->
             <div style="text-align: right;">
 
-                <div class="price" style="font-size: 18px; color: #d70018; font-weight: bold;">
-                    {{ number_format($product->variants->first()->price) }}₫
+                <div id="currentPrice" class="price" style="font-size: 18px; color: #d70018; font-weight: bold;">
+                    {{ number_format(optional($product->variants->first())->price) }}₫
                 </div>
+
+
+
                 <div style="text-decoration: line-through; color: #999; font-size: 14px;">
                     34.590.000đ
                 </div>
@@ -776,12 +796,14 @@
                             Trả góp 0%
                         </button>
                         <button onclick="buyNow()" id="buyNowBtn"
-                            {{ $product->variants->count() > 0 && $product->variants->first()->stock_quantity == 0 ? 'disabled' : '' }}
+                            {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
+
                             style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
                             Mua Ngay
                         </button>
                         <button onclick="addToCart()" id="addToCartBtn"
-                            {{ $product->variants->count() > 0 && $product->variants->first()->stock_quantity == 0 ? 'disabled' : '' }}
+                            {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
+
                             style="background: #f5f5f5; border: 1px solid #e20808; padding: 6px; border-radius: 6px; cursor: pointer;">
                             <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Giỏ hàng"
                                 style="width: 16px; height: 16px;" />
@@ -792,12 +814,13 @@
                             Trả góp 0%
                         </button>
                         <button onclick="openLoginModal()"
-                            {{ $product->variants->count() > 0 && $product->variants->first()->stock_quantity == 0 ? 'disabled' : '' }}
+                            {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
                             style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
                             Mua Ngay
                         </button>
                         <button onclick="openLoginModal()" id="addToCartBtn"
-                            {{ $product->variants->count() > 0 && $product->variants->first()->stock_quantity == 0 ? 'disabled' : '' }}
+                            {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
+
                             style="background: #f5f5f5; border: 1px solid #e20808; padding: 6px; border-radius: 6px; cursor: pointer;">
                             <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Giỏ hàng"
                                 style="width: 16px; height: 16px;" />

@@ -15,25 +15,25 @@ function selectOption(el) {
     const attrId = el.dataset.attribute;
     const optId = parseInt(el.dataset.option);
 
+    // Lưu lựa chọn
     selectedOptions[attrId] = optId;
 
-    document.querySelectorAll(`.option-box[data-attribute="${attrId}"]`).forEach(box => {
-        box.classList.remove('border-primary', 'bg-primary', 'text-white', 'selected');
-    });
+    // Reset style cho các option cùng thuộc tính
+    document.querySelectorAll(`.option-box[data-attribute="${attrId}"]`)
+        .forEach(box => box.classList.remove('border-primary', 'selected'));
 
     el.classList.add('border-primary', 'selected');
 
+    // Tìm biến thể khớp VÀ còn hàng
     let matchedVariant = null;
     for (const variant of variantCombinations) {
-        let isMatch = true;
-        for (const [aId, oId] of Object.entries(selectedOptions)) {
-            if (parseInt(variant.options[aId]) !== parseInt(oId)) {
-                isMatch = false;
-                break;
-            }
-        }
-
-        if (isMatch && Object.keys(variant.options).length === Object.keys(selectedOptions).length) {
+        const isMatch = Object.entries(selectedOptions).every(
+            ([aId, oId]) => String(variant.options[aId]) === String(oId)
+        );
+        if (isMatch &&
+            Object.keys(variant.options).length === Object.keys(selectedOptions).length &&
+            variant.stock_quantity > 0
+        ) {
             matchedVariant = variant;
             break;
         }
@@ -43,16 +43,111 @@ function selectOption(el) {
         selectedVariantId = matchedVariant.id;
         selectedPrice = parseFloat(matchedVariant.price);
         document.getElementById('selected-variant-id').value = selectedVariantId;
-        document.getElementById('currentPrice').textContent = selectedPrice.toLocaleString('vi-VN') + ' ₫';
+        document.getElementById('currentPrice').textContent =
+            selectedPrice.toLocaleString('vi-VN') + ' ₫';
     } else {
         selectedVariantId = null;
         document.getElementById('selected-variant-id').value = '';
+    }
+
+    // Auto chọn nếu chỉ còn 1 biến thể khả dụng
+    const possibleVariants = variantCombinations.filter(v =>
+        Object.entries(selectedOptions).every(([sAttrId, sOptId]) =>
+            String(v.options[sAttrId]) === String(sOptId)
+        ) &&
+        v.stock_quantity > 0
+    );
+
+    if (possibleVariants.length === 1) {
+        const autoVariant = possibleVariants[0];
+        for (const [autoAttrId, autoOptId] of Object.entries(autoVariant.options)) {
+            if (!selectedOptions[autoAttrId]) {
+                selectedOptions[autoAttrId] = parseInt(autoOptId);
+                const autoEl = document.querySelector(
+                    `.option-box[data-attribute="${autoAttrId}"][data-option="${autoOptId}"]`
+                );
+                if (autoEl) autoEl.classList.add('border-primary', 'selected');
+            }
+        }
+        selectedVariantId = autoVariant.id;
+        selectedPrice = parseFloat(autoVariant.price);
+        document.getElementById('selected-variant-id').value = selectedVariantId;
+        document.getElementById('currentPrice').textContent =
+            selectedPrice.toLocaleString('vi-VN') + ' ₫';
     }
 
     updateAvailableOptions();
     checkVariantSelection();
     updateSelectedOptionsDisplay();
 }
+
+function updateAvailableOptions() {
+    // Tìm ID thuộc tính "Màu sắc" (nếu có)
+    let colorAttributeId = null;
+    for (const [attrId, attribute] of Object.entries(attributeOptionsWithPrices)) {
+        if (attribute.name && attribute.name.trim().toLowerCase() === 'màu sắc') {
+            colorAttributeId = attrId;
+            break;
+        }
+    }
+
+    const attributes = Object.keys(attributeOptionsWithPrices);
+
+    for (const attrId of attributes) {
+        document.querySelectorAll(`.option-box[data-attribute="${attrId}"]`).forEach(optionEl => {
+            const currentOptId = parseInt(optionEl.dataset.option);
+
+            let shouldBeDisabled = false;
+            if (selectedOptions[attrId] !== undefined && selectedOptions[attrId] !== currentOptId) {
+                shouldBeDisabled = true;
+            }
+
+            let isValidByCompatibility = false;
+            const isColorAttribute = (colorAttributeId !== null && attrId == colorAttributeId);
+
+            if (isColorAttribute) {
+                // Chỉ disable màu nếu TẤT CẢ biến thể cùng màu đều hết hàng
+                const allVariantsOfColor = variantCombinations.filter(variant =>
+                    variant.options &&
+                    String(variant.options[attrId]) === String(currentOptId)
+                );
+                isValidByCompatibility = allVariantsOfColor.some(variant => variant.stock_quantity > 0);
+            } else {
+                // Các thuộc tính khác: disable nếu không còn biến thể phù hợp + còn hàng
+                const relevantSelectedOptions = {};
+                for (const key in selectedOptions) {
+                    if (parseInt(key) !== parseInt(attrId)) {
+                        relevantSelectedOptions[key] = selectedOptions[key];
+                    }
+                }
+
+                const filteredVariants = variantCombinations.filter(variant =>
+                    Object.entries(relevantSelectedOptions).every(([sAttrId, sOptId]) =>
+                        String(variant.options[sAttrId]) === String(sOptId)
+                    )
+                );
+
+                isValidByCompatibility = filteredVariants.some(variant =>
+                    String(variant.options[attrId]) === String(currentOptId) &&
+                    variant.stock_quantity > 0
+                );
+            }
+
+            // Apply trạng thái
+            if (shouldBeDisabled || !isValidByCompatibility) {
+                optionEl.classList.add('disabled-option');
+                optionEl.style.pointerEvents = 'none';
+                optionEl.style.opacity = 0.3;
+            } else {
+                optionEl.classList.remove('disabled-option');
+                optionEl.style.pointerEvents = 'auto';
+                optionEl.style.opacity = 1;
+            }
+        });
+    }
+}
+
+
 
 function checkVariantSelection() {
     const actionBar = document.getElementById('sticky-action-bar');
@@ -105,37 +200,7 @@ function updateSelectedOptionsDisplay() {
     }
 }
 
-function updateAvailableOptions() {
-    const attributes = Object.keys(attributeOptionsWithPrices);
-    for (const attrId of attributes) {
-        document.querySelectorAll(`.option-box[data-attribute="${attrId}"]`).forEach(optionEl => {
-            const currentOptId = parseInt(optionEl.dataset.option);
-            const simulatedSelection = {
-                ...selectedOptions,
-                [attrId]: currentOptId
-            };
-            
-            // Kiểm tra có biến thể nào khớp VÀ còn hàng (stock_quantity > 0)
-            const isValid = variantCombinations.some(variant => {
-                const isMatch = Object.entries(simulatedSelection).every(([aId, oId]) =>
-                    variant.options[aId] && parseInt(variant.options[aId]) === parseInt(oId)
-                );
-                // Thêm điều kiện kiểm tra tồn kho > 0
-                return isMatch && variant.stock_quantity > 0;
-            });
-            
-            if (isValid) {
-                optionEl.classList.remove('disabled-option');
-                optionEl.style.pointerEvents = 'auto';
-                optionEl.style.opacity = 1;
-            } else {
-                optionEl.classList.add('disabled-option');
-                optionEl.style.pointerEvents = 'none';
-                optionEl.style.opacity = 0.3;
-            }
-        });
-    }
-}
+
 
 async function addToCart() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -182,7 +247,7 @@ async function addToCart() {
 
 function showToast(title, message, type = 'success') {
     const toastId = 'custom-toast-' + Date.now();
-    
+
     // Chọn icon dựa trên type
     let icon = '';
     if (type === 'success') {
@@ -194,7 +259,7 @@ function showToast(title, message, type = 'success') {
     } else {
         icon = 'ℹ️';
     }
-    
+
     const toastHtml = `
     <div id="${toastId}" class="toast-container position-fixed" style="top: 80px; right: 0; z-index: 1055;">
         <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 fade show" role="alert">
@@ -216,12 +281,12 @@ function showToast(title, message, type = 'success') {
 async function buyNow() {
     const variantId = selectedVariantId;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
+
     if (!variantId || Object.keys(selectedOptions).length < totalAttributes) {
         showToast('Cảnh báo', 'Vui lòng chọn đầy đủ các phiên bản sản phẩm!', 'error');
         return;
     }
-    
+
     try {
         const response = await fetch(window.cartBuyNowUrl, {
             method: 'POST',
@@ -234,11 +299,11 @@ async function buyNow() {
                 quantity: 1
             })
         });
-        
+
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
             const data = await response.json();
-            
+
             if (data.status === 'success') {
                 // Cập nhật số lượng giỏ hàng trong header
                 if (document.getElementById('cart-count')) {
@@ -247,9 +312,9 @@ async function buyNow() {
                 if (document.getElementById('cart-total')) {
                     document.getElementById('cart-total').textContent = data.total_amount;
                 }
-                
+
                 showToast('Thành công', data.message, 'success');
-                
+
                 // Chuyển hướng sau 400ms
                 setTimeout(() => {
                     window.location.href = data.redirect_url;
@@ -324,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkVariantSelection();
         });
     }
-});
+});211111111
 
 // Ẩn sticky-action-bar khi lăn chuột, hiện lại khi dừng lăn
 let stickyBarTimeout = null;
@@ -341,4 +406,4 @@ window.addEventListener('scroll', function() {
             actionBar.style.pointerEvents = 'auto';
         }
     }, 300);
-}); 
+});

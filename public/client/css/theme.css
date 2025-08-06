@@ -34602,13 +34602,13 @@ blockquote:not(.blockquote) p {
 }
 
 .checkout-form-custom .summary-wrapper {
-    background-color: #2b3696; /* Dark Blue */
+    background-color:lightcoral 	 ; /* Dark Blue */
     color: #fff; /* White text */
 }
 
 .checkout-form-custom .summary-wrapper .text-muted,
 .checkout-form-custom .summary-wrapper .text-success {
-    color: #d8d8d8 !important; /* Light gray for muted text */
+    color: #787878 !important; /* Light gray for muted text */
 }
 
 .checkout-form-custom .delivery-wrapper {

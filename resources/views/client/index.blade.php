@@ -115,6 +115,9 @@
                 <div class="product-list">
                     <div class="product-grid">
                         @foreach ($newProducts->take(10) as $product)
+                            @if ($product->variants->where('stock_quantity', '>', 0)->count() === 0)
+                                @continue
+                            @endif
                             @php
                                 $variant = $product->variants
                                     ->sortBy(function ($v) {
@@ -144,8 +147,7 @@
                                             <span
                                                 class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                             @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span
-                                                    class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                             @endif
                                         @endif
                                     </div>
@@ -175,7 +177,7 @@
                                     </div>
                                     <div class="product-wishlist" data-product-id="{{ $product->id }}"
                                         onclick="handleFavoriteClick(event, this)">
-                                        <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
                                     </div>
                                 </div>
                             </div>
@@ -194,16 +196,13 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Macbook</a><a
-                            href="" class="related-tag button__link">Asus</a><a href=""
-                            class="related-tag button__link">MSI</a><a href=""
-                            class="related-tag button__link">Lenovo</a><a href=""
-                            class="related-tag button__link">HP</a><a href=""
-                            class="related-tag button__link">Acer</a><a href=""
-                            class="related-tag button__link">Dell</a><a href=""
+                    <div class="list-related-tag"><a href="" class="related-tag button__link">Macbook</a><a href=""
+                            class="related-tag button__link">Asus</a><a href="" class="related-tag button__link">MSI</a><a
+                            href="" class="related-tag button__link">Lenovo</a><a href=""
+                            class="related-tag button__link">HP</a><a href="" class="related-tag button__link">Acer</a><a
+                            href="" class="related-tag button__link">Dell</a><a href=""
                             class="related-tag button__link">Huawei</a><a href=""
-                            class="related-tag button__link">Gigabyte</a><a href=""
-                            class="related-tag button__link">Laptop
+                            class="related-tag button__link">Gigabyte</a><a href="" class="related-tag button__link">Laptop
                             AI</a>
                         <a href="" class="related-tag button__link">Xem tất cả</a>
                     </div>
@@ -211,6 +210,9 @@
                 <div class="product-list">
                     <div class="product-grid">
                         @foreach ($laptopProducts->take(5) as $laptopProduct)
+                            @if ($laptopProduct->variants->where('stock_quantity', '>', 0)->count() === 0)
+                                @continue
+                            @endif
                             @php
                                 $variant = $laptopProduct->variants
                                     ->sortBy(function ($v) {
@@ -241,8 +243,7 @@
                                             <span
                                                 class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                             @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span
-                                                    class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                             @endif
                                         @endif
                                     </div>
@@ -272,7 +273,7 @@
                                     </div>
                                     <div class="product-wishlist" data-product-id="{{ $laptopProduct->id }}"
                                         onclick="handleFavoriteClick(event, this)">
-                                        <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
                                     </div>
                                 </div>
                             </div>
@@ -291,8 +292,8 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a><a
-                            href="" class="related-tag button__link">Máy tính bàn</a>
+                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a><a href=""
+                            class="related-tag button__link">Máy tính bàn</a>
                         <a href="" class="related-tag button__link">PC Gaming</a>
                         <a href="" class="related-tag button__link">PC Đồ họa</a><a href=""
                             class="related-tag button__link">PC đồng bộ</a>
@@ -304,6 +305,9 @@
             <div class="product-list">
                 <div class="product-grid">
                     @foreach ($screenProducts->take(5) as $screenProduct)
+                        @if ($screenProduct->variants->where('stock_quantity', '>', 0)->count() === 0)
+                            @continue
+                        @endif
                         @php
                             $variant = $screenProduct->variants
                                 ->sortBy(function ($v) {
@@ -322,8 +326,7 @@
                             <div class="install-0-tag"><span>Trả góp <strong>0%</strong></span></div>
                             <a href="{{ route('client.products.show', $screenProduct->id) }}" class="product-link">
                                 <div class="product-image">
-                                    <img src="{{ asset('storage/' . $screenProduct->image) }}"
-                                        alt="{{ $screenProduct->name }}">
+                                    <img src="{{ asset('storage/' . $screenProduct->image) }}" alt="{{ $screenProduct->name }}">
                                 </div>
 
                                 <h3 class="product-name">{{ $screenProduct->name }}</h3>
@@ -332,8 +335,7 @@
                                         <span
                                             class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                         @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                            <span
-                                                class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                            <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                         @endif
                                     @endif
                                 </div>
@@ -363,7 +365,7 @@
                                 </div>
                                 <div class="product-wishlist" data-product-id="{{ $screenProduct->id }}"
                                     onclick="handleFavoriteClick(event, this)">
-                                    <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
                                 </div>
                             </div>
                         </div>
@@ -392,6 +394,9 @@
             <div class="product-list">
                 <div class="product-grid">
                     @foreach ($pcProducts->take(5) as $pcProduct)
+                        @if ($pcProduct->variants->where('stock_quantity', '>', 0)->count() === 0)
+                            @continue
+                        @endif
                         @php
                             $variant = $pcProduct->variants
                                 ->sortBy(function ($v) {
@@ -419,8 +424,7 @@
                                         <span
                                             class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                         @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                            <span
-                                                class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                            <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                         @endif
                                     @endif
                                 </div>
@@ -450,7 +454,7 @@
                                 </div>
                                 <div class="product-wishlist" data-product-id="{{ $pcProduct->id }}"
                                     onclick="handleFavoriteClick(event, this)">
-                                    <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
                                 </div>
                             </div>
                         </div>
@@ -461,7 +465,7 @@
     </div>
 
 
-@section('footer')
-    @include('client.layouts.partials.footer')
-@endsection
+    @section('footer')
+        @include('client.layouts.partials.footer')
+    @endsection
 @endsection

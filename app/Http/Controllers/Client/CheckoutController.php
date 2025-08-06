@@ -64,14 +64,7 @@ class CheckoutController extends Controller
             })
             ->get();
 
-        // Xóa session reorder_shipping_info nếu không phải từ "Mua lại"
-        // Chỉ giữ session nếu có flag is_reorder và đây là lần đầu vào checkout
-        if (!session()->has('is_reorder') || session()->has('checkout_visited')) {
-            session()->forget('reorder_shipping_info');
-        }
-        
-        // Đánh dấu đã vào trang checkout để lần sau sẽ xóa session
-        session(['checkout_visited' => true]);
+
 
         $reorderInfo = session('reorder_shipping_info', []);
 
@@ -461,6 +454,8 @@ class CheckoutController extends Controller
     }
     public function thankYou($orderId)
     {
+        session()->forget('reorder_shipping_info');
+        session()->forget('is_reorder');
         // Lấy thông tin đơn hàng vừa tạo để xác định trạng thái
         $currentOrder = Order::where('user_id', Auth::id())->findOrFail($orderId);
         

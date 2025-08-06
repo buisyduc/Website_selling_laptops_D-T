@@ -4,65 +4,7 @@
     <div class="container checkout-form-custom">
         <div class="row gx-lg-5">
             <!-- Right Column: Order Summary -->
-            <div class="col-lg-5 order-lg-1">
-                <div class="content-wrapper summary-wrapper">
-                    <h3 class="fw-bold mb-4 fs-5">Order Summary</h3>
-
-                    <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-muted">Subtotal</span>
-                        <span class="fw-bold" id="order-subtotal">
-                            {{ number_format($cartTotal ?? $totalAmount, 0, ',', '.') }}đ
-                        </span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Delivery/Shipping</span>
-                        <span class="fw-bold">Free</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center" id="order-discount-row"
-                        style="display: none;">
-                        <span class="text-muted" id="order-discount-label"></span>
-                        <span class="fw-bold text-danger" id="order-discount-amount"></span>
-                    </div>
-                    <div class="my-2">
-                        <p class="text-success mb-1">You qualify for free shipping!</p>
-                        <div class="shipping-progress-bar"></div>
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between align-items-center py-2 mb-4">
-                        <span class="fw-bold fs-5">Total</span>
-                        <span class="fw-bold fs-4">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
-                    </div>
-
-                    @foreach ($cartItems as $item)
-                        @php
-                            $product = $item->variant->product;
-                            $imgPath = $product->image ?? 'default-image.jpg';
-                        @endphp
-                        <div class="mb-4">
-                            <p class="fw-bold mb-2">Arrives {{ now()->format('D, M d') }}</p>
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-4" style="width: 180px; height:180px; margin-right: 10px;">
-                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}"
-                                        class="img-fluid" style="border-radius: 12px;">
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="fw-bold mb-1">{{ $product->name }}</p>
-                                    <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
-                                    @foreach ($item->variant->options as $opt)
-                                        <p class="text-muted mb-1">{{ $opt->attribute->name }}:
-                                            {{ $opt->option->value }}
-                                        </p>
-                                    @endforeach
-                                    <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <!-- Left Column -->
-            <div class="col-lg-7 order-lg-2 mb-4 mb-lg-0">
+            <div class="col-lg-7 order-lg-1">
                 <div class="content-wrapper delivery-wrapper">
                     <div class="checkout-stepper mb-4" data-current-step="1">
                         <div class="step active" data-step="1" onclick="switchToInformationTab()">
@@ -86,7 +28,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-custom"
-                                    value="{{ old('name', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.name') : ($order->name ?? auth()->user()->name ?? '')) }}">
+                                    value="{{ old('name', $reorderInfo['name'] ?? ($order->name ?? (auth()->user()->name ?? ''))) }}">
                                 @error('name')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -94,7 +36,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control form-control-custom"
-                                    value="{{ old('email', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.email') : ($order->email ?? auth()->user()->email ?? '')) }}">
+                                    value="{{ old('email', $reorderInfo['email'] ?? ($order->email ?? (auth()->user()->email ?? ''))) }}">
                                 @error('email')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -104,7 +46,7 @@
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
                             <input type="text" id="phone" name="phone" class="form-control form-control-custom"
-                                value="{{ old('phone', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.phone') : ($order->phone ?? auth()->user()->phone ?? '')) }}">
+                                value="{{ old('phone', $reorderInfo['phone'] ?? ($order->phone ?? (auth()->user()->phone ?? ''))) }}">
                             @error('phone')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -114,7 +56,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tỉnh / Thành phố</label>
                                 <input type="text" name="province" class="form-control form-control-custom"
-                                    value="{{ old('province', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.province') : ($order->province ?? '')) }}">
+                                    value="{{ old('province', $reorderInfo['province'] ?? ($order->province ?? '')) }}">
                                 @error('province')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -122,7 +64,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Quận / Huyện</label>
                                 <input type="text" name="district" class="form-control form-control-custom"
-                                    value="{{ old('district', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.district') : ($order->district ?? '')) }}">
+                                    value="{{ old('district', $reorderInfo['district'] ?? ($order->district ?? '')) }}">
                                 @error('district')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -133,7 +75,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Phường / Xã</label>
                                 <input type="text" name="ward" class="form-control form-control-custom"
-                                    value="{{ old('ward', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.ward') : ($order->ward ?? '')) }}">
+                                    value="{{ old('ward', $reorderInfo['ward'] ?? ($order->ward ?? '')) }}">
                                 @error('ward')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -141,7 +83,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số nhà, tên đường</label>
                                 <input type="text" name="address" class="form-control form-control-custom"
-                                    value="{{ old('address', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.address') : ($order->address ?? '')) }}">
+                                    value="{{ old('address', $reorderInfo['address'] ?? ($order->address ?? '')) }}">
                                 @error('address')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -151,7 +93,8 @@
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>
                             <input type="text" name="note" class="form-control form-control-custom"
-                                style="height: 100px;" value="{{ old('note', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.note') : ($order->note ?? '')) }}">
+                                style="height: 100px;"
+                                value="{{ old('note', $reorderInfo['note'] ?? ($order->note ?? '')) }}">
                             @error('note')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -171,8 +114,8 @@
                         <!-- Nhập mã giảm giá thủ công -->
                         <div id="manual-coupon-input">
                             <div class="rounded-3 px-3 py-2 d-flex justify-content-between align-items-center fw-medium">
-                                <input id="coupon_input" type="text" class="form-control border-0"
-                                    name="coupon_input" placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
+                                <input id="coupon_input" type="text" class="form-control border-0" name="coupon_input"
+                                    placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
                                 <button type="button" class="btn btn-outline-success btn-sm" id="manualApplyBtn"
                                     onclick="applyManualCoupon()" disabled>Áp dụng</button>
                             </div>
@@ -357,9 +300,67 @@
                         </div>
                     </form>
                 </div>
+
+
             </div>
+            <!-- Left Column -->
+            <div class="col-lg-5 order-lg-2 mb-4 mb-lg-0">
+                <div class="content-wrapper summary-wrapper">
+                    <h3 class="fw-bold mb-4 fs-5">Order Summary</h3>
 
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-bold" id="order-subtotal">
+                            {{ number_format($cartTotal ?? $totalAmount, 0, ',', '.') }}đ
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Delivery/Shipping</span>
+                        <span class="fw-bold">Free</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center" id="order-discount-row"
+                        style="display: none;">
+                        <span class="text-muted" id="order-discount-label"></span>
+                        <span class="fw-bold text-danger" id="order-discount-amount"></span>
+                    </div>
+                    <div class="my-2">
+                        <p class="text-success mb-1">You qualify for free shipping!</p>
+                        <div class="shipping-progress-bar"></div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center py-2 mb-4">
+                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-4">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
+                    </div>
 
+                    @foreach ($cartItems as $item)
+                        @php
+                            $product = $item->variant->product;
+                            $imgPath = $product->image ?? 'default-image.jpg';
+                        @endphp
+                        <div class="mb-4">
+                            <p class="fw-bold mb-2">Arrives {{ now()->format('D, M d') }}</p>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-4" style="width: 180px; height:180px; margin-right: 10px;">
+                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}"
+                                        class="img-fluid" style="border-radius: 12px;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="fw-bold mb-1">{{ $product->name }}</p>
+                                    <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
+                                    @foreach ($item->variant->options as $opt)
+                                        <p class="text-muted mb-1">{{ $opt->attribute->name }}:
+                                            {{ $opt->option->value }}
+                                        </p>
+                                    @endforeach
+                                    <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <!-- Các modal -->
     </div>
