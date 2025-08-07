@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkVariantSelection();
         });
     }
-});211111111
+});
 
 // Ẩn sticky-action-bar khi lăn chuột, hiện lại khi dừng lăn
 let stickyBarTimeout = null;
@@ -407,3 +407,4 @@ window.addEventListener('scroll', function() {
         }
     }, 300);
 });
+let isPlacingOrder = false;

@@ -760,6 +760,17 @@
             if (typeof enablePaymentButtonIfValid === 'function') {
                 enablePaymentButtonIfValid();
             }
+            // Reset trạng thái nút Đặt hàng
+            resetPlaceOrderButton();
+        }
+
+        function resetPlaceOrderButton() {
+            const btn = document.querySelector('[onclick="submitPaymentForm()"]');
+            if (btn) {
+                btn.disabled = false;
+                btn.style.cursor = '';
+                btn.classList.remove('disabled-place-order');
+            }
         }
 
         // Check if we should switch to payment tab on page load (after successful form submission)
@@ -837,30 +848,37 @@
         }
 
         function submitPaymentForm() {
-            const selectedMethod = document.getElementById('payment_method')?.value;
+    // Kiểm tra đã chọn phương thức thanh toán chưa
+    const selectedMethod = document.getElementById('payment_method')?.value;
+    if (!selectedMethod) {
+        showToast("Vui lòng chọn phương thức thanh toán");
+        return;
+    }
 
-            if (!selectedMethod) {
-                showToast("Vui lòng chọn phương thức thanh toán");
-                return;
-            }
-            const form = document.getElementById('payment-form-content');
-            if (!form || typeof form.submit !== 'function') {
-                console.error('Không tìm thấy form thanh toán');
-                return;
-            }
+    // Disable nút và đổi con trỏ
+    const btn = document.querySelector('[onclick="submitPaymentForm()"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.style.cursor = 'not-allowed';
+        btn.classList.add('disabled-place-order');
+    }
 
-            // Gán lại (đề phòng)
-            let hiddenInput = form.querySelector('input[name="payment_method"]');
-            if (!hiddenInput) {
-                hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'payment_method';
-                form.appendChild(hiddenInput);
-            }
-            hiddenInput.value = selectedMethod;
+    // Gán lại payment_method (đề phòng)
+    const form = document.getElementById('payment-form-content');
+    let hiddenInput = form.querySelector('input[name="payment_method"]');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'payment_method';
+        form.appendChild(hiddenInput);
+    }
+    hiddenInput.value = selectedMethod;
 
-            form.submit();
-        }
+    // Submit form như bình thường
+    if (form && typeof form.submit === 'function') {
+        form.submit();
+    }
+}
 
         // Coupon functions (move to global scope)
         async function applyManualCoupon() {

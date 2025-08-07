@@ -13,6 +13,7 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController;
+use App\Http\Controllers\Client\VNPayController;
 
 use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -78,14 +79,16 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
 
 
-    // Orders - Đơn hàng
+// Orders - Đơn hàng
     Route::get('/client/orders', [OrderController::class, 'index'])->name('client.orders.index');
     Route::get('/client/orders/{id}', [OrderController::class, 'show'])->name('client.orders.show');
-    Route::get('/order/thank-you/{orderId}', [CheckoutController::class, 'thankYou'])->name('checkout.thankYou');
+    Route::get('/order/order-information/{orderId}', [CheckoutController::class, 'orderInformation'])->name('checkout.orderInformation');
     Route::delete('/client/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/client/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
 
-
+//VNPay
+Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');
+Route::get('/payment/vnpay-return', [VNPayController::class, 'handleReturn'])->name('vnpay.return');
 
 
 });

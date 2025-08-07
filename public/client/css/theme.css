@@ -20513,7 +20513,7 @@ main {
 }
 
 p {
-  color: #747474;
+  color: #4d4d4d !important;
   line-height: 1.7;
 }
 
@@ -34608,7 +34608,7 @@ blockquote:not(.blockquote) p {
 
 .checkout-form-custom .summary-wrapper .text-muted,
 .checkout-form-custom .summary-wrapper .text-success {
-    color: #787878 !important; /* Light gray for muted text */
+    color: #4d4d4d !important; /* Light gray for muted text */
 }
 
 .checkout-form-custom .delivery-wrapper {
