@@ -12,68 +12,51 @@ class ProductController extends Controller
 {
 public function show($id)
 {
+    // Load product with necessary relationships
     $product = Product::with([
         'variants.options.attribute',
         'variants.options.option',
         'images',
         'brand',
-        'category'
+        'category',
+        'coupons' => function($query) {
+            // Kiểm tra coupon còn hiệu lực và chưa đạt giới hạn sử dụng
+            $query->where('expires_at', '>=', now())
+                  ->where(function($q) {
+                      $q->whereNull('usage_limit')
+                        ->orWhereColumn('used_count', '<', 'usage_limit');
+                  });
+                  
+        }
     ])->findOrFail($id);
 
+    // Tìm ID của thuộc tính màu sắc
+    $colorAttribute = \App\Models\Variant_Attributes::where('name', 'Màu sắc')->first();
+    $colorAttributeId  = $colorAttribute ? $colorAttribute->id : null;
+
     // Tìm ID của thuộc tính RAM
-    $ramAttr = \App\Models\variant_attributes::where('name', 'RAM')->first();
-    $ramAttrId = $ramAttr ? $ramAttr->id : null;
+    $ramAttribute  = \App\Models\Variant_Attributes::where('name', 'RAM')->first();
+    $ramAttributeId   = $ramAttribute ? $ramAttribute->id : null;
 
-    // Dữ liệu phục vụ cho JavaScript
-$variantsForJs = $product->variants->map(function ($variant) {
-    return [
-        'id' => $variant->id,
-        'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity, 
-        'options' => $variant->options->mapWithKeys(function ($opt) {
-            return [$opt->attribute_id => $opt->option_id];
-        }),
-    ];
-})->toArray();
+    // Prepare variants data for JavaScript
+    $variantsForJs = $product->variants->map(function ($variant) {
+        return [
+            'id' => $variant->id,
+            'price' => $variant->price,
+            'sale_price' => $variant->sale_price,
+            'stock_quantity' => $variant->stock_quantity,
+            'options' => $variant->options->mapWithKeys(function ($opt) {
+                return [$opt->attribute_id => $opt->option_id];
+            }),
+        ];
+    })->toArray();
 
+    // Calculate pricing information
+    $originalPrice = $product->variants->max('price') ?? 0;
+    $currentPrice = $product->variants->min('price') ?? 0;
+    $discountPercent = $originalPrice > 0 ? round(100 - ($currentPrice / $originalPrice * 100)) : 0;
 
-
-
-    // Cấu trúc dạng readable như yêu cầu
-    $variantGroupsReadable = [];
-
-    foreach ($product->variants as $variant) {
-        $ramValue = null;
-        $otherOptions = [];
-
-        foreach ($variant->options as $option) {
-            $attrName = $option->attribute->name;
-            $optValue = $option->option->value;
-
-            if (strtolower($attrName) === 'ram') {
-                $ramValue = $optValue;
-            } else {
-                $otherOptions[$attrName][] = $optValue;
-            }
-        }
-
-        if ($ramValue) {
-            $variantGroupsReadable[] = [
-                'id' => $variant->id,
-                'price' => $variant->price,
-                'stock_quantity' => $variant->stock_quantity,
-                'options' => [
-                    $ramValue => $otherOptions
-                ]
-            ];
-        }
-    }
-
-
-    // Breadcrumbs
-    $breadcrumbs = $product->category->getBreadcrumbs();
-
-    // Danh sách thuộc tính kèm giá rẻ nhất và tồn kho
+    // Prepare attribute options with pricing
     $attributeOptionsWithPrices = [];
     foreach ($product->variants as $variant) {
         foreach ($variant->options as $option) {
@@ -81,7 +64,7 @@ $variantsForJs = $product->variants->map(function ($variant) {
             $attrName = $option->attribute->name;
             $optId = $option->option->id;
             $optValue = $option->option->value;
-            $price = $variant->price;
+            $price = $variant->sale_price ?? $variant->price;
             $stock = $variant->stock_quantity;
 
             if (!isset($attributeOptionsWithPrices[$attrId])) {
@@ -95,7 +78,9 @@ $variantsForJs = $product->variants->map(function ($variant) {
                 $attributeOptionsWithPrices[$attrId]['options'][$optId] = [
                     'value' => $optValue,
                     'price' => $price,
-                    'stock' => $stock
+                    'stock' => $stock,
+                    'color_code' => $this->getColorCode($optValue),
+                    'image' => $variant->image ?? $product->image
                 ];
             } else {
                 $existing = $attributeOptionsWithPrices[$attrId]['options'][$optId];
@@ -107,10 +92,15 @@ $variantsForJs = $product->variants->map(function ($variant) {
         }
     }
 
-    // Sắp xếp variant theo giá
-    $product->variants = $product->variants->sortBy('price');
+    // Sort variants by price
+    $product->variants = $product->variants->sortBy(function($variant) {
+        return $variant->sale_price ?? $variant->price;
+    });
 
-    // Sản phẩm liên quan
+    // Prepare breadcrumbs
+    $breadcrumbs = $product->category->getBreadcrumbs();
+
+    // Get related products
     $relatedProducts = Product::with(['images', 'variants'])
         ->where('id', '!=', $product->id)
         ->where('status', true)
@@ -126,12 +116,33 @@ $variantsForJs = $product->variants->map(function ($variant) {
         'relatedProducts',
         'breadcrumbs',
         'variantsForJs',
-        'ramAttrId',
+        'colorAttributeId',
+        'ramAttributeId',
         'attributeOptionsWithPrices',
-        'variantGroupsReadable'
+        'discountPercent',
+        'originalPrice',
+        'currentPrice'
     ));
 }
 
+// Helper function to get color code
+private function getColorCode($colorName)
+{
+    $colors = [
+        'Xanh' => '#1a73e8',
+        'Đỏ' => '#ea4335',
+        'Vàng' => '#fbbc05',
+        'Xanh lá' => '#34a853',
+        'Đen' => '#000000',
+        'Trắng' => '#ffffff',
+        'Tím' => '#9c27b0',
+        'Hồng' => '#e91e63',
+        'Xám' => '#9e9e9e',
+        'Bạc' => '#e0e0e0',
+    ];
+    
+    return $colors[$colorName] ?? '#f0f0f0';
+}
 
     public function index(Request $request)
     {

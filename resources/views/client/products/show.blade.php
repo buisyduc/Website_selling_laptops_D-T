@@ -942,7 +942,8 @@
                 <div class="card-header mb-4">
                     <h5>Bình luận ({{ $product->comments->count() }})</h5>
                 </div>
-                <form class="ms-2 me-2" id="comment-form" method="POST" action="{{ route('comments.store', ['id' => $product->id]) }}"
+                <form class="ms-2 me-2" id="comment-form" method="POST"
+                    action="{{ route('comments.store', $product->id) }}"
                     style="display: flex; gap: 10px; align-items: center;">
                     @csrf
                     <input type="hidden" name="post_id" value="{{ $product->id }}">
@@ -953,7 +954,7 @@
                         bình luận</button>
                     <div id="loading" style="display: none;">Đang gửi...</div>
                 </form>
-                <div class=" card-body comment-section">
+                <div class="card-body comment-section">
                     <div id="comments-list">
                         <div id="comment-alert" class="alert" style="display: none;"></div>
                         @foreach ($product->comments as $comment)
@@ -962,117 +963,239 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal cho khách chưa đăng nhập -->
+            <div class="modal fade" id="guestCommentModal" tabindex="-1" aria-labelledby="guestCommentModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="guestCommentModalLabel">Thông tin của bạn</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="guest-comment-form">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gender" id="male"
+                                                value="male" checked>
+                                            <label class="form-check-label" for="male">Nam</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gender" id="female"
+                                                value="female">
+                                            <label class="form-check-label" for="female">Nữ</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guest-name" class="form-label head">Tên</label>
+                                    <input type="text" class="form-control" id="guest-name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guest-phone" class="form-label head">Số điện thoại</label>
+                                    <input type="tel" class="form-control" id="guest-phone" name="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guest-email" class="form-label head">Email</label>
+                                    <input type="email" class="form-control" id="guest-email" name="email" required>
+                                </div>
+                                <input type="hidden" id="guest-comment-content" name="content">
+                                <input type="hidden" name="post_id" value="{{ $product->id }}">
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-primary" id="submit-guest-comment">Gửi bình
+                                luận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <style>
-        .alert {
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            font-size: 14px;
+        .comment-item {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
         }
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .comment-body {
+            line-height: 1.5;
+        }
+
+        .guest-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #comment-alert {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #comment-form textarea {
+            transition: height 0.2s;
+        }
+
+        #comment-form textarea:focus {
+            height: 80px;
+        }
+
+        .form-label>head {
+            text-align: left
         }
     </style>
     {{-- <script src="{{ asset('js/comment.js') }}"></script> --}}
+    {{-- comment --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Đảm bảo DOM đã load hoàn toàn
+        window.addEventListener('DOMContentLoaded', function() {
+            // Kiểm tra sự tồn tại của tất cả phần tử
             const commentForm = document.getElementById('comment-form');
+            const guestModalEl = document.getElementById('guestCommentModal');
+            const submitGuestBtn = document.getElementById('submit-guest-comment');
 
-            if (commentForm) {
-                commentForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
+            if (!commentForm || !guestModalEl || !submitGuestBtn) {
+                console.error('Không tìm thấy các phần tử cần thiết');
+                return;
+            }
 
-                    const formData = new FormData(commentForm);
-                    const loadingIndicator = document.getElementById('loading');
-                    const submitButton = commentForm.querySelector('button[type="submit"]');
-                    const commentContent = document.getElementById('comment-content');
-                    const alertDiv = document.getElementById('comment-alert');
+            // Khởi tạo modal với try-catch
+            let guestCommentModal;
+            try {
+                guestCommentModal = new bootstrap.Modal(guestModalEl, {
+                    keyboard: true,
+                    backdrop: 'static'
+                });
+            } catch (e) {
+                console.error('Lỗi khởi tạo modal:', e);
+                return;
+            }
 
-                    // Ẩn thông báo cũ nếu có
-                    if (alertDiv) {
-                        alertDiv.style.display = 'none';
-                        alertDiv.textContent = '';
-                        alertDiv.className = 'alert';
+            // Kiểm tra trạng thái đăng nhập từ meta tag
+            const isLoggedIn = document.querySelector('meta[name="user-logged"]')?.content === 'true';
+
+            // Xử lý submit form chính
+            commentForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(commentForm);
+                const content = formData.get('content');
+
+                if (!content?.trim()) {
+                    showAlert('Vui lòng nhập nội dung bình luận', 'danger');
+                    return;
+                }
+
+                if (isLoggedIn) {
+                    await handleCommentSubmit(formData);
+                } else {
+                    // Chuẩn bị dữ liệu cho guest
+                    document.getElementById('guest-comment-content').value = content;
+                    guestCommentModal.show();
+                }
+            });
+
+            // Xử lý submit từ modal
+            submitGuestBtn.addEventListener('click', async function() {
+                const guestForm = document.getElementById('guest-comment-form');
+                const formData = new FormData(guestForm);
+
+                // Validate dữ liệu khách
+                if (!validateGuestData(formData)) {
+                    showAlert('Vui lòng điền đầy đủ thông tin', 'danger');
+                    return;
+                }
+
+                const success = await handleCommentSubmit(formData);
+                if (success) {
+                    guestCommentModal.hide();
+                    commentForm.reset();
+                }
+            });
+
+            // Hàm validate thông tin khách
+            function validateGuestData(formData) {
+                return formData.get('name')?.trim() &&
+                    formData.get('phone')?.trim() &&
+                    formData.get('email')?.trim();
+            }
+
+            // Hàm xử lý submit chung
+            async function handleCommentSubmit(formData) {
+                const loading = document.getElementById('loading');
+                const alertDiv = document.getElementById('comment-alert');
+
+                try {
+                    if (loading) loading.style.display = 'block';
+
+                    // Thêm CSRF token nếu chưa có
+                    if (!formData.has('_token')) {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                        if (csrfToken) formData.append('_token', csrfToken);
                     }
 
-                    // Hiển thị loading
-                    if (loadingIndicator) loadingIndicator.style.display = 'block';
-                    if (submitButton) submitButton.disabled = true;
+                    const response = await fetch(commentForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    });
 
-                    fetch(commentForm.action, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .content
-                            },
-                            body: formData
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                // Thêm comment mới vào đầu danh sách
-                                const commentsList = document.getElementById('comments-list');
-                                if (commentsList && data.html) {
-                                    const newComment = document.createElement('div');
-                                    newComment.innerHTML = data.html;
-                                    commentsList.insertBefore(newComment.firstChild, commentsList
-                                        .firstChild);
-                                }
+                    const data = await response.json();
 
-                                // Reset form
-                                if (commentContent) commentContent.value = '';
+                    if (!response.ok) {
+                        throw new Error(data.message || `Lỗi: ${response.status}`);
+                    }
 
-                                // Hiển thị thông báo thành công trong form
-                                if (alertDiv && data.message) {
-                                    alertDiv.textContent = data.message;
-                                    alertDiv.classList.add('alert-success');
-                                    alertDiv.style.display = 'block';
-                                }
-                            } else if (alertDiv && data.message) {
-                                // Hiển thị thông báo lỗi
-                                alertDiv.textContent = data.message;
-                                alertDiv.classList.add('alert-danger');
-                                alertDiv.style.display = 'block';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            if (alertDiv) {
-                                alertDiv.textContent = 'Có lỗi xảy ra khi gửi bình luận';
-                                alertDiv.classList.add('alert-danger');
-                                alertDiv.style.display = 'block';
-                            }
-                        })
-                        .finally(() => {
-                            if (loadingIndicator) loadingIndicator.style.display = 'none';
-                            if (submitButton) submitButton.disabled = false;
+                    if (data.success) {
+                        updateCommentsList(data.html);
+                        showAlert(data.message || 'Bình luận thành công!', 'success');
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert(error.message || 'Có lỗi khi gửi bình luận', 'danger');
+                    return false;
+                } finally {
+                    if (loading) loading.style.display = 'none';
+                }
+            }
 
-                            // Tự động ẩn thông báo sau 5 giây
-                            if (alertDiv) {
-                                setTimeout(() => {
-                                    alertDiv.style.display = 'none';
-                                }, 5000);
-                            }
-                        });
-                });
+            function updateCommentsList(html) {
+                const commentsList = document.getElementById('comments-list');
+                if (commentsList && html) {
+                    commentsList.insertAdjacentHTML('afterbegin', html);
+                }
+            }
+
+            function showAlert(message, type) {
+                const alertDiv = document.getElementById('comment-alert');
+                if (alertDiv) {
+                    alertDiv.textContent = message;
+                    alertDiv.className = `alert alert-${type}`;
+                    alertDiv.style.display = 'block';
+                    setTimeout(() => {
+                        alertDiv.style.display = 'none';
+                    }, 5000);
+                }
             }
         });
     </script>

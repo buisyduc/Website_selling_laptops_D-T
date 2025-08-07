@@ -48,8 +48,9 @@ Route::get('/account-management', [AuthController::class, 'management'])->name('
 //giao diện chung
 Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
-Route::post('/products/{id}/comments', [ProductCommentController::class, 'store'])->middleware('auth')->name('comments.store');
-
+Route::post('/products/{product}/comments', [ProductCommentController::class, 'store'])
+    ->name('comments.store');
+ 
 
 // // Product routes
 // Route::get('/api/products/search', [ProductController::class, 'search'])->name('products.search');
