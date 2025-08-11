@@ -110,6 +110,7 @@
                     <form method="POST" action="{{ route('checkout.paymentStore') }}" id="payment-form-content"
                         style="display: none;">
                         @csrf
+                        <input type="hidden" name="order_id" value="{{ $order->id ?? '' }}">
 
                         <!-- Nhập mã giảm giá thủ công -->
                         <div id="manual-coupon-input">
@@ -762,7 +763,7 @@
             }
             // Reset trạng thái nút Đặt hàng
             resetPlaceOrderButton();
-        }
+        } 
 
         function resetPlaceOrderButton() {
             const btn = document.querySelector('[onclick="submitPaymentForm()"]');
@@ -772,6 +773,17 @@
                 btn.classList.remove('disabled-place-order');
             }
         }
+        // Đảm bảo nút Đặt hàng luôn bật khi quay lại trang (kể cả từ cache/bfcache)
+        window.addEventListener('pageshow', function (event) {
+    // Nếu quay lại từ cache hoặc từ VNPay thì reset bước về thông tin giao hàng
+    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+        switchToInformationTab(); // Đưa về bước 1
+    }
+
+    // Luôn reset nút đặt hàng
+    resetPlaceOrderButton();
+});
+
 
         // Check if we should switch to payment tab on page load (after successful form submission)
         document.addEventListener('DOMContentLoaded', function() {

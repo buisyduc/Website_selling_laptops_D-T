@@ -462,63 +462,147 @@ document.addEventListener('DOMContentLoaded', function () {
         </span>
     `).join('');
 }
-
-    function addAttribute(variantId, attributeKey = null, attributeData = null) {
+function rerenderAttributeSelects(variantId) {
     const container = document.getElementById(`attributes-container-${variantId}`);
-    const attributeId = attributeKey || (++attributeCounter);
+    const selects = container.querySelectorAll('.attribute-select');
+    // Lấy tất cả giá trị đã chọn, loại bỏ giá trị rỗng
+    const selectedValues = Array.from(selects).map(s => s.value).filter(v => v);
+
+    selects.forEach(select => {
+        const currentValue = select.value;
+        const parent = select.parentNode;
+        const name = select.name;
+        // Tạo select mới
+        const newSelect = document.createElement('select');
+        newSelect.className = 'form-select attribute-select';
+        newSelect.name = name;
+        newSelect.required = true;
+        newSelect.style.flex = '1';
+
+        // Option mặc định
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '-- Chọn thuộc tính --';
+        newSelect.appendChild(defaultOption);
+
+        // Nếu select chưa chọn giá trị, loại bỏ tất cả option đã được chọn ở select khác
+        availableAttributes.forEach(attr => {
+            if (
+                (!selectedValues.includes(attr.id.toString())) ||
+                (attr.id.toString() === currentValue)
+            ) {
+                const option = document.createElement('option');
+                option.value = attr.id;
+                option.textContent = attr.name;
+                if (attr.id.toString() === currentValue) option.selected = true;
+                newSelect.appendChild(option);
+            }
+        });
+
+        parent.replaceChild(newSelect, select);
+    });
+}
+
+
+
+if (availableAttributes.length === 0) {
+    alert('Không có thuộc tính nào để thêm.');
+    return;
+}
+
+function addAttribute(variantId, attributeKey = null, attributeData = null) {
+    const container = document.getElementById(`attributes-container-${variantId}`);
+    const attributeId = attributeKey !== null ? attributeKey : (++attributeCounter);
+
     attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
 
+    // Lấy các thuộc tính đã chọn trong variant này (trừ thuộc tính đang edit)
+    const selects = container.querySelectorAll('.attribute-select');
+    let selectedValues = Array.from(selects).map(s => s.value).filter(v => v);
+    // Nếu đang edit (attributeKey), loại bỏ thuộc tính hiện tại khỏi danh sách đã chọn
     const selectedAttribute = attributeData?.attribute_id || '';
+    if (selectedAttribute) {
+        selectedValues = selectedValues.filter(v => v !== selectedAttribute.toString());
+    }
     const options = attributeData?.options || [];
 
+    // ==== SỬA ĐOẠN NÀY ====
+    // Chỉ render các thuộc tính chưa chọn hoặc đang edit
     const attributeDiv = document.createElement('div');
     attributeDiv.className = 'attribute-group mb-3';
     attributeDiv.id = `attribute-${variantId}-${attributeId}`;
 
-   attributeDiv.innerHTML = `
+    // Lọc thuộc tính chưa chọn
+    const availableForSelect = availableAttributes
+        .filter(attr => !selectedValues.includes(attr.id.toString()) || attr.id == selectedAttribute);
+
+    attributeDiv.innerHTML = `
     <div class="d-flex align-items-center gap-2">
         <select class="form-select attribute-select" name="variants[${variantId}][attributes][${attributeId}][attribute_id]" required style="flex: 1;">
             <option value="">-- Chọn thuộc tính --</option>
-            ${availableAttributes.map(attr => `
-                <option value="${attr.id}" ${attr.id == selectedAttribute ? 'selected' : ''}>${attr.name}</option>
-            `).join('')}
+            ${availableForSelect
+                .map(attr => `
+                    <option value="${attr.id}" ${attr.id == selectedAttribute ? 'selected' : ''}>${attr.name}</option>
+                `).join('')}
         </select>
-
-        <div style="flex: 2; display: flex; align-items: center; gap: 4px;">
-            <input type="text" class="form-control form-control-sm" id="option-input-${variantId}-${attributeId}" placeholder="Nhập giá trị và nhấn Enter">
-            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addOptionToAttribute(${variantId}, ${attributeId})">
-                <i class="bi bi-plus"></i>
-            </button>
-        </div>
-
-        <button type="button" class="btn btn-sm btn-outline-danger remove-attribute-btn" data-variant-id="${variantId}" data-attribute-id="${attributeId}">
-            <i class="bi bi-trash"></i>
-        </button>
+        ...
     </div>
-
-    <div id="options-hidden-container-${variantId}-${attributeId}">
-        ${options.map(opt => `<input type="hidden" name="variants[${variantId}][attributes][${attributeId}][options][]" value="${opt}">`).join('')}
-    </div>
-
-    <div id="options-display-${variantId}-${attributeId}" class="mt-2">
-        ${options.map(opt => `
-            <span class="option-tag me-2 mb-1 d-inline-block">
-                ${opt}
-                <button type="button" class="btn btn-sm btn-link text-danger remove-option"
-                    data-variant-id="${variantId}" data-attribute-id="${attributeId}" data-option-value="${opt}">
-                    <i class="bi bi-x"></i>
-                </button>
-            </span>
-        `).join('')}
-    </div>
-`;
-
+    ...
+    `;
 
     container.appendChild(attributeDiv);
+
+    // Gọi update sau khi thêm
+    updateAttributeSelectOptions(variantId);
+    updateAddAttributeBtnState(variantId);
+
+    // Thêm event change cho select vừa thêm
+    const select = attributeDiv.querySelector('.attribute-select');
+    select.addEventListener('change', function () {
+    const selects = document.querySelectorAll(`#attributes-container-${variantId} .attribute-select`);
+    
+    const values = Array.from(selects)
+        .filter(s => s !== this)
+        .map(s => s.value);
+
+    if (this.value && values.includes(this.value)) {
+        alert('Thuộc tính này đã được chọn cho biến thể này!');
+        this.value = '';
+    }
+
+    updateAttributeSelectOptions(variantId);
+    updateAddAttributeBtnState(variantId);
+});
+
+
 }
 
 
-    window.addVariant = function (variantKey = null, variantData = null) {
+    // Cập nhật trạng thái nút Thêm thuộc tính
+// Cập nhật trạng thái nút Thêm thuộc tính
+function updateAddAttributeBtnState(variantId) {
+    const container = document.getElementById(`attributes-container-${variantId}`);
+    const selects = container.querySelectorAll('.attribute-select');
+    
+    // Lấy danh sách các thuộc tính đã chọn (bỏ qua select rỗng)
+    const selectedValues = Array.from(selects)
+        .map(s => s.value)
+        .filter(v => v); // loại bỏ giá trị rỗng
+
+    const addBtn = container.parentElement.querySelector('.add-attribute-btn');
+    
+    // Disable nút nếu đã chọn hết các thuộc tính
+    if (selectedValues.length >= availableAttributes.length) {
+        addBtn.disabled = true;
+        addBtn.title = 'Đã chọn hết thuộc tính';
+    } else {
+        addBtn.disabled = false;
+        addBtn.title = '';
+    }
+}
+
+
+window.addVariant = function (variantKey = null, variantData = null) {
         const id = variantKey || (++variantCount);
         variantCount = Math.max(variantCount, parseInt(id));
 
@@ -609,27 +693,62 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 
     // ==== 3. Event delegation ====
-    document.addEventListener('click', e => {
+    document.addEventListener('click', function(e) {
         const btn = e.target.closest('button');
         if (!btn) return;
-
         const { variantId, attributeId, optionValue } = btn.dataset;
 
+        // Xóa biến thể
         if (btn.classList.contains('remove-variant-btn')) {
             document.getElementById(`variant-${variantId}`)?.remove();
         }
 
+        // Thêm thuộc tính mới (chặn thêm nếu còn select chưa chọn hoặc bị trùng)
         if (btn.classList.contains('add-attribute-btn')) {
+            const container = document.getElementById(`attributes-container-${variantId}`);
+            const selects = container.querySelectorAll('.attribute-select');
+            const values = Array.from(selects).map(s => s.value).filter(v => v);
+            const uniqueValues = [...new Set(values)];
+            const allSelected = Array.from(selects).every(s => s.value);
+            if (!allSelected) {
+                alert('Vui lòng chọn thuộc tính cho tất cả các dòng trước khi thêm mới!');
+                return;
+            }
+            if (values.length !== uniqueValues.length) {
+                alert('Không được chọn trùng thuộc tính trong cùng một biến thể!');
+                return;
+            }
             addAttribute(variantId);
+            rerenderAttributeSelects(variantId);
         }
 
+        // Xóa thuộc tính
         if (btn.classList.contains('remove-attribute-btn')) {
             document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
+            rerenderAttributeSelects(variantId);
+            updateAddAttributeBtnState(variantId);
         }
 
+        // Xóa option giá trị thuộc tính
         if (btn.classList.contains('remove-option')) {
             removeOptionFromAttribute(variantId, attributeId, optionValue);
         }
+    });
+
+    // Sự kiện change cho select thuộc tính (ẩn/hiện option đã chọn ở select khác)
+    document.addEventListener('change', function(e) {
+        if (!e.target.classList.contains('attribute-select')) return;
+        const select = e.target;
+        const container = select.closest('.attribute-group').parentElement;
+        const variantId = container.id.split('-').pop();
+        const selects = container.querySelectorAll('.attribute-select');
+        const values = Array.from(selects).filter(s => s !== select).map(s => s.value);
+        if (select.value && values.includes(select.value)) {
+            alert('Thuộc tính này đã được chọn cho biến thể này!');
+            select.value = '';
+        }
+        rerenderAttributeSelects(variantId);
+        updateAddAttributeBtnState(variantId);
     });
 
     // ==== 4. Enter để thêm option nhanh ====
