@@ -9,9 +9,9 @@
     @endif
 
     {{-- Sidebar + Content trong container --}}
-    @hasSection('sidebar')
-        @yield('sidebar')
-    @endif
+      @hasSection('sidebar')
+            @yield('sidebar')
+        @endif
 
     <div class="container">
 
@@ -356,12 +356,12 @@
 
                                     <div class="text-center mb-4">
                                         <span class="small text-muted">Already have an account?</span>
-                                        <a class="js-animation-link btn btn-sm btn-danger text-white ms-2"
-                                            href="javascript:;" data-target="#login" data-link-group="idForm"
+                                        <a class="js-animation-link small text-dark" href="javascript:;"
+                                            data-target="#login" data-link-group="idForm"
                                             data-animation-in="slideInUp">Login
                                         </a>
                                     </div>
-                                    
+
                                     <div class="text-center">
                                         <span class="u-divider u-divider--xs u-divider--text mb-4">OR</span>
                                     </div>

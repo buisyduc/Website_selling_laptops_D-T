@@ -67,19 +67,5 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(cart_item::class, Cart::class, 'user_id', 'cart_id', 'id', 'id');
     }
-    public function productReviews()
-    {
-        return $this->hasMany(ProductReview::class);
-    }
-
-    public function hasPurchasedProduct($productId)
-    {
-        return $this->orders()
-            ->where('status', 'completed')
-            ->whereHas('orderItems', function($query) use ($productId) {
-                $query->where('product_id', $productId);
-            })
-            ->exists();
-    }
 
 }

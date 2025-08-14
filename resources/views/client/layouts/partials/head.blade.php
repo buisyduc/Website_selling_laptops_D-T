@@ -13,7 +13,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="user-logged" content="{{ auth()->check() ? 'true' : 'false' }}">
 
     <!-- Google Fonts -->
     <link
@@ -33,6 +32,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('client/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')); ?>">
     <!-- Bootstrap 5 + Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"

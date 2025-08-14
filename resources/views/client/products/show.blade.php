@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="container" >
         <!-- BREADCRUMB -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb mb-0">
@@ -182,7 +182,8 @@
                             <div class="d-flex gap-3 align-items-start p-3 rounded-4 shadow-sm bg-light h-100">
                                 <div class="d-flex justify-content-center align-items-center rounded-3"
                                     style="background-color: #E41727; width: 20px; height: 20px; ">
-                                    <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="24" height="24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M2.25 7.5H3.75M2.25 10.5H3.75M7.5 2.25V3.75M10.5 2.25V3.75M15.75 7.5H14.25M15.75 10.5H14.25M10.5 15.75V14.25M7.5 15.75V14.25M5.75 14.25H12.25C13.3546 14.25 14.25 13.3546 14.25 12.25V5.75C14.25 4.64543 13.3546 3.75 12.25 3.75H5.75C4.64543 3.75 3.75 4.64543 3.75 5.75V12.25C3.75 13.3546 4.64543 14.25 5.75 14.25ZM7.75 11.25H10.25C10.8023 11.25 11.25 10.8023 11.25 10.25V7.75C11.25 7.19772 10.8023 6.75 10.25 6.75H7.75C7.19772 6.75 6.75 7.19772 6.75 7.75V10.25C6.75 10.8023 7.19772 11.25 7.75 11.25Z"
                                             stroke="white" stroke-width="1.5" stroke-linecap="round"
@@ -746,11 +747,9 @@
                     alt="{{ $product->name }}" class="img-fluid"
                     style="width: 40px; height: 40px; border-radius: 6px; margin-right: 8px;" />
                 <div>
-                    <div class="product-name"
-                        style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
+                    <div class="product-name" style="font-weight: bold; font-size: 15px; display: flex; align-items: baseline;">
                         <span>{{ $product->name }}</span>
-                        <span id="sticky-bar-stock"
-                            style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
+                        <span id="sticky-bar-stock" style="font-size: 14px; color: #28a745; font-weight: 500; margin-left: 8px;"></span>
                     </div>
                     <div id="sticky-selected-options" style="font-size: 11px; color: #666; margin-top: 1px;"></div>
                     <div style="font-size: 10px; color: #888;">
@@ -908,298 +907,8 @@
                     </div>
                 </div>
             @endif
-            {{-- Hiển thị bình luận --}}
-            {{-- <div class="card mt-4 mb-3">
-                <div class="card-header">
-                    <h5>Bình luận ({{ $product->comments->count() }})</h5>
-                </div>
-                <div class="card-body">
-                    @foreach ($product->comments as $comment)
-                        <div>
-                            <strong>{{ $comment->user->name }}</strong>
-                            ({{ $comment->created_at->diffForHumans() }})
-                            <p>{{ $comment->content }}</p>
-                        </div>
-                    @endforeach
-                    @auth
-                        <form action="{{ route('comments.store', $product) }}" method="POST">
-                            @csrf
-                            <textarea name="content" placeholder="Viết bình luận..." required style="width: 100%;"></textarea>
-
-                            @error('content')
-                                <span>{{ $message }}</span>
-                            @enderror
-
-                            <button type="submit">Gửi bình luận</button>
-                        </form>
-                    @else
-                        <p>Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.</p>
-                    @endauth
-
-                </div>
-            </div> --}}
-            <div class="card mt-4 mb-3">
-                <div class="card-header mb-4">
-                    <h5>Bình luận ({{ $product->comments->count() }})</h5>
-                </div>
-                <form class="ms-2 me-2" id="comment-form" method="POST"
-                    action="{{ route('comments.store', $product->id) }}"
-                    style="display: flex; gap: 10px; align-items: center;">
-                    @csrf
-                    <input type="hidden" name="post_id" value="{{ $product->id }}">
-                    <textarea id="comment-content" name="content" placeholder="Viết bình luận..." required
-                        style="flex: 1; height: 50px; border: 1px solid #ccc; border-radius: 10px; padding: 8px; resize: none; min-height: 40px;"></textarea>
-                    <button type="submit" class="btn btn-primary"
-                        style="border-radius: 25px; padding: 8px 15px; border: none; background-color: black; color: white; cursor: pointer; height: 50px;">Gửi
-                        bình luận</button>
-                    <div id="loading" style="display: none;">Đang gửi...</div>
-                </form>
-                <div class="card-body comment-section">
-                    <div id="comments-list">
-                        <div id="comment-alert" class="alert" style="display: none;"></div>
-                        @foreach ($product->comments as $comment)
-                            @include('client.comments._item', ['comment' => $comment])
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal cho khách chưa đăng nhập -->
-            <div class="modal fade" id="guestCommentModal" tabindex="-1" aria-labelledby="guestCommentModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="guestCommentModalLabel">Thông tin của bạn</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="guest-comment-form">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="form-label">Giới tính</label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="gender" id="male"
-                                                value="male" checked>
-                                            <label class="form-check-label" for="male">Nam</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="gender" id="female"
-                                                value="female">
-                                            <label class="form-check-label" for="female">Nữ</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="guest-name" class="form-label head">Tên</label>
-                                    <input type="text" class="form-control" id="guest-name" name="name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="guest-phone" class="form-label head">Số điện thoại</label>
-                                    <input type="tel" class="form-control" id="guest-phone" name="phone" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="guest-email" class="form-label head">Email</label>
-                                    <input type="email" class="form-control" id="guest-email" name="email" required>
-                                </div>
-                                <input type="hidden" id="guest-comment-content" name="content">
-                                <input type="hidden" name="post_id" value="{{ $product->id }}">
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" id="submit-guest-comment">Gửi bình
-                                luận</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-    <style>
-        .comment-item {
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            border-left: 3px solid #0d6efd;
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .comment-body {
-            line-height: 1.5;
-        }
-
-        .guest-info {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        #comment-alert {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        #comment-form textarea {
-            transition: height 0.2s;
-        }
-
-        #comment-form textarea:focus {
-            height: 80px;
-        }
-
-        .form-label>head {
-            text-align: left
-        }
-    </style>
-    {{-- <script src="{{ asset('js/comment.js') }}"></script> --}}
-    {{-- comment --}}
-    <script>
-        // Đảm bảo DOM đã load hoàn toàn
-        window.addEventListener('DOMContentLoaded', function() {
-            // Kiểm tra sự tồn tại của tất cả phần tử
-            const commentForm = document.getElementById('comment-form');
-            const guestModalEl = document.getElementById('guestCommentModal');
-            const submitGuestBtn = document.getElementById('submit-guest-comment');
-
-            if (!commentForm || !guestModalEl || !submitGuestBtn) {
-                console.error('Không tìm thấy các phần tử cần thiết');
-                return;
-            }
-
-            // Khởi tạo modal với try-catch
-            let guestCommentModal;
-            try {
-                guestCommentModal = new bootstrap.Modal(guestModalEl, {
-                    keyboard: true,
-                    backdrop: 'static'
-                });
-            } catch (e) {
-                console.error('Lỗi khởi tạo modal:', e);
-                return;
-            }
-
-            // Kiểm tra trạng thái đăng nhập từ meta tag
-            const isLoggedIn = document.querySelector('meta[name="user-logged"]')?.content === 'true';
-
-            // Xử lý submit form chính
-            commentForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const formData = new FormData(commentForm);
-                const content = formData.get('content');
-
-                if (!content?.trim()) {
-                    showAlert('Vui lòng nhập nội dung bình luận', 'danger');
-                    return;
-                }
-
-                if (isLoggedIn) {
-                    await handleCommentSubmit(formData);
-                } else {
-                    // Chuẩn bị dữ liệu cho guest
-                    document.getElementById('guest-comment-content').value = content;
-                    guestCommentModal.show();
-                }
-            });
-
-            // Xử lý submit từ modal
-            submitGuestBtn.addEventListener('click', async function() {
-                const guestForm = document.getElementById('guest-comment-form');
-                const formData = new FormData(guestForm);
-
-                // Validate dữ liệu khách
-                if (!validateGuestData(formData)) {
-                    showAlert('Vui lòng điền đầy đủ thông tin', 'danger');
-                    return;
-                }
-
-                const success = await handleCommentSubmit(formData);
-                if (success) {
-                    guestCommentModal.hide();
-                    commentForm.reset();
-                }
-            });
-
-            // Hàm validate thông tin khách
-            function validateGuestData(formData) {
-                return formData.get('name')?.trim() &&
-                    formData.get('phone')?.trim() &&
-                    formData.get('email')?.trim();
-            }
-
-            // Hàm xử lý submit chung
-            async function handleCommentSubmit(formData) {
-                const loading = document.getElementById('loading');
-                const alertDiv = document.getElementById('comment-alert');
-
-                try {
-                    if (loading) loading.style.display = 'block';
-
-                    // Thêm CSRF token nếu chưa có
-                    if (!formData.has('_token')) {
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                        if (csrfToken) formData.append('_token', csrfToken);
-                    }
-
-                    const response = await fetch(commentForm.action, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: formData
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(data.message || `Lỗi: ${response.status}`);
-                    }
-
-                    if (data.success) {
-                        updateCommentsList(data.html);
-                        showAlert(data.message || 'Bình luận thành công!', 'success');
-                        return true;
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showAlert(error.message || 'Có lỗi khi gửi bình luận', 'danger');
-                    return false;
-                } finally {
-                    if (loading) loading.style.display = 'none';
-                }
-            }
-
-            function updateCommentsList(html) {
-                const commentsList = document.getElementById('comments-list');
-                if (commentsList && html) {
-                    commentsList.insertAdjacentHTML('afterbegin', html);
-                }
-            }
-
-            function showAlert(message, type) {
-                const alertDiv = document.getElementById('comment-alert');
-                if (alertDiv) {
-                    alertDiv.textContent = message;
-                    alertDiv.className = `alert alert-${type}`;
-                    alertDiv.style.display = 'block';
-                    setTimeout(() => {
-                        alertDiv.style.display = 'none';
-                    }, 5000);
-                }
-            }
-        });
-    </script>
-
     <script>
         window.variantsForJs = @json($variantsForJs);
         window.attributeOptionsWithPrices = @json($attributeOptionsWithPrices);

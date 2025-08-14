@@ -18,4 +18,5 @@ class variant_options extends Model
     {
         return $this->hasMany(product_variant_options::class, 'option_id');
     }
+    
 }

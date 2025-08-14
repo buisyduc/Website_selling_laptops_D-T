@@ -22,18 +22,19 @@
 
                 <div class="table-responsive">
                     <!-- Toast container góc phải -->
-                    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+                    <!-- Toast container góc phải trên -->
+                    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055; right: 0; top: 10%;">
                         <div id="cartToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
                             aria-live="assertive" aria-atomic="true">
                             <div class="d-flex">
                                 <div class="toast-body" id="cartToastBody">
-                                   <div class="text-danger small mt-1 qty-error" style="display:none;"></div>
+                                    <div class="text-danger small mt-1 qty-error" style="display:none;"></div>
                                 </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                                    aria-label="Close"></button>
+                               
                             </div>
                         </div>
                     </div>
+
 
                     <table class="table table-bordered align-middle">
                         <thead class="table-light text-center">
@@ -107,48 +108,90 @@
             <div class="alert alert-info">Giỏ hàng của bạn đang trống.</div>
         @endif
     </div>
- <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-  const toastEl = document.getElementById('cartToast');
-  const toastBody = document.getElementById('cartToastBody');
-  // Khởi tạo toast với delay 5000ms và autohide = true
-  const bsToast = new bootstrap.Toast(toastEl, { delay: 5000, autohide: true });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+            const toastEl = document.getElementById('cartToast');
+            const toastBody = document.getElementById('cartToastBody');
+            const bsToast = new bootstrap.Toast(toastEl, {
+                delay: 5000,
+                autohide: true
+            });
 
-  document.querySelectorAll('.update-quantity').forEach(input => {
-    input.addEventListener('change', function() {
-      const variantId = this.dataset.variantId;
-      const quantity = parseInt(this.value, 10);
+            const updateCart = (inputEl, quantity) => {
+                const variantId = inputEl.dataset.variantId;
 
-      fetch('/cart/update-item', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({ variant_id: variantId, quantity: quantity })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.success) {
-          // Hiển thị toast góc phải với nội dung lỗi
-          toastBody.textContent = data.message;
-          bsToast.show();
+                fetch('/cart/update-item', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            variant_id: variantId,
+                            quantity: quantity
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const row = inputEl.closest('tr');
+                        inputEl.value = data.allowed_quantity ?? quantity;
 
-          // reset input về số kho cho phép
-          this.value = data.allowed_quantity;
-        } else {
-          // Cập nhật lại UI khi thành công
-          const row = this.closest('tr');
-          row.querySelector('.item-total').textContent = data.item_total;
-          document.getElementById('cart-total-in-table').textContent = data.cart_total;
+                        // Cập nhật lại UI trong bảng
+                        row.querySelector('.item-total').textContent = data.item_total;
+                        document.getElementById('cart-total-in-table').textContent = data.cart_total;
+
+                        // Cập nhật header trực tiếp từ response data
+                        if (data.total_quantity !== undefined && data.total_amount !== undefined) {
+                            const cartCountEl = document.getElementById('cart-count');
+                            if (cartCountEl) {
+                                cartCountEl.textContent = data.total_quantity;
+                            }
+
+                            const cartTotalEl = document.getElementById('cart-total');
+                            if (cartTotalEl) {
+                                cartTotalEl.textContent = data.total_amount;
+                            }
+                        }
+
+                        if (!data.success) {
+                            toastBody.textContent = data.message;
+                            bsToast.show();
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Update cart failed:', err);
+                    });
+            };
+
+            document.querySelectorAll('.update-quantity').forEach(input => {
+                input.addEventListener('change', function() {
+                    const quantity = parseInt(this.value, 10) || 1;
+                    updateCart(this, quantity);
+                });
+            });
+        });
+
+        // Clear entire cart function
+        function clearCart() {
+            if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
+                fetch('/cart/clear-ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Reload to show empty cart
+                    }
+                })
+                .catch(err => console.error('Clear cart failed:', err));
+            }
         }
-      });
-    });
-  });
-});
-
-</script>
+    </script>
 
 
 

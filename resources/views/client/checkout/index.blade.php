@@ -1,43 +1,36 @@
 @extends('client.layouts.layout')
 
-
-
 @section('content')
     <div class="container checkout-form-custom">
         <div class="row gx-lg-5">
             <!-- Right Column: Order Summary -->
             <div class="col-lg-5 order-lg-1">
                 <div class="content-wrapper summary-wrapper">
-                    <h3 class="fw-bold mb-4 fs-5 text-danger">Order Summary</h3>
+                    <h3 class="fw-bold mb-4 fs-5">Order Summary</h3>
 
                     <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-dark">Subtotal</span>
-                        <span class="fw-bold text-danger" id="order-subtotal">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-bold" id="order-subtotal">
                             {{ number_format($cartTotal ?? $totalAmount, 0, ',', '.') }}đ
                         </span>
                     </div>
-
-                    <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-dark">Delivery/Shipping</span>
-                        <span class="fw-bold text-dark">Free</span>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Delivery/Shipping</span>
+                        <span class="fw-bold">Free</span>
                     </div>
-
                     <div class="d-flex justify-content-between align-items-center" id="order-discount-row"
                         style="display: none;">
-                        <span class="text-dark" id="order-discount-label"></span>
+                        <span class="text-muted" id="order-discount-label"></span>
                         <span class="fw-bold text-danger" id="order-discount-amount"></span>
                     </div>
-
                     <div class="my-2">
-                        <p class="text-dark fw-semibold">You qualify for free shipping!</p>
+                        <p class="text-success mb-1">You qualify for free shipping!</p>
                         <div class="shipping-progress-bar"></div>
                     </div>
-
                     <hr>
-
                     <div class="d-flex justify-content-between align-items-center py-2 mb-4">
-                        <span class="fw-bold fs-5 text-dark">Total</span>
-                        <span class="fw-bold fs-4 text-danger">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
+                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-4">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
                     </div>
 
                     @foreach ($cartItems as $item)
@@ -54,21 +47,20 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="fw-bold mb-1">{{ $product->name }}</p>
-                                    <p class="text-dark mb-1">Qty {{ $item->quantity }}</p>
+                                    <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
                                     @foreach ($item->variant->options as $opt)
-                                        <p class="text-dark mb-1">{{ $opt->attribute->name }}:
+                                        <p class="text-muted mb-1">{{ $opt->attribute->name }}:
                                             {{ $opt->option->value }}
                                         </p>
                                     @endforeach
-                                    <p class="fw-bold text-danger mb-0">
-                                        {{ number_format($item->variant->price, 0, ',', '.') }}đ</p>
+                                    <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-
             <!-- Left Column -->
             <div class="col-lg-7 order-lg-2 mb-4 mb-lg-0">
                 <div class="content-wrapper delivery-wrapper">
@@ -94,7 +86,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-custom"
-                                    value="{{ old('name', $order->name ?? (auth()->user()->name ?? '')) }}">
+                                    value="{{ old('name', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.name') : ($order->name ?? auth()->user()->name ?? '')) }}">
                                 @error('name')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -102,7 +94,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control form-control-custom"
-                                    value="{{ old('email', $order->email ?? (auth()->user()->email ?? '')) }}">
+                                    value="{{ old('email', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.email') : ($order->email ?? auth()->user()->email ?? '')) }}">
                                 @error('email')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -112,7 +104,7 @@
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
                             <input type="text" id="phone" name="phone" class="form-control form-control-custom"
-                                value="{{ old('phone', $order->phone ?? '') }}">
+                                value="{{ old('phone', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.phone') : ($order->phone ?? auth()->user()->phone ?? '')) }}">
                             @error('phone')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -122,7 +114,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tỉnh / Thành phố</label>
                                 <input type="text" name="province" class="form-control form-control-custom"
-                                    value="{{ old('province', $order->province ?? (auth()->user()->province ?? '')) }}">
+                                    value="{{ old('province', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.province') : ($order->province ?? '')) }}">
                                 @error('province')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -130,7 +122,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Quận / Huyện</label>
                                 <input type="text" name="district" class="form-control form-control-custom"
-                                    value="{{ old('district', $order->district ?? '') }}">
+                                    value="{{ old('district', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.district') : ($order->district ?? '')) }}">
                                 @error('district')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -141,7 +133,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Phường / Xã</label>
                                 <input type="text" name="ward" class="form-control form-control-custom"
-                                    value="{{ old('ward', $order->ward ?? '') }}">
+                                    value="{{ old('ward', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.ward') : ($order->ward ?? '')) }}">
                                 @error('ward')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -149,7 +141,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số nhà, tên đường</label>
                                 <input type="text" name="address" class="form-control form-control-custom"
-                                    value="{{ old('address', $order->address ?? '') }}">
+                                    value="{{ old('address', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.address') : ($order->address ?? '')) }}">
                                 @error('address')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -159,13 +151,13 @@
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>
                             <input type="text" name="note" class="form-control form-control-custom"
-                                style="height: 100px;" value="{{ old('note', $order->note ?? '') }}">
+                                style="height: 100px;" value="{{ old('note', session()->has('reorder_shipping_info') ? session('reorder_shipping_info.note') : ($order->note ?? '')) }}">
                             @error('note')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <button type="button" class="btn btn-danger w-100 py-3"
+                        <button type="button" class="btn payment-btn w-100 mt-3"
                             onclick="handleContinueToPayment()">CONTINUE TO PAYMENT</button>
 
 
@@ -244,8 +236,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-danger w-100 py-3">
-                            Đặt hàng
+                        <button type="button" class="btn btn-danger w-100 py-3" onclick="submitPaymentForm()">
+                            Thanh toán
                         </button>
 
 
@@ -267,9 +259,11 @@
                                             data-method="cod">
                                             Thanh toán khi nhận hàng (COD)
                                         </button>
+
+
                                         <button type="button" class="list-group-item list-group-item-action"
                                             data-method="vnpay">
-                                            Thanh toán VnPay
+                                            VNPay
                                         </button>
                                     </div>
 
@@ -300,6 +294,13 @@
                                                 @php
                                                     $isDisabled = $orderTotal < $coupon->min_order_amount;
                                                 @endphp
+                                                @php
+                                                    $isDisabled =
+                                                        $orderTotal < $coupon->min_order_amount ||
+                                                        ($coupon->per_user_limit !== null &&
+                                                            $coupon->used_count >= $coupon->per_user_limit);
+                                                @endphp
+
                                                 <div
                                                     class="border rounded p-3 mb-3 d-flex align-items-start{{ $isDisabled ? ' bg-light text-muted coupon-disabled' : '' }}">
                                                     <div class="flex-grow-1 text-start">
@@ -320,9 +321,17 @@
                                                             {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}
                                                         </div>
                                                         @if ($isDisabled)
-                                                            <div class="text-danger small mt-1">Không đủ điều kiện áp dụng
+                                                            <div class="text-danger small mt-1">
+                                                                @if ($orderTotal < $coupon->min_order_amount)
+                                                                    Không đủ điều kiện áp dụng
+                                                                @elseif ($coupon->per_user_limit !== null && $coupon->used_count >= $coupon->per_user_limit)
+                                                                    Mã đã đạt giới hạn sử dụng cho bạn
+                                                                @else
+                                                                    Không thể áp dụng mã giảm giá này
+                                                                @endif
                                                             </div>
                                                         @endif
+
                                                     </div>
                                                     <div class="ms-3">
                                                         <input class="form-check-input mt-1" type="radio"
@@ -465,21 +474,6 @@
             opacity: 0.5;
             cursor: not-allowed !important;
             pointer-events: none;
-        }
-
-        .summary-wrapper {
-            background-color: #fff0e6 !important;
-            color: #5c1a00;
-            /* Màu chữ chính */
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #cceeff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .summary-wrapper .fw-bold {
-            color: #e53935;
-            /* Giá tiền, chữ đậm */
         }
     </style>
 
@@ -825,13 +819,16 @@
             toast.innerText = message;
             toast.style.position = 'fixed';
             toast.style.top = '10%';
-            toast.style.right = '5%';
-            toast.style.backgroundColor = '#f44336';
-            toast.style.color = 'white';
+            toast.style.right = '0';
+            toast.style.left = 'auto';
+            toast.style.transform = 'none';
+            toast.style.background = 'rgba(220,53,69,0.97)';
+            toast.style.color = '#fff';
             toast.style.padding = '12px 16px';
-            toast.style.borderRadius = '8px';
-            toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-            toast.style.zIndex = '9999';
+            toast.style.borderRadius = '12px';
+            toast.style.fontSize = '0.9rem';
+            toast.style.zIndex = '99999';
+            toast.style.boxShadow = '0 4px 32px rgba(0,0,0,0.18)';
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.remove();
@@ -881,7 +878,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     },
                     body: JSON.stringify({
                         code
@@ -916,18 +913,16 @@
             toast.id = 'center-toast-error';
             toast.style.position = 'fixed';
             toast.style.top = '10%';
-            toast.style.right = '2%';
+            toast.style.right = '0';
             toast.style.left = 'auto';
             toast.style.transform = 'none';
             toast.style.background = 'rgba(220,53,69,0.97)';
             toast.style.color = '#fff';
-            toast.style.padding = '14px 20px';
+            toast.style.padding = '12px 16px';
             toast.style.borderRadius = '12px';
-            toast.style.fontSize = '1.2rem';
+            toast.style.fontSize = '0.9rem';
             toast.style.zIndex = '99999';
             toast.style.boxShadow = '0 4px 32px rgba(0,0,0,0.18)';
-            toast.innerHTML =
-                `<span>${message}</span><button style="margin-left:24px;background:transparent;border:none;color:#fff;font-weight:bold;font-size:1.2rem;cursor:pointer;" onclick="this.parentElement.remove()">&times;</button>`;
             document.body.appendChild(toast);
             setTimeout(() => {
                 if (toast.parentElement) toast.remove();
@@ -1206,6 +1201,7 @@
                 vnpay: '🌐'
             };
 
+            // Add event listeners to payment options
             const paymentButtons = document.querySelectorAll('#paymentOptions button');
             paymentButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1220,7 +1216,9 @@
                     if (iconElement) iconElement.textContent = icon;
 
                     const paymentInput = document.getElementById('payment_method');
-                    if (paymentInput) paymentInput.value = method;
+                    if (paymentInput) {
+                        paymentInput.value = method;
+                    }
 
                     closePaymentModal();
                 });

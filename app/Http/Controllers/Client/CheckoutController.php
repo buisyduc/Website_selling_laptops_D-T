@@ -64,6 +64,17 @@ class CheckoutController extends Controller
             })
             ->get();
 
+        // Xóa session reorder_shipping_info nếu không phải từ "Mua lại"
+        // Chỉ giữ session nếu có flag is_reorder và đây là lần đầu vào checkout
+        if (!session()->has('is_reorder') || session()->has('checkout_visited')) {
+            session()->forget('reorder_shipping_info');
+        }
+
+        // Đánh dấu đã vào trang checkout để lần sau sẽ xóa session
+        session(['checkout_visited' => true]);
+
+        $reorderInfo = session('reorder_shipping_info', []);
+
         return view('client.checkout.index', [
             'user' => $user,
             'cartItems' => $cart->items,
@@ -73,6 +84,7 @@ class CheckoutController extends Controller
             'appliedCoupon' => $appliedCoupon,
             'discountAmount' => $discountAmount,
             'availableCoupons' => $availableCoupons,
+            'reorderInfo' => $reorderInfo,
         ]);
     }
 
@@ -121,9 +133,9 @@ class CheckoutController extends Controller
             $request->province,
         ]));
 
-        // 🔍 Tìm đơn hàng `unprocessed` hiện tại (nếu có)
+        // 🔍 Tìm đơn hàng `pending` hiện tại (nếu có)
         $order = Order::where('user_id', $user->id)
-            ->where('status', 'unprocessed') // Chỉ lấy đơn hàng chưa xử lý
+            ->where('status', 'pending') // Chỉ lấy đơn hàng chưa xử lý
             ->latest()
             ->first();
 
@@ -139,6 +151,7 @@ class CheckoutController extends Controller
                 'ward'             => $request->ward,
                 'address'          => $request->address,
                 'note'             => $request->note,
+                
             ]);
 
             // Xóa item cũ rồi thêm lại nếu cần (nếu bạn muốn cập nhật theo cart)
@@ -153,7 +166,7 @@ class CheckoutController extends Controller
                 'coupon_id'        => null,
                 'order_code'       => strtoupper('OD' . now()->format('YmdHis') . rand(100, 999)),
                 'total_amount'     => null, // Tổng tiền sẽ được tính sau khi áp dụng mã giảm giá
-                'status'           => 'unprocessed', // Đặt trạng thái ban đầu là 'unprocessed'
+                'status'           => 'pending', // Đặt trạng thái ban đầu là 'pending'
                 'payment_method'   => null,
                 'payment_status'   => 'unpaid',
                 'shipping_address' => $shippingAddress,
@@ -253,84 +266,86 @@ class CheckoutController extends Controller
         ));
     }
 
-    public function paymentStore(Request $request)
-    {
-        Log::info('Dữ liệu gửi vào request:', $request->all());
+ public function paymentStore(Request $request)
+{
+    Log::info('Dữ liệu gửi vào request:', $request->all());
 
-        $user = auth()->user();
+    $user = auth()->user();
 
-        $order = Order::where('user_id', $user->id)
-            ->where('status', 'unprocessed')
-            ->latest()
-            ->firstOrFail();
+    $order = Order::where('user_id', $user->id)
+        ->where('status', 'pending')
+        ->latest()
+        ->firstOrFail();
 
-        $cartTotal = $order->items->sum(fn($item) => $item->variant->price * $item->quantity);
+    $cartTotal = $order->items->sum(fn($item) => $item->variant->price * $item->quantity);
 
-        // Tính giảm giá
-        $discountAmount = 0;
-        $coupon = null;
+    // Tính giảm giá
+    $discountAmount = 0;
+    $coupon = null;
 
-        if ($request->filled('coupon_id')) {
-            $coupon = Coupon::find($request->coupon_id);
-            if ($coupon) {
-                $discountAmount = round($cartTotal * ($coupon->discount_percent / 100));
-                $discountAmount = min($discountAmount, $coupon->max_discount);
-            }
+    if ($request->filled('coupon_id')) {
+        $coupon = Coupon::find($request->coupon_id);
+        if ($coupon) {
+            $discountAmount = round($cartTotal * ($coupon->discount_percent / 100));
+            $discountAmount = min($discountAmount, $coupon->max_discount);
         }
-
-        $totalAmount = $cartTotal - $discountAmount;
-
-        // ✅ Xác định trạng thái theo phương thức thanh toán
-        $status = match ($request->payment_method) {
-            'cod' => 'pending',
-            default => 'processing_seller',
-        };
-
-        $order->update([
-            'total_amount'    => $totalAmount,
-            'discount_amount' => $discountAmount,
-            'shipping_fee'    => $request->shipping_fee ?? 0,
-            'shipping_method' => $request->shipping_method,
-            'payment_method'  => $request->payment_method,
-            'payment_status'  => $request->payment_method === 'cod' ? 'unpaid' : 'paid',
-            'status'          => $status, // 👈 cập nhật trạng thái đúng
-            'coupon_id'       => $request->coupon_id,
-            'note'            => $request->note,
-            'confirmed_at'    => now(),
-        ]);
-
-        // Trừ kho
-        foreach ($order->items as $item) {
-            $variant = $item->variant;
-            if ($variant && $variant->stock_quantity !== null) {
-                if ($variant->stock_quantity >= $item->quantity) {
-                    $variant->decrement('stock_quantity', $item->quantity);
-                } else {
-                    return redirect()->route('checkout.payment', ['orderId' => $order->id])
-                        ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
-                }
-            }
-        }
-
-        // Cộng lượt dùng mã giảm giá
-        if ($request->filled('coupon_id') && $coupon) {
-            $coupon->increment('used_count');
-        }
-
-        // Xoá giỏ hàng
-        if ($cart = Cart::where('user_id', $user->id)->first()) {
-            $cart->items()->delete();
-            $cart->delete();
-        }
-
-        // Nếu chọn VNPay thì redirect sang VNPay
-        if ($request->payment_method === 'vnpay') {
-            return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
-        }
-
-        // Nếu COD thì chuyển thẳng tới trang cảm ơn
-        return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Đặt hàng thành công!');
     }
+
+    $totalAmount = $cartTotal - $discountAmount;
+
+    // Kiểm tra tồn kho
+    foreach ($order->items as $item) {
+        $variant = $item->variant;
+        if ($variant && $variant->stock_quantity !== null) {
+            if ($variant->stock_quantity < $item->quantity) {
+                return redirect()->route('checkout.payment', ['orderId' => $order->id])
+                    ->with('error', 'Sản phẩm "' . $variant->product->name . '" chỉ còn ' . $variant->stock_quantity . ' trong kho.');
+            }
+        }
+    }
+
+    // Xác định trạng thái và payment_status
+    $status = 'pending';
+    $paymentStatus = $request->payment_method === 'vnpay' ? 'unpaid' : 'unpaid';
+
+    // ✅ Cập nhật đơn hàng đầy đủ các trường cần thiết
+    $order->update([
+        'total_amount'     => $totalAmount,
+        'discount_amount'  => $discountAmount,
+        'shipping_fee'     => $request->shipping_fee ?? 0,
+        'shipping_method'  => $request->shipping_method ?? $order->shipping_method ?? 'home_delivery',
+        'payment_method'   => $request->payment_method,
+        'payment_status'   => $paymentStatus,
+        'status'           => $status,
+        'coupon_id'        => $request->coupon_id,
+        'confirmed_at'     => now(),
+    ]);
+
+    // Nếu là VNPay thì chuyển hướng sau khi đã cập nhật đơn
+    if ($request->payment_method === 'vnpay') {
+        return redirect()->route('vnpay.redirect', ['orderId' => $order->id]);
+    }
+
+    // Nếu là COD thì mới xử lý trừ kho và xoá giỏ hàng
+    foreach ($order->items as $item) {
+        $variant = $item->variant;
+        if ($variant && $variant->stock_quantity !== null) {
+            $variant->decrement('stock_quantity', $item->quantity);
+        }
+    }
+
+    if ($request->filled('coupon_id') && $coupon) {
+        $coupon->increment('used_count');
+    }
+
+    if ($cart = Cart::where('user_id', $user->id)->first()) {
+        $cart->items()->delete();
+        $cart->delete();
+    }
+
+    return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Đặt hàng thành công!');
+}
+
 
     /**
      * Hoàn tất thanh toán
@@ -436,7 +451,35 @@ class CheckoutController extends Controller
     }
     public function thankYou($orderId)
     {
-        $order = Order::with('orderItems')->where('user_id', Auth::id())->findOrFail($orderId);
-        return view('client.orders.thank_you', compact('order'));
+        // Lấy thông tin đơn hàng vừa tạo để xác định trạng thái
+        $currentOrder = Order::where('user_id', Auth::id())->findOrFail($orderId);
+
+        // Lấy tất cả đơn hàng có cùng trạng thái với đơn vừa tạo
+        $orders = Order::with([
+            'items',
+            'items.product',
+            'items.variant.options.attribute',
+            'items.variant.options.option'
+        ])
+            ->where('user_id', Auth::id())
+            ->where('status', $currentOrder->status)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Tạo thông báo thành công dựa trên trạng thái
+        $statusMessage = '';
+        if ($currentOrder->status === 'pending') {
+            $statusMessage = 'Đặt hàng thành công! Vui lòng thanh toán để hoàn tất đơn hàng.';
+        } elseif ($currentOrder->status === 'processing_seller') {
+            $statusMessage = 'Đặt hàng và thanh toán thành công! Đơn hàng đang được chuẩn bị.';
+        } else {
+            $statusMessage = 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại D&T.';
+        }
+
+        // Truyền trạng thái hiện tại để hiển thị đúng tab
+        request()->merge(['status' => $currentOrder->status]);
+
+        return view('client.user.purchase_order', compact('orders'))
+            ->with('success', $statusMessage);
     }
 }

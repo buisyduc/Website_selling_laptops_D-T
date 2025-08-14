@@ -150,7 +150,7 @@
                         <!-- Product Variants -->
                         <div class="card mb-4">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Biến Thể Sản Phẩm</h5>
+                                <h5 class="mb-0">Biến thể sản phẩm</h5>
                                 <button type="button" class="btn btn-sm btn-primary" onclick="addVariant()">
                                     <i class="bi bi-plus-circle me-1"></i> Thêm biến thể
                                 </button>
@@ -159,6 +159,7 @@
                                 <!-- Biến thể sẽ được thêm bằng JS -->
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Right sidebar -->
@@ -195,7 +196,7 @@
             </form>
         </div>
     </div>
-        <style>
+    <style>
         /* Global Styles */
         body {
             background-color: #f8f9fa;
@@ -525,112 +526,111 @@
             background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         }
     </style>
-<script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Slug tự động từ tên sản phẩm
+            const nameInput = document.getElementById('product-name');
+            const slugInput = document.getElementById('product-slug');
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function() {
+                    const slug = nameInput.value
+                        .toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .trim().replace(/\s+/g, '-')
+                        .replace(/-+/g, '-');
+                    slugInput.value = slug;
+                });
+            }
 
-document.addEventListener('DOMContentLoaded', function () {
-    // 1. Slug tự động từ tên sản phẩm
-    const nameInput = document.getElementById('product-name');
-    const slugInput = document.getElementById('product-slug');
-    if (nameInput && slugInput) {
-        nameInput.addEventListener('input', function () {
-            const slug = nameInput.value
-                .toLowerCase()
-                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9\s-]/g, '')
-                .trim().replace(/\s+/g, '-')
-                .replace(/-+/g, '-');
-            slugInput.value = slug;
-        });
-    }
+            // 2. Upload ảnh phụ
+            const uploadIcon = document.getElementById('upload-icon');
+            const fileInput = document.getElementById('product-images-input');
+            const previewContainer = document.getElementById('image-preview-container');
+            const dropzone = document.getElementById('productImagesDropzone');
 
-    // 2. Upload ảnh phụ
-    const uploadIcon = document.getElementById('upload-icon');
-    const fileInput = document.getElementById('product-images-input');
-    const previewContainer = document.getElementById('image-preview-container');
-    const dropzone = document.getElementById('productImagesDropzone');
+            if (dropzone && fileInput) {
+                dropzone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = '#0d6efd';
+                });
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.style.borderColor = '#dee2e6';
+                });
+                dropzone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = '#dee2e6';
+                    const dt = new DataTransfer();
+                    Array.from(fileInput.files).forEach(file => dt.items.add(file));
+                    Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
+                    fileInput.files = dt.files;
+                    fileInput.dispatchEvent(new Event('change'));
+                });
+                uploadIcon?.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', event => {
+                    const files = event.target.files;
+                    previewContainer.innerHTML = '';
+                    Array.from(files).forEach((file, index) => {
+                        if (!file.type.startsWith('image/')) return;
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            const previewItem = document.createElement('div');
+                            previewItem.classList.add('preview-item');
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'img-thumbnail';
+                            Object.assign(img.style, {
+                                width: '100px',
+                                height: '100px',
+                                objectFit: 'cover'
+                            });
 
-    if (dropzone && fileInput) {
-        dropzone.addEventListener('dragover', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#0d6efd';
-        });
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.style.borderColor = '#dee2e6';
-        });
-        dropzone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#dee2e6';
-            const dt = new DataTransfer();
-            Array.from(fileInput.files).forEach(file => dt.items.add(file));
-            Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
-            fileInput.dispatchEvent(new Event('change'));
-        });
-        uploadIcon?.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', event => {
-            const files = event.target.files;
-            previewContainer.innerHTML = '';
-            Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'img-thumbnail';
-                    Object.assign(img.style, {
-                        width: '100px',
-                        height: '100px',
-                        objectFit: 'cover'
+                            const removeBtn = document.createElement('button');
+                            removeBtn.type = 'button';
+                            removeBtn.className = 'btn btn-danger btn-sm mt-2';
+                            removeBtn.textContent = 'Xóa';
+                            removeBtn.addEventListener('click', e => {
+                                e.preventDefault();
+                                previewItem.remove();
+                                const dt = new DataTransfer();
+                                Array.from(fileInput.files).forEach((f, i) => {
+                                    if (i !== index) dt.items.add(f);
+                                });
+                                fileInput.files = dt.files;
+                                fileInput.dispatchEvent(new Event('change'));
+                            });
+
+                            previewItem.appendChild(img);
+                            previewItem.appendChild(removeBtn);
+                            previewContainer.appendChild(previewItem);
+                        };
+                        reader.readAsDataURL(file);
                     });
+                });
+            }
 
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn btn-danger btn-sm mt-2';
-                    removeBtn.textContent = 'Xóa';
-                    removeBtn.addEventListener('click', e => {
-                        e.preventDefault();
-                        previewItem.remove();
-                        const dt = new DataTransfer();
-                        Array.from(fileInput.files).forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        fileInput.files = dt.files;
-                        fileInput.dispatchEvent(new Event('change'));
-                    });
+            // 3. Biến thể sản phẩm
+            let variantCount = 0;
+            let attributeCounter = 0;
+            const availableAttributes = @json($availableAttributes);
+            const oldVariants = @json(old('variants', []));
 
-                    previewItem.appendChild(img);
-                    previewItem.appendChild(removeBtn);
-                    previewContainer.appendChild(previewItem);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-    }
+            if (typeof oldVariants === 'object' && oldVariants !== null) {
+                Object.entries(oldVariants).forEach(([key, variant]) => {
+                    addVariant(key, variant);
+                });
+            }
 
-    // 3. Biến thể sản phẩm
-    let variantCount = 0;
-    let attributeCounter = 0;
-    const availableAttributes = @json($availableAttributes);
-    const oldVariants = @json(old('variants', []));
-
-    if (typeof oldVariants === 'object' && oldVariants !== null) {
-        Object.entries(oldVariants).forEach(([key, variant]) => {
-            addVariant(key, variant);
-        });
-    }
-
-    window.addVariant = function (variantKey = null, variantData = null) {
-        const id = variantKey || (++variantCount);
-        variantCount = Math.max(variantCount, parseInt(id));
-        const container = document.getElementById('variants-container');
-        const price = variantData?.price || '';
-        const stock = variantData?.stock_quantity || '';
-        const variantDiv = document.createElement('div');
-        variantDiv.className = 'variant-item';
-        variantDiv.id = `variant-${id}`;
-        variantDiv.innerHTML = `
+            window.addVariant = function(variantKey = null, variantData = null) {
+                const id = variantKey || (++variantCount);
+                variantCount = Math.max(variantCount, parseInt(id));
+                const container = document.getElementById('variants-container');
+                const price = variantData?.price || '';
+                const stock = variantData?.stock_quantity || '';
+                const variantDiv = document.createElement('div');
+                variantDiv.className = 'variant-item';
+                variantDiv.id = `variant-${id}`;
+                variantDiv.innerHTML = `
             <div class="position-relative border rounded p-3 mb-3 bg-light-subtle">
                 <button type="button" class="btn btn-outline-danger position-absolute top-0 end-0 m-2 remove-variant-btn"
                     data-variant-id="${id}" aria-label="Xoá"><i class="bi bi-trash"></i></button>
@@ -660,29 +660,29 @@ document.addEventListener('DOMContentLoaded', function () {
                     </button>
                 </div>
             </div>`;
-        container.appendChild(variantDiv);
+                container.appendChild(variantDiv);
 
-        if (variantData?.attributes) {
-            Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
-                addAttribute(id, attrKey, attrData);
-            });
-        }
-    };
+                if (variantData?.attributes) {
+                    Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
+                        addAttribute(id, attrKey, attrData);
+                    });
+                }
+            };
 
-    function addAttribute(variantId, attributeKey = null, attributeData = null) {
-        const container = document.getElementById(`attributes-container-${variantId}`);
-        const attributeId = attributeKey || (++attributeCounter);
-        attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
-        const selectedAttribute = attributeData?.attribute_id || '';
-        const selectedOptions = attributeData?.options || [];
-        const attributeDiv = document.createElement('div');
-        attributeDiv.className = 'attribute-group mb-3';
-        attributeDiv.id = `attribute-${variantId}-${attributeId}`;
-        const selectHTML = availableAttributes.map(attr => `
+            function addAttribute(variantId, attributeKey = null, attributeData = null) {
+                const container = document.getElementById(`attributes-container-${variantId}`);
+                const attributeId = attributeKey || (++attributeCounter);
+                attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
+                const selectedAttribute = attributeData?.attribute_id || '';
+                const selectedOptions = attributeData?.options || [];
+                const attributeDiv = document.createElement('div');
+                attributeDiv.className = 'attribute-group mb-3';
+                attributeDiv.id = `attribute-${variantId}-${attributeId}`;
+                const selectHTML = availableAttributes.map(attr => `
             <option value="${attr.id}" ${attr.id == selectedAttribute ? 'selected' : ''}>${attr.name}</option>
         `).join('');
 
-        attributeDiv.innerHTML = `
+                attributeDiv.innerHTML = `
             <div class="d-flex gap-2 align-items-center">
                 <select class="form-select attribute-select"
                     name="variants[${variantId}][attributes][${attributeId}][attribute_id]"
@@ -698,103 +698,111 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button type="button" class="btn btn-outline-danger btn-sm remove-attribute-btn"
                     data-variant-id="${variantId}" data-attribute-id="${attributeId}"><i class="bi bi-trash"></i></button>
             </div>`;
-        container.appendChild(attributeDiv);
+                container.appendChild(attributeDiv);
 
-        const attrSelect = attributeDiv.querySelector('.attribute-select');
-        if (attrSelect) {
-            attrSelect.addEventListener('change', function () {
-                updateOptionsSelect(this.dataset.variantId, this.dataset.attributeId, this.value, []);
-            });
-        }
+                const attrSelect = attributeDiv.querySelector('.attribute-select');
+                if (attrSelect) {
+                    attrSelect.addEventListener('change', function() {
+                        updateOptionsSelect(this.dataset.variantId, this.dataset.attributeId, this.value,
+                        []);
+                    });
+                }
 
-        if (selectedAttribute) {
-            updateOptionsSelect(variantId, attributeId, selectedAttribute, selectedOptions);
-        }
-    }
-
-    function updateOptionsSelect(variantId, attributeId, attributeValue, selected = []) {
-        const selectEl = document.getElementById(`option-select-${variantId}-${attributeId}`);
-        const spanEl = document.getElementById(`selected-value-${variantId}-${attributeId}`);
-        if (!selectEl || !spanEl) return;
-        const attr = availableAttributes.find(a => a.id == attributeValue);
-        if (!attr) return;
-
-        selectEl.innerHTML = attr.options.map(opt => {
-            const isSelected = selected.includes(opt.id.toString()) || selected.includes(opt.id);
-            return `<option value="${opt.id}" ${isSelected ? 'selected' : ''}>${opt.value}</option>`;
-        }).join('');
-
-        selectEl.onchange = () => {
-            const selectedOption = selectEl.options[selectEl.selectedIndex];
-            if (!selectedOption) return;
-            spanEl.innerText = selectedOption.text;
-            spanEl.style.display = 'inline-block';
-            selectEl.style.display = 'none';
-        };
-
-        spanEl.onclick = () => {
-            spanEl.style.display = 'none';
-            selectEl.style.display = 'block';
-        };
-
-        if (selected.length > 0) {
-            const selectedOption = attr.options.find(opt => selected.includes(opt.id.toString()) || selected.includes(opt.id));
-            if (selectedOption) {
-                spanEl.innerText = selectedOption.value;
-                spanEl.style.display = 'inline-block';
-                selectEl.style.display = 'none';
+                if (selectedAttribute) {
+                    updateOptionsSelect(variantId, attributeId, selectedAttribute, selectedOptions);
+                }
             }
-        } else {
-            spanEl.style.display = 'none';
-            selectEl.style.display = 'block';
-        }
-    }
 
-    // 4. Các sự kiện động: thêm, xoá, copy
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.add-attribute-btn')) {
-            const btn = e.target.closest('.add-attribute-btn');
-            addAttribute(btn.dataset.variantId);
-        }
+            function updateOptionsSelect(variantId, attributeId, attributeValue, selected = []) {
+                const selectEl = document.getElementById(`option-select-${variantId}-${attributeId}`);
+                const spanEl = document.getElementById(`selected-value-${variantId}-${attributeId}`);
+                if (!selectEl || !spanEl) return;
+                const attr = availableAttributes.find(a => a.id == attributeValue);
+                if (!attr) return;
 
-        if (e.target.closest('.remove-variant-btn')) {
-            const id = e.target.closest('.remove-variant-btn').dataset.variantId;
-            document.getElementById(`variant-${id}`)?.remove();
-        }
+                selectEl.innerHTML = attr.options.map(opt => {
+                    const isSelected = selected.includes(opt.id.toString()) || selected.includes(opt.id);
+                    return `<option value="${opt.id}" ${isSelected ? 'selected' : ''}>${opt.value}</option>`;
+                }).join('');
 
-        if (e.target.closest('.remove-attribute-btn')) {
-            const btn = e.target.closest('.remove-attribute-btn');
-            const variantId = btn.dataset.variantId;
-            const attributeId = btn.dataset.attributeId;
-            document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
-        }
+                selectEl.onchange = () => {
+                    const selectedOption = selectEl.options[selectEl.selectedIndex];
+                    if (!selectedOption) return;
+                    spanEl.innerText = selectedOption.text;
+                    spanEl.style.display = 'inline-block';
+                    selectEl.style.display = 'none';
+                };
 
-        if (e.target.closest('.copy-variant-btn')) {
-            const btn = e.target.closest('.copy-variant-btn');
-            const variantId = btn.dataset.variantId;
-            const el = document.getElementById(`variant-${variantId}`);
-            if (!el) return;
+                spanEl.onclick = () => {
+                    spanEl.style.display = 'none';
+                    selectEl.style.display = 'block';
+                };
 
-            const price = el.querySelector(`[name="variants[${variantId}][price]"]`)?.value || '';
-            const stock = el.querySelector(`[name="variants[${variantId}][stock_quantity]"]`)?.value || '';
+                if (selected.length > 0) {
+                    const selectedOption = attr.options.find(opt => selected.includes(opt.id.toString()) || selected
+                        .includes(opt.id));
+                    if (selectedOption) {
+                        spanEl.innerText = selectedOption.value;
+                        spanEl.style.display = 'inline-block';
+                        selectEl.style.display = 'none';
+                    }
+                } else {
+                    spanEl.style.display = 'none';
+                    selectEl.style.display = 'block';
+                }
+            }
 
-            const attributes = [];
-            el.querySelectorAll('.attribute-group').forEach(group => {
-                const attrId = group.querySelector('.attribute-select')?.value;
-                const selectedOpts = Array.from(group.querySelectorAll('.option-select option:checked')).map(opt => opt.value);
-                if (attrId) {
-                    attributes.push({ attribute_id: attrId, options: selectedOpts });
+            // 4. Các sự kiện động: thêm, xoá, copy
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.add-attribute-btn')) {
+                    const btn = e.target.closest('.add-attribute-btn');
+                    addAttribute(btn.dataset.variantId);
+                }
+
+                if (e.target.closest('.remove-variant-btn')) {
+                    const id = e.target.closest('.remove-variant-btn').dataset.variantId;
+                    document.getElementById(`variant-${id}`)?.remove();
+                }
+
+                if (e.target.closest('.remove-attribute-btn')) {
+                    const btn = e.target.closest('.remove-attribute-btn');
+                    const variantId = btn.dataset.variantId;
+                    const attributeId = btn.dataset.attributeId;
+                    document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
+                }
+
+                if (e.target.closest('.copy-variant-btn')) {
+                    const btn = e.target.closest('.copy-variant-btn');
+                    const variantId = btn.dataset.variantId;
+                    const el = document.getElementById(`variant-${variantId}`);
+                    if (!el) return;
+
+                    const price = el.querySelector(`[name="variants[${variantId}][price]"]`)?.value || '';
+                    const stock = el.querySelector(`[name="variants[${variantId}][stock_quantity]"]`)
+                        ?.value || '';
+
+                    const attributes = [];
+                    el.querySelectorAll('.attribute-group').forEach(group => {
+                        const attrId = group.querySelector('.attribute-select')?.value;
+                        const selectedOpts = Array.from(group.querySelectorAll(
+                            '.option-select option:checked')).map(opt => opt.value);
+                        if (attrId) {
+                            attributes.push({
+                                attribute_id: attrId,
+                                options: selectedOpts
+                            });
+                        }
+                    });
+
+                    const attrObj = {};
+                    attributes.forEach((a, i) => attrObj[i + 1] = a);
+
+
                 }
             });
-
-            const attrObj = {};
-            attributes.forEach((a, i) => attrObj[i + 1] = a);
-
-            
-        }
-    });
-});
-</script>
+        });
+        
+    </script>
 
 
 @endsection

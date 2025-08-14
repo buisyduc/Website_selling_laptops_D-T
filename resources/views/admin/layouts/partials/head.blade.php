@@ -6,7 +6,7 @@
 <head>
 
         <meta charset="utf-8">
-        <title>Dashboard | Toner eCommerce + Admin HTML Template</title>
+        <title>Trang chủ Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="eCommerce + Admin HTML Template" name="description">
         <meta content="Themesbrand" name="author">

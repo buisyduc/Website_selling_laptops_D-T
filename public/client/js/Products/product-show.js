@@ -114,11 +114,16 @@ function updateAvailableOptions() {
                 ...selectedOptions,
                 [attrId]: currentOptId
             };
+            
+            // Kiểm tra có biến thể nào khớp VÀ còn hàng (stock_quantity > 0)
             const isValid = variantCombinations.some(variant => {
-                return Object.entries(simulatedSelection).every(([aId, oId]) =>
+                const isMatch = Object.entries(simulatedSelection).every(([aId, oId]) =>
                     variant.options[aId] && parseInt(variant.options[aId]) === parseInt(oId)
                 );
+                // Thêm điều kiện kiểm tra tồn kho > 0
+                return isMatch && variant.stock_quantity > 0;
             });
+            
             if (isValid) {
                 optionEl.classList.remove('disabled-option');
                 optionEl.style.pointerEvents = 'auto';
@@ -177,12 +182,25 @@ async function addToCart() {
 
 function showToast(title, message, type = 'success') {
     const toastId = 'custom-toast-' + Date.now();
+    
+    // Chọn icon dựa trên type
+    let icon = '';
+    if (type === 'success') {
+        icon = '✅';
+    } else if (type === 'error') {
+        icon = '❌';
+    } else if (type === 'warning') {
+        icon = '⚠️';
+    } else {
+        icon = 'ℹ️';
+    }
+    
     const toastHtml = `
-    <div id="${toastId}" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div id="${toastId}" class="toast-container position-fixed" style="top: 80px; right: 0; z-index: 1055;">
         <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 fade show" role="alert">
             <div class="d-flex">
                 <div class="toast-body">
-                    <strong>${title}:</strong> ${message}
+                    <span style="font-size: 16px; margin-right: 8px;">${icon}</span>${message}
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
@@ -195,39 +213,56 @@ function showToast(title, message, type = 'success') {
     }, 3000);
 }
 
-function buyNow() {
+async function buyNow() {
     const variantId = selectedVariantId;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    if (!variantId) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Thiếu thông tin',
-            text: 'Vui lòng chọn đầy đủ các phiên bản sản phẩm trước khi mua!',
-            confirmButtonText: 'Đã hiểu',
-            confirmButtonColor: '#3085d6'
-        });
+    
+    if (!variantId || Object.keys(selectedOptions).length < totalAttributes) {
+        showToast('Cảnh báo', 'Vui lòng chọn đầy đủ các phiên bản sản phẩm!', 'error');
         return;
     }
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = window.cartBuyNowUrl;
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_token';
-    csrf.value = csrfToken;
-    form.appendChild(csrf);
-    const variantInput = document.createElement('input');
-    variantInput.type = 'hidden';
-    variantInput.name = 'variant_id';
-    variantInput.value = variantId;
-    form.appendChild(variantInput);
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'hidden';
-    qtyInput.name = 'quantity';
-    qtyInput.value = 1;
-    form.appendChild(qtyInput);
-    document.body.appendChild(form);
-    form.submit();
+    
+    try {
+        const response = await fetch(window.cartBuyNowUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                variant_id: variantId,
+                quantity: 1
+            })
+        });
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Cập nhật số lượng giỏ hàng trong header
+                if (document.getElementById('cart-count')) {
+                    document.getElementById('cart-count').textContent = data.total_quantity;
+                }
+                if (document.getElementById('cart-total')) {
+                    document.getElementById('cart-total').textContent = data.total_amount;
+                }
+                
+                showToast('Thành công', data.message, 'success');
+                
+                // Chuyển hướng sau 400ms
+                setTimeout(() => {
+                    window.location.href = data.redirect_url;
+                }, 400);
+            } else {
+                showToast('Lỗi', data.message || 'Mua ngay thất bại!', 'error');
+            }
+        } else {
+            showToast('Lỗi', 'Phản hồi không hợp lệ từ máy chủ!', 'error');
+        }
+    } catch (error) {
+        showToast('Lỗi', 'Có lỗi xảy ra, vui lòng thử lại!', 'error');
+    }
 }
 
 function scrollThumbnails(direction) {
