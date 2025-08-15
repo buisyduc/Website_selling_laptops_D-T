@@ -921,7 +921,7 @@
                                 <span>Đánh giá & Xếp hạng</span></a></li>
                         <li><a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span>Thương
                                     hiệu</span></a></li>
-                        <li><a href="statistics.html" class="nav-link menu-link"><i class="bi bi-pie-chart"></i>
+                        <li><a href="{{ route('admin.dashboard') }}" class="nav-link menu-link"><i class="bi bi-pie-chart"></i>
                                 <span>Thống kê</span></a></li>
 
                         <li class="nav-item">
@@ -1201,6 +1201,7 @@
         </div>
     </div>
     @include('admin.layouts.partials.script')
+    @stack('scripts')
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

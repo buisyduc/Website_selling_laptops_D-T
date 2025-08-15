@@ -30,7 +30,7 @@ class product extends Model
     // 🔗 Danh mục (bao gồm cả khi bị soft delete nếu muốn gọi thủ công)
     public function category()
     {
-        return $this->belongsTo(categorie::class)->withTrashed();
+        return $this->belongsTo(categories::class)->withTrashed();
     }
 
     public function brand()
@@ -86,5 +86,9 @@ class product extends Model
                 $query->whereNull('deleted_at');
             });
         });
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
     }
 }

@@ -108,15 +108,16 @@
                     @else
                         <!-- Account Sidebar Toggle Button -->
                         <a id="sidebarNavToggler" href="javascript:;" role="button"
-                            style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white;"
-                            class="d-flex align-items-center text-decoration-none font-weight-bold"
-                            aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false"
-                            data-unfold-event="click" data-unfold-hide-on-scroll="false"
-                            data-unfold-target="#sidebarContent" data-unfold-type="css-animation"
-                            data-unfold-animation-in="fadeInRight" data-unfold-animation-out="fadeOutRight"
-                            data-unfold-duration="500">
-                            Đăng nhập <i class="fas fa-user-circle mr-1" style="font-size: 20px; color: white;"></i>
-                        </a>
+                                style="background-color: #ef6969; padding: 10px; border-radius: 12px; color: white;"
+                                class="d-flex align-items-center text-decoration-none font-weight-bold"
+                                aria-controls="sidebarContent" aria-haspopup="true" aria-expanded="false"
+                                data-unfold-event="click" data-unfold-hide-on-scroll="false"
+                                data-unfold-target="#sidebarContent" data-unfold-type="css-animation"
+                                data-unfold-animation-in="fadeInRight" data-unfold-animation-out="fadeOutRight"
+                                data-unfold-duration="500">
+                                Đăng nhập <i class="fas fa-user-circle mr-1" style="font-size: 20px; color: white;"></i>
+                            </a>
+                            
 
 
                         <!-- End Account Sidebar Toggle Button -->

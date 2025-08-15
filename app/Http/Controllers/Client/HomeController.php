@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\product;
-use App\Models\categorie;
+use App\Models\categories;
 use App\Models\brand;
 
 class HomeController extends Controller
@@ -46,7 +46,7 @@ class HomeController extends Controller
                                   ->get();
 
         // Lấy danh mục sản phẩm chính (parent categories)
-        $categories = categorie::where('status', 1)
+        $categories = categories::where('status', 1)
                               ->whereNull('parent_id') // Chỉ lấy danh mục cha
                               ->withCount('products')
                               ->orderBy('order', 'asc')
@@ -59,7 +59,7 @@ class HomeController extends Controller
                       ->get();
 
         // Lấy sản phẩm theo danh mục cụ thể
-        $pcCategory = categorie::where('slug', 'pc')->first();
+        $pcCategory = categories::where('slug', 'pc')->first();
         $pcProducts = collect();
         if ($pcCategory) {
             $pcProducts = product::where('status', 1)
@@ -69,7 +69,7 @@ class HomeController extends Controller
                                    ->limit(5)
                                    ->get();
         }
-        $screenCategory = categorie::where('slug', 'man-hinh')->first();
+        $screenCategory = categories::where('slug', 'man-hinh')->first();
         $screenProducts = collect();
         if ($screenCategory) {
             $screenProducts = product::where('status', 1)
@@ -80,7 +80,7 @@ class HomeController extends Controller
                                    ->get();
         }
 
-        $laptopCategory = categorie::where('slug', 'laptop')->first();
+        $laptopCategory = categories::where('slug', 'laptop')->first();
         $laptopProducts = collect();
         if ($laptopCategory) {
             $laptopProducts = product::where('status', 1)
@@ -113,7 +113,7 @@ class HomeController extends Controller
 
         // Thống kê tổng quan
         $totalProducts = product::where('status', 1)->whereNull('deleted_at')->count();
-        $totalCategories = categorie::where('status', 1)->whereNull('deleted_at')->count();
+        $totalcategories = categories::where('status', 1)->whereNull('deleted_at')->count();
         $totalBrands = brand::whereNull('deleted_at')->count();
 
         return view('client.index', compact(
@@ -128,7 +128,7 @@ class HomeController extends Controller
             'laptopProducts',
             'recentReleases',
             'totalProducts',
-            'totalCategories',
+            'totalcategories',
             'totalBrands',
             'bestDealVariant'
         ));
@@ -271,7 +271,7 @@ class HomeController extends Controller
     {
         $stats = [
             'total_products' => product::where('status', 1)->count(),
-            'total_categories' => categorie::where('status', 1)->count(),
+            'total_categories' => categories::where('status', 1)->count(),
             'total_brands' => brand::count(),
             'total_reviews' => \App\Models\review::count(),
         ];

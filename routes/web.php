@@ -7,9 +7,11 @@ use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ProductCommentController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController;
@@ -44,6 +46,9 @@ Route::post('/logout', action: [AuthController::class, 'logout'])->name('logout'
 //giao diện chung
 Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
+
+Route::post('/products/{product}/comments', [ProductCommentController::class, 'store'])
+    ->name('comments.store');
 
 
 
@@ -149,6 +154,11 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::get('admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::post('admin/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    // Dashboard
+    Route::prefix('admin')->middleware(['auth'])->group(function () {
+     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard-data', [DashboardController::class, 'getData'])->name('admin.dashboard.data');
+    });
 });
 Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');
 Route::get('/payment/vnpay-return', [VNPayController::class, 'handleReturn'])->name('vnpay.return');
