@@ -3,11 +3,12 @@
 @section('title', 'Chỉnh sửa đánh giá')
 
 @section('content')
+
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-warning text-dark fw-bold">
                         <h5 class="mb-0">Chỉnh sửa đánh giá: {{ $review->product->name }}</h5>
                     </div>
 

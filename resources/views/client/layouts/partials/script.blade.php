@@ -750,3 +750,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 </script>
+{{-- ẩn tbao sau 3s --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        if (alerts.length > 0) {
+            alerts.forEach(alert => {
+                // Sau 3 giây sẽ tự động ẩn
+                setTimeout(() => {
+                    const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                }, 3000);
+            });
+        }
+    });
+</script>

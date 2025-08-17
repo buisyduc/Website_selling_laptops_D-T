@@ -17,42 +17,37 @@ public function show($id)
         'variants.options.option',
         'images',
         'brand',
-        'category'
+        'category',
+        'reviews.user', // load review + user
     ])->findOrFail($id);
 
-    // Tìm ID của thuộc tính RAM
+    // ---------- PHẦN VARIANTS ----------
     $ramAttr = \App\Models\variant_attributes::where('name', 'RAM')->first();
     $ramAttrId = $ramAttr ? $ramAttr->id : null;
 
-    // Dữ liệu phục vụ cho JavaScript
-$variantsForJs = $product->variants->map(function ($variant) {
-    return [
-        'id' => $variant->id,
-        'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity, 
-        'options' => $variant->options->mapWithKeys(function ($opt) {
-            return [$opt->attribute_id => $opt->option_id];
-        }),
-    ];
-})->toArray();
+    $variantsForJs = $product->variants->map(function ($variant) {
+        return [
+            'id' => $variant->id,
+            'price' => $variant->price,
+            'stock_quantity' => $variant->stock_quantity,
+            'options' => $variant->options->mapWithKeys(function ($opt) {
+                return [$opt->attribute_id => $opt->option_id];
+            }),
+        ];
+    })->toArray();
 
-
-
-
-    // Cấu trúc dạng readable như yêu cầu
     $variantGroupsReadable = [];
-
     foreach ($product->variants as $variant) {
         $ramValue = null;
         $otherOptions = [];
 
         foreach ($variant->options as $option) {
-            $attrName = $option->attribute->name;
-            $optValue = $option->option->value;
+            $attrName = $option->attribute->name ?? null;
+            $optValue = $option->option->value ?? null;
 
-            if (strtolower($attrName) === 'ram') {
+            if ($attrName !== null && strtolower($attrName) === 'ram') {
                 $ramValue = $optValue;
-            } else {
+            } elseif ($attrName !== null) {
                 $otherOptions[$attrName][] = $optValue;
             }
         }
@@ -69,14 +64,15 @@ $variantsForJs = $product->variants->map(function ($variant) {
         }
     }
 
+    // ---------- BREADCRUMBS ----------
+    $breadcrumbs = $product->category ? $product->category->getBreadcrumbs() : [];
 
-    // Breadcrumbs
-    $breadcrumbs = $product->category->getBreadcrumbs();
-
-    // Danh sách thuộc tính kèm giá rẻ nhất và tồn kho
-    $attributeOptionsWithPrices = [];
+    // ---------- Danh sách thuộc tính kèm giá rẻ nhất và tồn kho ----------
+    $attributeOptionsWithPrices = []; // đảm bảo biến luôn tồn tại
     foreach ($product->variants as $variant) {
         foreach ($variant->options as $option) {
+            if (!isset($option->attribute) || !isset($option->option)) continue;
+
             $attrId = $option->attribute->id;
             $attrName = $option->attribute->name;
             $optId = $option->option->id;
@@ -110,7 +106,26 @@ $variantsForJs = $product->variants->map(function ($variant) {
     // Sắp xếp variant theo giá
     $product->variants = $product->variants->sortBy('price');
 
-    // Sản phẩm liên quan
+    // ---------- PHẦN REVIEW ----------
+    $totalReviews = $product->reviews->count();
+
+    $ratingCounts = $product->reviews()
+        ->selectRaw('rating, COUNT(*) as count')
+        ->groupBy('rating')
+        ->pluck('count', 'rating');
+
+    $ratingSummary = [];
+    for ($i = 1; $i <= 5; $i++) {
+        $ratingSummary[$i] = $ratingCounts->get($i, 0);
+    }
+
+    // Danh sách reviews (sắp xếp mới nhất)
+    $reviews = $product->reviews()
+        ->with('user')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // ---------- SẢN PHẨM LIÊN QUAN ----------
     $relatedProducts = Product::with(['images', 'variants'])
         ->where('id', '!=', $product->id)
         ->where('status', true)
@@ -121,6 +136,7 @@ $variantsForJs = $product->variants->map(function ($variant) {
         ->limit(4)
         ->get();
 
+    // Trả view: tất cả biến đã được khởi tạo ở trên
     return view('client.products.show', compact(
         'product',
         'relatedProducts',
@@ -128,10 +144,12 @@ $variantsForJs = $product->variants->map(function ($variant) {
         'variantsForJs',
         'ramAttrId',
         'attributeOptionsWithPrices',
-        'variantGroupsReadable'
+        'variantGroupsReadable',
+        'totalReviews',
+        'ratingSummary',
+        'reviews'
     ));
 }
-
 
     public function index(Request $request)
     {

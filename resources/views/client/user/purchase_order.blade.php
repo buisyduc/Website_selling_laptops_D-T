@@ -158,7 +158,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        trả hàng/hoàn tiền
+                                        Trả hàng/Hoàn tiền
                                     </button>
                                 </form>
                             @endif
@@ -168,7 +168,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        Hủy đơn/hoàn tiền
+                                        Hủy đơn/Hoàn tiền
                                     </button>
                                 </form>
                             @endif

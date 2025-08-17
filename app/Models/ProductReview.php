@@ -80,5 +80,7 @@ class ProductReview extends Model
         
         return $this->created_at->addDays(3) > now();
     }
+    
 }
+
 

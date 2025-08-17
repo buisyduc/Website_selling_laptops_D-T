@@ -20,7 +20,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-warning text-dark fw-bold">
                         <h5 class="mb-0">Đánh giá sản phẩm: {{ $product->name }}</h5>
                     </div>
 
@@ -33,7 +33,7 @@
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Đánh giá của bạn</label>
                                 <div class="rating-input d-flex justify-content-center">
-                                    @for ($i = 1; $i <= 5; $i++)
+                                    @for ($i = 5; $i >= 1; $i--)
                                         <input type="radio" id="star{{ $i }}" name="rating"
                                             value="{{ $i }}" {{ old('rating') == $i ? 'checked' : '' }} required>
                                         <label for="star{{ $i }}"><i class="fas fa-star fa-2x"></i></label>

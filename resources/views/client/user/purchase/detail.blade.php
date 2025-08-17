@@ -2,14 +2,6 @@
 
 @section('content')
     <div class="container py-4 fs-4">
-        <!-- Nút quay lại -->
-        <div class="pt-2 mb-5">
-            <a href="{{ route('client.orders.index') }}"
-                class="btn btn-light border d-inline-flex align-items-center shadow-sm px-3 py-2 rounded">
-                <i class="bi bi-arrow-left me-2"></i> Quay lại đơn hàng
-            </a>
-        </div>
-
         <h4 class="mb-4">Chi tiết đơn hàng #{{ $order->order_code }}</h4>
 
         <div class="row">
@@ -157,6 +149,83 @@
                 </table>
             </div>
         </div>
+        {{-- rate --}}
+         @if ($order->status === 'completed')
+            @php
+                // Eager load quan hệ cần thiết
+                $order->load(['orderItems.product', 'reviews']);
+            @endphp
+
+            <div class="card mt-4">
+                <div class="card-header">Đánh giá sản phẩm</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Đánh giá</th>
+                                    <th>Số lần đánh giá</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($order->orderItems as $item)
+                                    @php
+                                        $product = $item->product;
+                                        $productId = $product->id;
+                                        $reviews = $order->reviews->where('product_id', $productId);
+                                        $hasReviews = $reviews->count() > 0;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $product->name }}</td>
+                                        <td>
+                                            <!-- Phần thêm đánh giá mới (chỉ hiển thị nếu chưa đạt giới hạn) -->
+                                            @if ($order->canReviewProduct($productId))
+                                                <a href="{{ route('reviews.create', ['order' => $order, 'product' => $product]) }}"
+                                                    class="btn btn-sm btn-outline-primary mb-2 me-2">
+                                                    Thêm đánh giá mới
+                                                </a>
+                                            @endif
+
+                                            <!-- Phần hiển thị các đánh giá cũ (luôn hiển thị nếu có) -->
+                                            @if ($hasReviews)
+                                                <div class="d-flex flex-column gap-2">
+                                                    @foreach ($reviews as $review)
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <a href="{{ route('reviews.edit', $review) }}"
+                                                                class="btn btn-sm btn-outline-secondary">
+                                                                Xem/Sửa #{{ $loop->iteration }}
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-muted">Chưa có đánh giá</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ $reviews->count() }} đánh giá
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center">Không có sản phẩm nào trong đơn hàng</td>
+                                    </tr>
+                                @endforelse
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
+        <!-- Nút quay lại -->
+        <div class="pt-2 mb-5">
+            <a href="{{ route('client.orders.index') }}"
+                class="btn btn-light border d-inline-flex align-items-center shadow-sm px-3 py-2 rounded">
+                <i class="bi bi-arrow-left me-2"></i> Quay lại đơn hàng
+            </a>
+        </div>
 
         <!-- Nút hủy đơn -->
         @if ($order->status === 'pending')
@@ -177,3 +246,26 @@
         @include('client.layouts.partials.footer')
     @endsection
 @endsection
+@push('scripts')
+    <script>
+        let isProcessing = false;
+
+        function handleReviewClick(element) {
+            if (isProcessing) {
+                return false;
+            }
+            isProcessing = true;
+
+            // Thêm hiệu ứng loading (tuỳ chọn)
+            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+            // Cho phép click lại sau 2s nếu trang không chuyển
+            setTimeout(() => {
+                isProcessing = false;
+                element.innerHTML = 'Viết đánh giá';
+            }, 2000);
+
+            return true;
+        }
+    </script>
+@endpush

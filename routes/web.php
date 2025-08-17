@@ -7,11 +7,14 @@ use App\Http\Controllers\Admin\CategorieController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductCommentController;
+use App\Http\Controllers\Client\ProductReviewController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController;
@@ -89,6 +92,27 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     Route::get('/order/thank-you/{orderId}', [CheckoutController::class, 'thankYou'])->name('checkout.thankYou');
     Route::delete('/client/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/client/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+    // Route cho create và store với order/product
+    Route::middleware(['auth'])->prefix('orders/{order}/products/{product}')->group(function () {
+        Route::controller(ProductReviewController::class)->group(function () {
+            Route::get('/review', 'create')->name('reviews.create');
+            Route::post('/review', 'store')->name('reviews.store');
+        });
+    });
+    Route::get('/reviews/filter', [App\Http\Controllers\ReviewController::class, 'filter'])->name('reviews.filter');
+
+
+    // Route cho edit, update, destroy với review ID
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('reviews', ProductReviewController::class)
+            ->only(['edit', 'update', 'destroy'])
+            ->parameters(['reviews' => 'review']) // Thêm dòng này nếu bạn muốn thống nhất parameter name
+            ->names([
+                'edit' => 'reviews.edit',
+                'update' => 'reviews.update',
+                'destroy' => 'reviews.destroy'
+            ]);
+    });
 
 
 
@@ -163,5 +187,17 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');
 Route::get('/payment/vnpay-return', [VNPayController::class, 'handleReturn'])->name('vnpay.return');
 
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+        Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+        Route::patch('comments/toggle/{comment}', [CommentController::class, 'toggleVisibility'])->name('comments.toggle');
+        Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
+
+    });
 Route::post('/admin/orders/{order}/send-email', [AdminOrderController::class, 'sendEmail'])
      ->name('admin.orders.sendEmail');
+     // Rate
+    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Resource route cho reviews
+    Route::get('reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    });

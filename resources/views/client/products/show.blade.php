@@ -30,21 +30,25 @@
             <!-- GALLERY SECTION -->
             <div class="col-md-5">
                 <!-- PRODUCT HEADER -->
-                <div class="mb-3">
+                <div class="mb-3 flex items-center space-x-2 text-sm">
                     <h1 class="h4 fw-bold">{{ $product->name }}</h1>
                     <div class="d-flex align-items-center flex-wrap gap-2">
                         <div class="text-warning">
+                            @php
+                                $avgRating = $product->average_rating ?? 0;
+                            @endphp
+
                             @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= floor($product->averageRating()))
+                                @if ($i <= floor($avgRating))
                                     <i class="fas fa-star"></i>
-                                @elseif($i <= ceil($product->averageRating()))
+                                @elseif($i == ceil($avgRating) && $avgRating - floor($avgRating) > 0)
                                     <i class="fas fa-star-half-alt"></i>
                                 @else
                                     <i class="far fa-star"></i>
                                 @endif
                             @endfor
                         </div>
-                        <span>| {{ $product->reviews->count() }} Đánh Giá</span>
+                        <span>{{ $product->reviews_count ?? 0 }} đánh giá</span>
                         <span>| Đã bán: {{ $product->totalSold() }}</span>
                     </div>
                 </div>
@@ -910,6 +914,65 @@
             @endif
         </div>
     </div>
+    <div class="card p-4">
+        <h4 class="fw-bold">Đánh giá</h4>
+
+        <div class="row mt-3">
+            <!-- Điểm trung bình -->
+            <div class="col-md-3 text-center">
+                <h2 class="mb-0">{{ number_format($product->average_rating, 1) }}</h2>
+                <p class="text-muted">{{ $totalReviews }} lượt đánh giá</p>
+                <div class="text-warning">
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if ($i <= floor($product->average_rating))
+                            <i class="fas fa-star"></i>
+                        @elseif($i <= ceil($product->average_rating))
+                            <i class="fas fa-star-half-alt"></i>
+                        @else
+                            <i class="far fa-star"></i>
+                        @endif
+                    @endfor
+                </div>
+            </div>
+
+            <!-- Thanh phân bố đánh giá -->
+            <div class="col-md-6">
+                @for ($i = 5; $i >= 1; $i--)
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="me-2">{{ $i }} <i class="fas fa-star text-warning"></i></div>
+                        <div class="progress flex-grow-1" style="height: 12px;">
+                            <div class="progress-bar bg-danger" role="progressbar"
+                                style="width: {{ $totalReviews > 0 ? ($ratingSummary[$i] / $totalReviews) * 100 : 0 }}%;">
+                            </div>
+                        </div>
+                        <div class="ms-2">{{ $ratingSummary[$i] }}</div>
+                    </div>
+                @endfor
+            </div>
+        </div>
+
+        <!-- Nút -->
+        <div class="review-filters mt-3 my-3">
+            <button class="filter-btn px-3 py-1 border rounded" data-rating="all" data-product="{{ $product->id }}">Tất cả</button>
+    <button class="filter-btn px-3 py-1 border rounded" data-rating="5" data-product="{{ $product->id }}">5 ★</button>
+    <button class="filter-btn px-3 py-1 border rounded" data-rating="4" data-product="{{ $product->id }}">4 ★</button>
+    <button class="filter-btn px-3 py-1 border rounded" data-rating="3" data-product="{{ $product->id }}">3 ★</button>
+    <button class="filter-btn px-3 py-1 border rounded" data-rating="2" data-product="{{ $product->id }}">2 ★</button>
+    <button class="filter-btn px-3 py-1 border rounded" data-rating="1" data-product="{{ $product->id }}">1 ★</button>
+</div>
+
+<div id="reviews-container">
+    @include('client.products.partials.reviews_list', ['reviews' => $reviews])
+        </div>
+
+        {{-- Khu vực hiển thị review --}}
+        <div id="reviews-container">
+            @include('client.products.partials.reviews_list', ['reviews' => $product->reviews])
+        </div>
+
+    </div>
+
+    {{-- comments --}}
     <div class="card mt-4 mb-3">
         <div class="card-header mb-4">
             <h5>Bình luận ({{ optional($product->comments)->count() ?? 0 }})</h5>
@@ -1030,6 +1093,22 @@
             text-align: left
         }
     </style>
+    {{-- reviews --}}
+    <script>
+       document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        let rating = this.dataset.rating;
+        let productId = this.dataset.product;
+
+        fetch(`/reviews/filter/${productId}?rating=${rating}`)
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('#reviews-container').innerHTML = data.html;
+            });
+    });
+});
+    </script>
+
     {{-- comment --}}
     <script>
         // Đảm bảo DOM đã load hoàn toàn

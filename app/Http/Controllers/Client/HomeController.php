@@ -132,7 +132,7 @@ class HomeController extends Controller
             'totalBrands',
             'bestDealVariant'
         ));
-    }
+    } 
 
     // Phương thức tìm kiếm nhanh cho homepage
     public function quickSearch(Request $request)
