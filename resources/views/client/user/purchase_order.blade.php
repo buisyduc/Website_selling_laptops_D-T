@@ -28,7 +28,15 @@
                     <a class="nav-link {{ request()->get('status') == null ? 'active' : '' }}"
                         href="{{ route('client.orders.index') }}">Tất cả</a>
                 </li>
-                @foreach (['pending' => 'Chờ thanh toán', 'processing_seller' => 'Chờ lấy hàng', 'processing' => 'Vận chuyển','shipping'=>'Chờ giao hàng', 'completed' => 'Hoàn thành', 'canceled' => 'Đã huỷ', 'returned' => 'Trả hàng/Hoàn tiền'] as $key => $label)
+                @foreach ([
+                    'pending' => 'Chờ xác nhận',
+                    'processing_seller' => 'Đã xác nhận',
+                    'processing' => 'Đang giao hàng',
+                    'shipping' => 'Đã giao hàng',
+                    'completed' => 'Hoàn thành',
+                    'returned' => 'Trả hàng/Hoàn tiền',
+                    'canceled' => 'Hủy'
+                ] as $key => $label)
                     <li class="nav-item">
                         <a class="nav-link {{ request()->get('status') == $key ? 'active' : '' }}"
                             href="{{ route('client.orders.index', ['status' => $key]) }}">{{ $label }}</a>
@@ -79,6 +87,7 @@
             </div>
         @elseif(isset($orders) && $orders->count() > 0)
             @foreach ($orders as $order)
+                @if ($order->status !== 'unprocessed')
                 <div class="border rounded shadow-sm mb-4 bg-white">
 
 
@@ -87,20 +96,25 @@
                     <div class="px-3 pt-3">
                         <div class="jgIyoX" style="right: 0;">
                             <div class="bv3eJE" tabindex="0">
-                                @if ($order->status === 'canceled')
-                                    <span class="text-danger">Đã huỷ</span>
-                                @elseif ($order->status === 'pending')
+                                @if ($order->payment_status === 'canceled')
+                                    <span class="text-danger">Đã hủy</span>
+                                @elseif ($order->payment_status === 'unpaid')
+                                    <span class="text-warning">Chưa thanh toán</span>
+                                @elseif ($order->payment_status === 'waiting_payment')
                                     <span class="text-warning">Chờ thanh toán</span>
-                                @elseif ($order->status === 'processing_seller')
-                                    <span class="text-success">Đã thanh toán</span>
-                                @elseif ($order->status === 'processing')
-                                    <span class="text-primary">Đơn hàng đang được chuẩn bị</span>
-                                @elseif ($order->status === 'shipping')
-                                    <span class="text-info">Đang vận chuyển</span>
-                                @elseif ($order->status === 'completed')
-                                    <span class="text-success">Hoàn thành</span>
-                                @elseif ($order->status === 'returned')
-                                    <span class="text-secondary">Đã hoàn tiền</span>
+
+                                @elseif ($order->payment_status === 'pending')
+                                    <span class="text-success">Đang chờ xử lý</span>
+                                @elseif ($order->payment_status === 'paid')
+                                    <span class="text-primary">Đã thanh toán</span>
+                                @elseif ($order->payment_status === 'failed')
+                                    <span class="text-info">Thanh toán thất bại</span>
+                                @elseif ($order->payment_status === 'refunded')
+                                    <span class="text-success">Đã hoàn tiền</span>
+                                @elseif ($order->payment_status === 'refund_pending')
+                                    <span class="text-warning">Đang chờ hoàn tiền</span>
+                                @elseif ($order->payment_status === 'returned_refunded')
+                                    <span class="text-warning">Đang chờ xử lý hoàn tiền</span>
                                 @else
                                     <span class="text-muted">Không xác định</span>
                                 @endif
@@ -141,8 +155,47 @@
                         </div>
                         <div class="text-end">
 
-
-                            @if ($order->status === 'pending')
+                            @if ($order->status === 'shipping' && $order->payment_status === 'paid')
+                            <form class="cancel-order-return-refund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.returnRefund', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                        Trả hàng/hoàn tiền
+                                    </button>
+                                </form>
+                            @endif
+                            @if ($order->status === 'shipping' && $order->payment_status === 'waiting_payment')
+                            <form class="cancel-order-traHang-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.traHang', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                        Trả hàng
+                                    </button>
+                                </form>
+                            @endif
+                            @if ($order->status === 'shipping')
+                                <form class="d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.received', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                            Đã nhận hàng
+                                    </button>
+                                </form>
+                            @endif
+                            @if ($order->payment_status === 'returned_refunded')
+                                <form class="cancel-order-cancelReturnRefund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.cancelReturnRefund', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                        Hủy trả hàng/hoàn tiền
+                                    </button>
+                                </form>
+                            @endif
+                            @if ($order->payment_status === 'unpaid' && $order->status === 'pending' )
                                 <form class="cancel-order-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
                                     action="{{ route('orders.cancel', $order->id) }}">
                                     @csrf
@@ -152,19 +205,9 @@
                                     </button>
                                 </form>
                             @endif
-                                 @if ($order->status === 'completed')
-                                <form
-                                    action="#">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        trả hàng/hoàn tiền
-                                    </button>
-                                </form>
-                            @endif
-                            @if ($order->status === 'processing_seller')
-                                <form
-                                    action="#">
+                                 @if ($order->payment_status === 'pending')
+                                 <form class="cancel-order-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.refundPending', $order->id) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
@@ -172,6 +215,18 @@
                                     </button>
                                 </form>
                             @endif
+                            @if ($order->payment_status === 'refund_pending')
+                                 <form class="cancel-order-refund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.refundCanceled', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                        Hủy yêu cầu hoàn tiền
+                                    </button>
+                                </form>
+                            @endif
+                            
+                         
 
                             @if ($order->status === 'canceled')
                                 <form action="{{ route('orders.reorder', $order->id) }}" method="POST" class="d-inline-block ms-2">
@@ -181,11 +236,20 @@
                                         lại</button>
                                 </form>
                             @endif
+                            @if ($order->status === 'failed')
+                                <form action="{{ route('orders.reorder', $order->id) }}" method="POST" class="d-inline-block ms-2">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-red btn-sm"
+                                        style="border-radius: 12px; color: #ffffff;background-color: #ee4d2d"> Thanh toán lại</button>
+                                </form>
+                            @endif
+                         
                         </div>
                     </div>
 
                 </div>
-            @endforeach
+    @endif
+@endforeach
         @else
             <div class="alert alert-warning text-center">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -208,6 +272,86 @@
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#6c757d',
                         confirmButtonText: 'Hủy đơn',
+                        cancelButtonText: 'Thoát'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit nếu xác nhận
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.cancel-order-cancelReturnRefund-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+
+                    Swal.fire({
+                        title: 'Hủy trả hàng hoàn tiền?',
+                        text: 'Bạn có chắc muốn hủy yêu cầu?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Hủy ',
+                        cancelButtonText: 'Thoát'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit nếu xác nhận
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.cancel-order-refund-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+
+                    Swal.fire({
+                        title: 'Hủy yêu cầu hoàn tiền?',
+                        text: 'Bạn có chắc muốn hủy yêu cầu  ?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Hủy  ',
+                        cancelButtonText: 'Thoát'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit nếu xác nhận
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.cancel-order-return-refund-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+
+                    Swal.fire({
+                        title: 'Trả hàng/hoàn tiền',
+                        text: 'Bạn có chắc muốn trả hàng/hoàn tiền?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Trả hàng',
+                        cancelButtonText: 'Thoát'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit nếu xác nhận
+                        }
+                    });
+                });
+            });
+             document.querySelectorAll('.cancel-order-traHang-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+
+                    Swal.fire({
+                        title: 'Trả hàng',
+                        text: 'Bạn có chắc muốn trả hàng?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Trả hàng',
                         cancelButtonText: 'Thoát'
                     }).then((result) => {
                         if (result.isConfirmed) {

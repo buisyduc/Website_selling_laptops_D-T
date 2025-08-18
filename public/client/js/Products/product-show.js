@@ -282,10 +282,22 @@ async function buyNow() {
     const variantId = selectedVariantId;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    // Prevent rapid multiple clicks
+    if (isPlacingOrder) return;
+
     if (!variantId || Object.keys(selectedOptions).length < totalAttributes) {
         showToast('Cảnh báo', 'Vui lòng chọn đầy đủ các phiên bản sản phẩm!', 'error');
         return;
     }
+
+    // Lock UI during request
+    isPlacingOrder = true;
+    (function disableBuyNowButtons() {
+        document.querySelectorAll('button[data-buy-now]').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('cursor-prohibited');
+        });
+    })();
 
     try {
         const response = await fetch(window.cartBuyNowUrl, {
@@ -321,12 +333,28 @@ async function buyNow() {
                 }, 400);
             } else {
                 showToast('Lỗi', data.message || 'Mua ngay thất bại!', 'error');
+                // Unlock on error
+                isPlacingOrder = false;
+                document.querySelectorAll('button[data-buy-now]').forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('cursor-prohibited');
+                });
             }
         } else {
             showToast('Lỗi', 'Phản hồi không hợp lệ từ máy chủ!', 'error');
+            isPlacingOrder = false;
+            document.querySelectorAll('button[data-buy-now]').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('cursor-prohibited');
+            });
         }
     } catch (error) {
         showToast('Lỗi', 'Có lỗi xảy ra, vui lòng thử lại!', 'error');
+        isPlacingOrder = false;
+        document.querySelectorAll('button[data-buy-now]').forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('cursor-prohibited');
+        });
     }
 }
 
@@ -389,6 +417,83 @@ document.addEventListener('DOMContentLoaded', () => {
             checkVariantSelection();
         });
     }
+
+    // Inject CSS for red prohibited cursor and disabled style
+    const styleEl = document.createElement('style');
+    const redProhibitedCursor = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9' fill='none' stroke='%23e53e3e' stroke-width='4'/><line x1='7' y1='17' x2='17' y2='7' stroke='%23e53e3e' stroke-width='4' stroke-linecap='round'/></svg>";
+    styleEl.textContent = `
+      button[data-buy-now][disabled] { opacity: 0.7; }
+      /* Apply prohibited cursor when disabled or explicitly flagged */
+      button.cursor-prohibited,
+      button[data-buy-now][disabled],
+      button[data-buy-now][disabled]:hover {
+        cursor: url('${redProhibitedCursor}') 12 12, not-allowed !important;
+      }
+      /* Show prohibited cursor on login-required Buy Now buttons even before click */
+      button[data-buy-now][onclick*="openLoginModal"] {
+        cursor: url('${redProhibitedCursor}') 12 12, not-allowed !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    // Ensure buy-now buttons are enabled on load
+    function setBuyNowButtonsDisabled(disabled) {
+        document.querySelectorAll('button[data-buy-now]').forEach(btn => {
+            btn.disabled = disabled;
+            if (disabled) btn.classList.add('cursor-prohibited');
+            else btn.classList.remove('cursor-prohibited');
+        });
+    }
+    setBuyNowButtonsDisabled(false);
+
+    // Add handlers for login-required buttons to ensure cursor effect is visible
+    document.querySelectorAll('button[data-buy-now][onclick*="openLoginModal"]').forEach(btn => {
+        // Capture: block if already disabled
+        btn.addEventListener('click', function(e) {
+            if (this.disabled) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }, true);
+
+        // On mousedown, immediately set prohibited visuals
+        btn.addEventListener('mousedown', function() {
+            this.classList.add('cursor-prohibited');
+            this.style.cursor = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"%23e53e3e\" stroke-width=\"4\"/><line x1=\"7\" y1=\"17\" x2=\"17\" y2=\"7\" stroke=\"%23e53e3e\" stroke-width=\"4\" stroke-linecap=\"round\"/></svg>') 12 12, not-allowed";
+        });
+
+        // Intercept click to delay modal opening briefly
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Disable to avoid double opens and enforce cursor state
+            this.disabled = true;
+            this.classList.add('cursor-prohibited');
+            this.style.opacity = '0.7';
+
+            // Small delay ensures repaint so user can see cursor change
+            setTimeout(() => {
+                if (typeof window.openLoginModal === 'function') {
+                    try { window.openLoginModal(); } catch (_) {}
+                }
+                setTimeout(() => {
+                    this.disabled = false;
+                    this.classList.remove('cursor-prohibited');
+                    this.style.cursor = '';
+                    this.style.opacity = '';
+                }, 2000);
+            }, 120);
+        });
+    });
+
+    // Re-enable if user navigates back (bfcache)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            setBuyNowButtonsDisabled(false);
+            isPlacingOrder = false;
+        }
+    });
 });
 
 // Ẩn sticky-action-bar khi lăn chuột, hiện lại khi dừng lăn

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -29,7 +29,7 @@ $variantsForJs = $product->variants->map(function ($variant) {
     return [
         'id' => $variant->id,
         'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity, 
+        'stock_quantity' => $variant->stock_quantity,
         'options' => $variant->options->mapWithKeys(function ($opt) {
             return [$opt->attribute_id => $opt->option_id];
         }),
@@ -123,15 +123,15 @@ $variantsForJs = $product->variants->map(function ($variant) {
 
     // Debug: Kiểm tra dữ liệu attributeOptionsWithPrices
     if ($product->id == 136) {
-        \Log::info('Product 136 Debug:', [
+        Log::info('Product 136 Debug:', [
             'variants_count' => $product->variants->count(),
             'attributeOptionsWithPrices' => $attributeOptionsWithPrices,
             'variantsForJs' => $variantsForJs
         ]);
-        
+
         // Debug từng variant
         foreach ($product->variants as $variant) {
-            \Log::info('Variant ' . $variant->id . ' options:', [
+            Log::info('Variant ' . $variant->id . ' options:', [
                 'options' => $variant->options->map(function($opt) {
                     return [
                         'attribute_id' => $opt->attribute_id,

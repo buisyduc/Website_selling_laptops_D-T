@@ -1,46 +1,3 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var galleryThumbs = new Swiper('.gallery-thumbs', {
-            spaceBetween: 0,
-            slidesPerView: 5,
-            freeMode: true,
-            watchSlidesProgress: true,
-            watchSlidesVisibility: true,
-            slideToClickedSlide: true,
-            breakpoints: {
-                0: {
-                    slidesPerView: 2
-                },
-                600: {
-                    slidesPerView: 3
-                },
-                900: {
-                    slidesPerView: 5
-                }
-            }
-        });
-        var galleryTop = new Swiper('.gallery-top', {
-            loop: true,
-            autoplay: {
-                delay: 3500,
-                disableOnInteraction: false,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            thumbs: {
-                swiper: galleryThumbs
-            },
-            effect: 'slide',
-            speed: 600,
-            spaceBetween: 0,
-            slidesPerView: 1,
-        });
-    });
-</script>
 <div class="container-main">
     <div class="sidebar-menu">
         <div id="menu-main" class="menu-container">
@@ -1226,6 +1183,49 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.Swiper) {
+            var thumbsEl = document.querySelector('.gallery-thumbs');
+            var topEl = document.querySelector('.gallery-top');
+            var galleryThumbs, galleryTop;
+            if (thumbsEl) {
+                galleryThumbs = new Swiper('.gallery-thumbs', {
+                    spaceBetween: 0,
+                    slidesPerView: 5,
+                    freeMode: true,
+                    watchSlidesProgress: true,
+                    watchSlidesVisibility: true,
+                    slideToClickedSlide: true,
+                    breakpoints: {
+                        0: { slidesPerView: 2 },
+                        600: { slidesPerView: 3 },
+                        900: { slidesPerView: 5 }
+                    }
+                });
+            }
+            if (topEl) {
+                galleryTop = new Swiper('.gallery-top', {
+                    loop: true,
+                    autoplay: {
+                        delay: 3500,
+                        disableOnInteraction: false,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    thumbs: galleryThumbs ? { swiper: galleryThumbs } : undefined,
+                    effect: 'slide',
+                    speed: 600,
+                    spaceBetween: 0,
+                    slidesPerView: 1,
+                });
+            }
+        }
+    });
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

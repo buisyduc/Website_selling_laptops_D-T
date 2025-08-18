@@ -7,6 +7,7 @@
         <script src="<?php echo e(asset('client/vendor/bootstrap/bootstrap.min.js')); ?>"></script>
 
         <!-- JS Implementing Plugins -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script src="<?php echo e(asset('client/vendor/appear.js')); ?>"></script>
         <script src="<?php echo e(asset('client/vendor/jquery.countdown.min.js')); ?>"></script>
         <script src="<?php echo e(asset('client/vendor/hs-megamenu/src/hs.megamenu.js')); ?>"></script>

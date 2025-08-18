@@ -26,7 +26,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">Name</label>
+                                <label for="name" class="form-label">Tên</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-custom"
                                     value="{{ old('name', $reorderInfo['name'] ?? ($order->name ?? (auth()->user()->name ?? ''))) }}">
                                 @error('name')
@@ -34,7 +34,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email Address</label>
+                                <label for="email" class="form-label">Email</label>
                                 <input type="email" id="email" name="email" class="form-control form-control-custom"
                                     value="{{ old('email', $reorderInfo['email'] ?? ($order->email ?? (auth()->user()->email ?? ''))) }}">
                                 @error('email')
@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
+                            <label for="phone" class="form-label">Số điện thoại</label>
                             <input type="text" id="phone" name="phone" class="form-control form-control-custom"
                                 value="{{ old('phone', $reorderInfo['phone'] ?? ($order->phone ?? (auth()->user()->phone ?? ''))) }}">
                             @error('phone')
@@ -101,7 +101,7 @@
                         </div>
 
                         <button type="button" class="btn payment-btn w-100 mt-3"
-                            onclick="handleContinueToPayment()">CONTINUE TO PAYMENT</button>
+                            onclick="handleContinueToPayment()">TIẾP TỤC THANH TOÁN</button>
 
 
                     </form>
@@ -114,7 +114,7 @@
 
                         <!-- Nhập mã giảm giá thủ công -->
                         <div id="manual-coupon-input">
-                            <div class="rounded-3 px-3 py-2 d-flex justify-content-between align-items-center fw-medium">
+                            <div class="rounded-3 px-3 py-2 d-flex justify-content-between fw-medium">
                                 <input id="coupon_input" type="text" class="form-control border-0" name="coupon_input"
                                     placeholder="Nhập mã giảm giá (chỉ áp dụng 1 lần)">
                                 <button type="button" class="btn btn-outline-success btn-sm" id="manualApplyBtn"
@@ -307,17 +307,17 @@
             <!-- Left Column -->
             <div class="col-lg-5 order-lg-2 mb-4 mb-lg-0">
                 <div class="content-wrapper summary-wrapper">
-                    <h3 class="fw-bold mb-4 fs-5">Order Summary</h3>
+                    <h3 class="fw-bold mb-4 fs-5">ĐƠN HÀNG </h3>
 
                     <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-muted">Subtotal</span>
+                        <span class="text-muted">Tổng phụ</span>
                         <span class="fw-bold" id="order-subtotal">
                             {{ number_format($cartTotal ?? $totalAmount, 0, ',', '.') }}đ
                         </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Delivery/Shipping</span>
-                        <span class="fw-bold">Free</span>
+                        <span class="text-muted">Phí vận chuyển</span>
+                        <span class="fw-bold">Miễn phí</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center" id="order-discount-row"
                         style="display: none;">
@@ -325,41 +325,65 @@
                         <span class="fw-bold text-danger" id="order-discount-amount"></span>
                     </div>
                     <div class="my-2">
-                        <p class="text-success mb-1">You qualify for free shipping!</p>
+                        <p class="text-success mb-1">Bạn có thể nhận hàng miễn phí!</p>
                         <div class="shipping-progress-bar"></div>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between align-items-center py-2 mb-4">
-                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-5">Tổng</span>
                         <span class="fw-bold fs-4">{{ number_format($totalAmount, 0, ',', '.') }}đ</span>
                     </div>
-
+                    <p class="fw-bold mb-2" >Dự kiến giao: {{ \Carbon\Carbon::now()->addDays(3)->locale('vi')->isoFormat('dddd, DD/MM') }}</p>
                     @foreach ($cartItems as $item)
                         @php
                             $product = $item->variant->product;
                             $imgPath = $product->image ?? 'default-image.jpg';
                         @endphp
                         <div class="mb-4">
-                            <p class="fw-bold mb-2">Arrives {{ now()->format('D, M d') }}</p>
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-4" style="width: 180px; height:180px; margin-right: 10px;">
+                            <div class="d-flex">
+                                <!-- Ảnh sản phẩm -->
+                                <div class="flex-shrink-0 me-4 h-100" style="width: 140px; height:140px; margin-right: 10px;">
                                     <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->name }}"
                                         class="img-fluid" style="border-radius: 12px;">
                                 </div>
-                                <div class="flex-grow-1">
-                                    <p class="fw-bold mb-1">{{ $product->name }}</p>
-                                    <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
-                                    @foreach ($item->variant->options as $opt)
-                                        <p class="text-muted mb-1">{{ $opt->attribute->name }}:
-                                            {{ $opt->option->value }}
-                                        </p>
-                                    @endforeach
-                                    <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ
-                                    </p>
+                                <!-- Thông tin sản phẩm -->
+                                <div class="flex-grow-1 h-100">
+                                    <div class="d-flex flex-column align-items-start h-100">
+                                        <p class="fw-bold mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">{{ $product->name }}</p>
+                                        <!-- Nội dung ẩn -->
+                                        <div class="more-info" style="display: none;">
+                                            <p class="text-muted mb-1">Qty {{ $item->quantity }}</p>
+                                            @foreach ($item->variant->options as $opt)
+                                                <p class="text-muted mb-1">{{ $opt->attribute->name }}: {{ $opt->option->value }}</p>
+                                            @endforeach
+                                            <p class="fw-bold mb-0">{{ number_format($item->variant->price, 0, ',', '.') }}đ</p>
+                                        </div>
+                                        <!-- Nút Xem thêm -->
+                                        <button type="button" class="btn btn-link p-0 toggle-info" style="font-size: 14px;">
+                                            Xem thêm...
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            document.querySelectorAll(".toggle-info").forEach(function (btn) {
+                                btn.addEventListener("click", function () {
+                                    let info = btn.previousElementSibling; // .more-info
+                                    if (info.style.display === "none") {
+                                        info.style.display = "block";
+                                        btn.textContent = "Ẩn bớt";
+                                    } else {
+                                        info.style.display = "none";
+                                        btn.textContent = "Xem thêm";
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+
                 </div>
             </div>
         </div>

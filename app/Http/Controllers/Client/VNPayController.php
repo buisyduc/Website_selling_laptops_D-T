@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 
 class VNPayController extends Controller
 {
@@ -64,16 +65,61 @@ class VNPayController extends Controller
         $vnp_ResponseCode = $request->get('vnp_ResponseCode');
         $vnp_TxnRef = $request->get('vnp_TxnRef');
 
-        $order = Order::where('order_code', $vnp_TxnRef)->firstOrFail();
+        try {
+            DB::transaction(function () use ($vnp_ResponseCode, $vnp_TxnRef) {
+                $order = Order::with(['items.variant', 'coupon'])->where('order_code', $vnp_TxnRef)->firstOrFail();
+                $user = auth()->user();
 
-        if ($vnp_ResponseCode == '00') {
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-            ]);
-            return redirect()->route('checkout.thankYou', $order->id)->with('success', 'Thanh toán VNPay thành công!');
-        } else {
-            return redirect()->route('checkout.index', $order->id)->with('error', 'Thanh toán thất bại hoặc bị huỷ.');
+                if ($vnp_ResponseCode == '00') {
+                    // Trừ kho
+                    foreach ($order->items as $item) {
+                        $variant = $item->variant;
+                        if ($variant && $variant->stock_quantity !== null) {
+                            $variant->decrement('stock_quantity', $item->quantity);
+                        }
+                    }
+
+                    // Cộng lượt dùng mã giảm giá
+                    if ($order->coupon) {
+                        $order->coupon->increment('used_count');
+                    }
+
+                    // Xoá giỏ hàng
+                    if ($user && ($cart = \App\Models\Cart::where('user_id', $user->id)->first())) {
+                        $cart->items()->delete();
+                        $cart->delete();
+                    }
+
+                    // Cập nhật trạng thái đơn hàng
+                    $order->update([
+                        'payment_status' => 'pending',
+                        'status'         => 'pending',
+                        'payment_method' => 'vnpay', // Thêm dòng này!
+                        'paid_at'        => now(),
+                    ]);
+                } else {
+                    // Nếu thanh toán thất bại từ VNPay, cập nhật trạng thái thất bại
+                    $order->update([
+                        'payment_status' => 'failed',
+                        'status' => 'failed',
+                    ]);
+                    throw new \Exception('Thanh toán VNPay thất bại hoặc bị huỷ.');
+                }
+            });
+
+            $order = Order::where('order_code', $vnp_TxnRef)->first();
+            return redirect()->route('checkout.orderInformation', $order->id)->with('success', 'Thanh toán VNPay thành công!');
+        } catch (\Exception $e) {
+            // Cập nhật trạng thái thất bại nếu chưa cập nhật ở trên (phòng trường hợp lỗi bất ngờ)
+            $order = Order::where('order_code', $vnp_TxnRef)->first();
+            if ($order && $order->payment_status !== 'paid') {
+                $order->update([
+                    'payment_status' => 'failed',
+                    'status' => 'failed',
+                ]);
+            }
+            return redirect()->route('checkout.orderInformation', $order->id ?? null)
+                ->with('error', 'Thanh toán VNPay thất bại hoặc bị huỷ. Bạn có thể thanh toán lại đơn hàng!');
         }
     }
 }

@@ -74,7 +74,123 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => 'canceled']);
+        $order->update(['payment_status' => 'canceled']);
         return back()->with('success', 'Đã hủy đơn hàng thành công.');
+    }
+    public function refundPending($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Không thể hủy đơn hàng này.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'pending']);
+        $order->update(['payment_status' => 'refund_pending']);
+        return back()->with('success', 'Shop sẽ sớm xử lý đơn hàng và hoàn tiền về cho bạn.');
+    }
+    public function refundCanceled($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Không thể hủy đơn hàng này.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'pending']);
+        $order->update(['payment_status' => 'pending']);
+        return back()->with('success', 'Đã hủy yêu cầu hoàn tiền.');
+    }
+    public function returnRefund($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'shipping') {
+            return back()->with('error', 'Không thể yêu cầu trả hàng hoàn tiền.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'returned']);
+        $order->update(['payment_status' => 'returned_refunded']);
+        return back()->with('success', 'Đã yêu cầu trả hàng hoàn tiền.');
+    }
+    public function cancelReturnRefund($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'returned') {
+            return back()->with('error', 'Không thể hủy yêu cầu trả hàng hoàn tiền.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'shipping']);
+        $order->update(['payment_status' => 'paid']);
+        return back()->with('success', 'Đã hủy yêu cầu trả hàng hoàn tiền.');
+    }
+
+    public function received($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'shipping') {
+            return back()->with('error', 'Không thể xác nhận đơn hàng.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'completed']);
+        $order->update(['payment_status' => 'paid']);
+        return back()->with('success', 'Đã xác nhận đơn hàng thành công.');
+    }
+    public function traHang($id)
+    {
+        $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($order->status !== 'shipping') {
+            return back()->with('error', 'Không thể yêu cầu trả hàng.');
+        }
+
+        foreach ($order->items as $item) {
+            if ($item->variant) {
+                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->save();
+            }
+        }
+
+        $order->update(['status' => 'returned']);
+        $order->update(['payment_status' => 'unpaid']);
+        return back()->with('success', 'Đã yêu cầu trả hàng.');
     }
 
     public function reorder($id)

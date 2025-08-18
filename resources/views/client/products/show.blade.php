@@ -588,12 +588,13 @@
                             Trả góp 0%
                         </button>
                         <!-- Mua ngay -->
-                        <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="buyNow()" id="buyNowBtn"
+                        <button class=" text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="buyNow()" id="buyNowBtn" data-buy-now="1"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
                             style="border-radius: 8px; background: linear-gradient(to bottom, #f42424, #c60000); border: none;">
                             MUA NGAY<br>
                             <small class="fw-normal">Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng</small>
                         </button>
+                      
                         <!-- Thêm vào giỏ -->
                         <button class="btn btn-outline-danger rounded-3 py-3" style="border-radius: 8px;"
                             onclick="addToCart()" id="addToCartBtn"
@@ -606,9 +607,9 @@
                             style="border-radius: 8px;">
                             Trả góp 0%
                         </button>
-
+ 
                         <!-- Mua ngay -->
-                        <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="openLoginModal()"
+                        <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3 login-required-btn" onclick="openLoginModal()" data-buy-now="1"
                             style="border-radius: 8px; background: linear-gradient(to bottom, #f42424, #c60000); border: none;">
                             MUA NGAY<br>
                             <small class="fw-normal">Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng</small>
@@ -798,7 +799,7 @@
                         <button onclick="buyNow()" id="buyNowBtn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
 
-                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;" data-buy-now="1">
                             Mua Ngay
                         </button>
                         <button onclick="addToCart()" id="addToCartBtn"
@@ -813,9 +814,9 @@
                             style="background: white; border: 1px solid #0066cc; color: #0066cc; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
                             Trả góp 0%
                         </button>
-                        <button onclick="openLoginModal()"
+                        <button onclick="openLoginModal()" data-buy-now="1" class="login-required-btn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
-                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px;">
                             Mua Ngay
                         </button>
                         <button onclick="openLoginModal()" id="addToCartBtn"
@@ -942,7 +943,17 @@
         window.cartBuyNowUrl = "{{ route('cart.buyNow') }}";
         window.selectedPrice = {{ $product->variants->count() > 0 ? $product->variants->first()->price : 0 }};
     </script>
-    <script src="{{ asset('client/js/Products/product-show.js') }}"></script>
+    <script src="{{ asset('client/js/Products/product-show.js') }}?v={{ filemtime(public_path('client/js/Products/product-show.js')) }}"></script>
+    
+    <style>
+        /* Red prohibited cursor for disabled buy-now buttons */
+        button[data-buy-now][disabled],
+        button[data-buy-now][disabled]:hover,
+        button.cursor-prohibited {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="%23e53e3e" stroke-width="4"/><line x1="7" y1="17" x2="17" y2="7" stroke="%23e53e3e" stroke-width="4" stroke-linecap="round"/></svg>') 12 12, not-allowed !important;
+            opacity: 0.7;
+        }
+    </style>
 
 @section('footer')
     @include('client.layouts.partials.footer')

@@ -58,7 +58,6 @@ Route::middleware(['auth', 'is_customer'])->group(function () {
 Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     ->middleware('auth')
     ->name('wishlist.store');
-
 // CART
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -84,7 +83,13 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     Route::get('/client/orders/{id}', [OrderController::class, 'show'])->name('client.orders.show');
     Route::get('/order/order-information/{orderId}', [CheckoutController::class, 'orderInformation'])->name('checkout.orderInformation');
     Route::delete('/client/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::delete('/client/orders/{id}/refundPending', [OrderController::class, 'refundPending'])->name('orders.refundPending');
+    Route::delete('/client/orders/{id}/refundCanceled', [OrderController::class, 'refundCanceled'])->name('orders.refundCanceled');
     Route::post('/client/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+    Route::delete('/client/orders/{id}/returnRefund', [OrderController::class, 'returnRefund'])->name('orders.returnRefund');
+    Route::delete('/client/orders/{id}/cancelReturnRefund', [OrderController::class, 'cancelReturnRefund'])->name('orders.cancelReturnRefund');
+    Route::delete('/client/orders/{id}/received', [OrderController::class, 'received'])->name('orders.received');
+    Route::delete('/client/orders/{id}/traHang', [OrderController::class, 'traHang'])->name('orders.traHang');
 
 //VNPay
 Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');

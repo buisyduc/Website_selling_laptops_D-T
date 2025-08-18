@@ -1,107 +1,130 @@
 @extends('client.layouts.layout')
-
 @section('sidebar')
     @include('client.layouts.partials.sidebar')
 @endsection
-
 @section('title', 'Trang chủ')
-
-
 @section('content')
+   
     <div class="container p-0">
-        <div class="banner-section rounded-3 overflow-hidden"
-            style="border-radius: 12px; background: transparent; min-height: 135px;">
-            <div class="banner-section d-flex flex-wrap align-items-stretch" style="gap: 16px; flex-grow:1; height: 100%;">
-                <div class="banner_one col-xl-3">
-                    <a href="#" class="d-black text-gray-90 text-decoration-none">
-                        <div class="min-height-132 py-1 d-flex bg-gray-1 align-items-center">
-                            <div class="col-6 col-xl-5 col-wd-6 pr-0">
-                                <img class="img-fluid"
-                                    src="{{ asset('client/img/1920X422/asus-rog-strix-gaming-g513r-r7-hn038w-170822-061143-600x600-removebg-preview.png') }}"
-                                    alt="Image Description">
-                            </div>
-                            <div class="col-6 col-xl-7 col-wd-6">
-                                <div class="mb-2 pb-1 font-size-18 font-weight-light text-ls-n1 text-lh-23 ">
-                                    CATCH BIG <strong>DEALS</strong> ON THE LAPTOP
-                                </div>
-                                <div class="link text-gray-90 font-weight-bold font-size-15" href="#">
-                                    Shop now
-                                    <span class="link__icon ml-1">
-                                        <span class="link__icon-inner"><i class="ec ec-arrow-right-categproes"></i></span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+        <div class="horizontal-banner"
+            style="margin:0; padding:0; background:#b8001c; border-radius: 12px; overflow: hidden;">
+            <a href="#" class="horizontal-banner__item button__link" style="display:block;">
+                <img src="{{ asset('client/img/special-b2s-dday3-d.gif') }}" width="100%" height="auto" alt="B2S 2025 - D&T"
+                    loading="lazy" class="horizontal-banner__img desktop" style="width:100%; height:auto; display:block;">
+                <img src="{{ asset('client/img/special-b2s-dday3-m.gif') }}" width="100%" height="auto"
+                    alt="B2S 2025 - D&T" loading="lazy" class="horizontal-banner__img mobile"
+                    style="width:100%; height:auto; display:none;">
+            </a>
+        </div>
+        <div id="noibat"
+            style="background: #ff4663; border-radius: 18px; padding: 18px 10px 30px 10px; margin-bottom: 30px; margin-top: 16px">
+           
+            <div class="block-featured-product">
+                <div class="product-list-title">
+                    <div class="product-list-title__header">
+                        <a href="#" class="title button__link">
+                            <h2 class="block-title-hot-sale">
+                                <span class="hot-sale-icon">
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                        <path
+                                            d="M16 8c2 2 2 4 0 6 2-1 4 1 4 3 0 2-2 4-4 4s-4-2-4-4c0-2 2-4 4-3-2-2-2-4 0-6z"
+                                            fill="#fff" />
+                                    </svg>
+                                </span>
+                                <span>SẢN PHẨM NỔI BẬT</span>
+                            </h2>
+                        </a>
+                    </div>
+
                 </div>
-                <div class="banner_two col-xl-3">
-                    <a href="#" class="d-black text-gray-90 text-decoration-none">
-                        <div class="min-height-132 py-1 d-flex bg-gray-1 align-items-center">
-                            <div class="col-6 col-xl-5 col-wd-6 pr-0">
-                                <img class="img-fluid"
-                                    src="{{ asset('client/img/1920X422/pc-gaming-hacom2-removebg-preview.png') }}"
-                                    alt="Image Description">
-                            </div>
-                            <div class="col-6 col-xl-7 col-wd-6">
-                                <div class="mb-2 pb-1 font-size-18 font-weight-light text-ls-n1 text-lh-23">
-                                    CATCH BIG <strong>DEALS</strong> ON THE ACCESORY
+                <div class="product-list">
+                    <div class="swiper product-slider">
+                        <div class="swiper-wrapper">
+                            @foreach ($featuredProducts->take(10) as $product)
+                                @if ($product->variants->where('stock_quantity', '>', 0)->count() === 0)
+                                    @continue
+                                @endif
+                                @php
+                                    $variant = $product->variants
+                                        ->sortBy(function ($v) {
+                                            return $v->sale_price ?? $v->price;
+                                        })
+                                        ->first();
+                                    $discount = 0;
+                                    if ($variant && $variant->sale_price && $variant->sale_price < $variant->price) {
+                                        $discount = round(
+                                            (($variant->price - $variant->sale_price) / $variant->price) * 100,
+                                        );
+                                    }
+                                @endphp
+                                <div class="swiper-slide">
+                                    <div class="product-card-container">
+                                        @if ($discount > 0)
+                                            <div class="discount-badge">Giảm {{ $discount }}%</div>
+                                        @endif
+                                        <div class="install-0-tag"><span>Trả góp <strong>0%</strong></span></div>
+                                        <a href="{{ route('client.products.show', $product->id) }}" class="product-link">
+                                            <div class="product-image">
+                                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                            </div>
+
+                                            <h3 class="product-name">{{ $product->name }}</h3>
+                                            <div class="product-price">
+                                                @if ($variant)
+                                                    <span class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
+                                                    @if ($variant->sale_price && $variant->sale_price < $variant->price)
+                                                        <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                    @endif
+                                                @endif
+                                            </div>
+
+                                            <div class="product-benefits">
+                                                <div class="smember-discount">Smember giảm đến 198.000₫</div>
+                                                <div class="sstudent-discount">S-Student giảm thêm 500.000₫</div>
+                                            </div>
+                                            <div class="product-promo">
+                                                Không phí chuyển đổi khi trả góp 0% qua thẻ tín dụng kỳ hạn 3-6 tháng
+                                            </div>
+                                        </a>
+                                        @php
+                                            $isFavorite = in_array($product->id, $favoriteIds ?? []);
+                                        @endphp
+                                        <div class="product-actions">
+                                            <div class="product-rating">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($product->averageRating()))
+                                                        <i class="fas fa-star"></i>
+                                                    @elseif($i <= ceil($product->averageRating()))
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <div class="product-wishlist" data-product-id="{{ $product->id }}"
+                                                onclick="handleFavoriteClick(event, this)">
+                                                <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu
+                                                thích
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="link text-gray-90 font-weight-bold font-size-15" href="#">
-                                    Shop now
-                                    <span class="link__icon ml-1">
-                                        <span class="link__icon-inner"><i class="ec ec-arrow-right-categproes"></i></span>
-                                    </span>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
-                    </a>
-                </div>
-                <div class="bbanner_three col-xl-3">
-                    <a href="#" class="d-black text-gray-90 text-decoration-none">
-                        <div class="min-height-132 py-1 d-flex bg-gray-1 align-items-center">
-                            <div class="col-6 col-xl-5 col-wd-6 pr-0">
-                                <img class="img-fluid"
-                                    src="{{ asset('client/img/1920X422/10875_dsc07967_26c1ee1d8ebb49dcb5369c56329c2368_master-removebg-preview.png') }}"
-                                    alt="Image Description">
-                            </div>
-                            <div class="col-6 col-xl-7 col-wd-6">
-                                <div class="mb-2 pb-1 font-size-18 font-weight-light text-ls-n1 text-lh-23">
-                                    CATCH BIG <strong>DEALS</strong> ON THE PC
-                                </div>
-                                <div class="link text-gray-90 font-weight-bold font-size-15" href="#">
-                                    Shop now
-                                    <span class="link__icon ml-1">
-                                        <span class="link__icon-inner"><i class="ec ec-arrow-right-categproes"></i></span>
-                                    </span>
-                                </div>
-                            </div>
+                        <!-- Swiper Navigation Buttons (chỉ giữ 1 cặp ngoài .swiper-wrapper) -->
+                        <div class="swiper-button-prev custom-swiper-nav">
+                            
                         </div>
-                    </a>
-                </div>
-                <div class="banner_four col-xl-3">
-                    <a href="#" class="d-black text-gray-90 text-decoration-none">
-                        <div class="min-height-132 py-1 d-flex bg-gray-1 align-items-center">
-                            <div class="col-6 col-xl-5 col-wd-6 pr-0">
-                                <img class="img-fluid"
-                                    src="{{ asset('client/img/1920X422/z3488965753247_9740d023e93f41cb195f48294ffbb0fe-removebg-preview.png') }}"
-                                    alt="Image Description">
-                            </div>
-                            <div class="col-6 col-xl-7 col-wd-6">
-                                <div class="mb-2 pb-1 font-size-18 font-weight-light text-ls-n1 text-lh-23">
-                                    CATCH BIG <strong>DEALS</strong> ON THE FURNITURE
-                                </div>
-                                <div class="link text-gray-90 font-weight-bold font-size-15" href="#">
-                                    Shop now
-                                    <span class="link__icon ml-1">
-                                        <span class="link__icon-inner"><i class="ec ec-arrow-right-categproes"></i></span>
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="swiper-button-next custom-swiper-nav">
+                          
                         </div>
-                    </a>
+                    </div>
                 </div>
+
             </div>
         </div>
+
+
         <div id="moinhat">
             <div class="block-featured-product">
                 <div class="product-list-title">
@@ -147,7 +170,8 @@
                                             <span
                                                 class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                             @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                <span
+                                                    class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                             @endif
                                         @endif
                                     </div>
@@ -177,7 +201,8 @@
                                     </div>
                                     <div class="product-wishlist" data-product-id="{{ $product->id }}"
                                         onclick="handleFavoriteClick(event, this)">
-                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu
+                                        thích
                                     </div>
                                 </div>
                             </div>
@@ -196,13 +221,16 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Macbook</a><a href=""
-                            class="related-tag button__link">Asus</a><a href="" class="related-tag button__link">MSI</a><a
-                            href="" class="related-tag button__link">Lenovo</a><a href=""
-                            class="related-tag button__link">HP</a><a href="" class="related-tag button__link">Acer</a><a
-                            href="" class="related-tag button__link">Dell</a><a href=""
+                    <div class="list-related-tag"><a href="" class="related-tag button__link">Macbook</a><a
+                            href="" class="related-tag button__link">Asus</a><a href=""
+                            class="related-tag button__link">MSI</a><a href=""
+                            class="related-tag button__link">Lenovo</a><a href=""
+                            class="related-tag button__link">HP</a><a href=""
+                            class="related-tag button__link">Acer</a><a href=""
+                            class="related-tag button__link">Dell</a><a href=""
                             class="related-tag button__link">Huawei</a><a href=""
-                            class="related-tag button__link">Gigabyte</a><a href="" class="related-tag button__link">Laptop
+                            class="related-tag button__link">Gigabyte</a><a href=""
+                            class="related-tag button__link">Laptop
                             AI</a>
                         <a href="" class="related-tag button__link">Xem tất cả</a>
                     </div>
@@ -243,7 +271,8 @@
                                             <span
                                                 class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                             @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                <span
+                                                    class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                             @endif
                                         @endif
                                     </div>
@@ -273,7 +302,8 @@
                                     </div>
                                     <div class="product-wishlist" data-product-id="{{ $laptopProduct->id }}"
                                         onclick="handleFavoriteClick(event, this)">
-                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                        Yêu thích
                                     </div>
                                 </div>
                             </div>
@@ -292,8 +322,8 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a><a href=""
-                            class="related-tag button__link">Máy tính bàn</a>
+                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a><a
+                            href="" class="related-tag button__link">Máy tính bàn</a>
                         <a href="" class="related-tag button__link">PC Gaming</a>
                         <a href="" class="related-tag button__link">PC Đồ họa</a><a href=""
                             class="related-tag button__link">PC đồng bộ</a>
@@ -326,7 +356,8 @@
                             <div class="install-0-tag"><span>Trả góp <strong>0%</strong></span></div>
                             <a href="{{ route('client.products.show', $screenProduct->id) }}" class="product-link">
                                 <div class="product-image">
-                                    <img src="{{ asset('storage/' . $screenProduct->image) }}" alt="{{ $screenProduct->name }}">
+                                    <img src="{{ asset('storage/' . $screenProduct->image) }}"
+                                        alt="{{ $screenProduct->name }}">
                                 </div>
 
                                 <h3 class="product-name">{{ $screenProduct->name }}</h3>
@@ -335,7 +366,8 @@
                                         <span
                                             class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                         @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                            <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                            <span
+                                                class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                         @endif
                                     @endif
                                 </div>
@@ -365,7 +397,8 @@
                                 </div>
                                 <div class="product-wishlist" data-product-id="{{ $screenProduct->id }}"
                                     onclick="handleFavoriteClick(event, this)">
-                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu
+                                    thích
                                 </div>
                             </div>
                         </div>
@@ -424,7 +457,8 @@
                                         <span
                                             class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                         @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                            <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                            <span
+                                                class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                         @endif
                                     @endif
                                 </div>
@@ -454,7 +488,8 @@
                                 </div>
                                 <div class="product-wishlist" data-product-id="{{ $pcProduct->id }}"
                                     onclick="handleFavoriteClick(event, this)">
-                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu thích
+                                    <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu
+                                    thích
                                 </div>
                             </div>
                         </div>
@@ -463,9 +498,58 @@
             </div>
         </div>
     </div>
+    <script>
+// --- Swiper Slider for #noibat Featured Products ---
+window.addEventListener('load', function () {
+    if (typeof Swiper !== 'undefined') {
+        console.log('Swiper loaded, initializing #noibat slider...');
+        var noibatSwiper = new Swiper('#noibat .product-slider', {
+    autoplay: {
+        delay: 3500, // thời gian chuyển slide (ms)
+        disableOnInteraction: false // vẫn tự chạy dù người dùng vừa thao tác
+    },
+            slidesPerView: 5,
+            slidesPerGroup: 5,
+            spaceBetween: 16,
+            navigation: {
+                nextEl: '#noibat .swiper-button-next',
+                prevEl: '#noibat .swiper-button-prev',
+            },
+            speed: 600,
+            grabCursor: true,
+            loop: false,
+            watchOverflow: true,
+            allowTouchMove: true,
+            breakpoints: {
+                1200: {
+                    slidesPerView: 5,
+                    slidesPerGroup: 5,
+                },
+                992: {
+                    slidesPerView: 4,
+                    slidesPerGroup: 4,
+                },
+                768: {
+                    slidesPerView: 3,
+                    slidesPerGroup: 3,
+                },
+                480: {
+                    slidesPerView: 2,
+                    slidesPerGroup: 2,
+                },
+                0: {
+                    slidesPerView: 1,
+                    slidesPerGroup: 1,
+                }
+            }
+        });
+    }
+});
+
+    </script>
 
 
-    @section('footer')
-        @include('client.layouts.partials.footer')
-    @endsection
+@section('footer')
+    @include('client.layouts.partials.footer')
+@endsection
 @endsection
