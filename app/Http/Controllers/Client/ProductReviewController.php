@@ -207,19 +207,20 @@ class ProductReviewController extends Controller
 }
 public function filter(Request $request, $productId)
 {
-    $rating = $request->input('rating'); // 1-5 hoặc "all"
+        $rating = $request->query('rating');
 
-    $query = Review::where('product_id', $productId);
+    $query = $product->reviews()->latest();
 
-    if ($rating && $rating !== 'all') {
+    if ($rating !== 'all') {
         $query->where('rating', $rating);
     }
 
-    $reviews = $query->latest()->get();
+    $reviews = $query->get();
 
-    return response()->json([
-        'html' => view('partials.reviews_list', compact('reviews'))->render()
-    ]);
+    $html = view('partials.reviews-list', compact('reviews'))->render();
+
+    return response()->json(['html' => $html]);
+
 }
 
 

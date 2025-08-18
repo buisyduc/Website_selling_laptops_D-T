@@ -940,9 +940,10 @@
                 @for ($i = 5; $i >= 1; $i--)
                     <div class="d-flex align-items-center mb-1">
                         <div class="me-2">{{ $i }} <i class="fas fa-star text-warning"></i></div>
-                        <div class="progress flex-grow-1" style="height: 12px;">
+                        <div class="progress flex-grow-1"
+                            style="height: 12px; border-radius: 6px; background-color: #e9ecef;">
                             <div class="progress-bar bg-danger" role="progressbar"
-                                style="width: {{ $totalReviews > 0 ? ($ratingSummary[$i] / $totalReviews) * 100 : 0 }}%;">
+                                style="width: {{ $totalReviews > 0 ? ($ratingSummary[$i] / $totalReviews) * 100 : 0 }}%; border-radius: 6px;">
                             </div>
                         </div>
                         <div class="ms-2">{{ $ratingSummary[$i] }}</div>
@@ -951,18 +952,15 @@
             </div>
         </div>
 
-        <!-- Nút -->
-        <div class="review-filters mt-3 my-3">
-            <button class="filter-btn px-3 py-1 border rounded" data-rating="all" data-product="{{ $product->id }}">Tất cả</button>
-    <button class="filter-btn px-3 py-1 border rounded" data-rating="5" data-product="{{ $product->id }}">5 ★</button>
-    <button class="filter-btn px-3 py-1 border rounded" data-rating="4" data-product="{{ $product->id }}">4 ★</button>
-    <button class="filter-btn px-3 py-1 border rounded" data-rating="3" data-product="{{ $product->id }}">3 ★</button>
-    <button class="filter-btn px-3 py-1 border rounded" data-rating="2" data-product="{{ $product->id }}">2 ★</button>
-    <button class="filter-btn px-3 py-1 border rounded" data-rating="1" data-product="{{ $product->id }}">1 ★</button>
-</div>
-
-<div id="reviews-container">
-    @include('client.products.partials.reviews_list', ['reviews' => $reviews])
+        <!-- Nút đánh giá & bộ lọc -->
+        <div class="review-filters mt-3 d-flex flex-wrap align-items-center gap-2">
+            <button class="btn btn-danger">Đánh giá sản phẩm</button>
+            <button class="btn btn-outline-danger filter-btn" data-rating="all"
+                data-product="{{ $product->id }}">Tất cả</button>
+            @for ($i = 5; $i >= 1; $i--)
+                <button class="btn btn-outline-danger filter-btn" data-rating="{{ $i }}"
+                    data-product="{{ $product->id }}">{{ $i }} ★</button>
+            @endfor
         </div>
 
         {{-- Khu vực hiển thị review --}}
@@ -1095,18 +1093,31 @@
     </style>
     {{-- reviews --}}
     <script>
-       document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        let rating = this.dataset.rating;
-        let productId = this.dataset.product;
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault(); // tránh reload trang
 
-        fetch(`/reviews/filter/${productId}?rating=${rating}`)
-            .then(res => res.json())
-            .then(data => {
-                document.querySelector('#reviews-container').innerHTML = data.html;
+                    let rating = this.dataset.rating;
+                    let productId = this.dataset.product;
+
+                    fetch(`/reviews/filter/${productId}?rating=${rating}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.html) {
+                                document.querySelector('#reviews-container').innerHTML = data
+                                    .html;
+                            } else {
+                                document.querySelector('#reviews-container').innerHTML =
+                                    '<p class="text-muted">Không có đánh giá nào.</p>';
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Lỗi khi gọi API filter:", err);
+                        });
+                });
             });
-    });
-});
+        });
     </script>
 
     {{-- comment --}}
