@@ -49,10 +49,11 @@ Route::post('/logout', action: [AuthController::class, 'logout'])->name('logout'
 //giao diện chung
 Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
-
+//comment
 Route::post('/products/{product}/comments', [ProductCommentController::class, 'store'])
     ->name('comments.store');
-
+//rate
+Route::get('/reviews/filter/{productId}', [ProductReviewController::class, 'filter'])->name('reviews.filter');
 
 
 // // Product routes
@@ -99,9 +100,7 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
             Route::post('/review', 'store')->name('reviews.store');
         });
     });
-    Route::get('/reviews/filter', [App\Http\Controllers\ReviewController::class, 'filter'])->name('reviews.filter');
-
-
+    
     // Route cho edit, update, destroy với review ID
     Route::middleware(['auth'])->group(function () {
         Route::resource('reviews', ProductReviewController::class)

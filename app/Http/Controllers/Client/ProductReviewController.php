@@ -18,7 +18,7 @@ class ProductReviewController extends Controller
     // Middleware
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth')->except(['index', 'show', 'filter']);
         // $this->middleware('auth')->except(['index', 'show']);
         // $this->middleware('can:review,order,product')->only(['create', 'store']);
         // $this->middleware('can:update,review')->only(['edit', 'update']);
@@ -205,23 +205,26 @@ class ProductReviewController extends Controller
 
     return $images; // luôn trả về array
 }
-public function filter(Request $request, $productId)
+public function filter($productId, Request $request)
 {
-        $rating = $request->query('rating');
+    $rating = $request->query('rating');
 
-    $query = $product->reviews()->latest();
+    $query = \App\Models\ProductReview::with('user')
+        ->where('product_id', $productId);
 
     if ($rating !== 'all') {
         $query->where('rating', $rating);
     }
 
-    $reviews = $query->get();
+    $reviews = $query->latest()->get();
 
-    $html = view('partials.reviews-list', compact('reviews'))->render();
+    $html = view('client.products.partials.reviews_list', compact('reviews'))->render();
 
-    return response()->json(['html' => $html]);
-
+    return response()->json([
+        'success' => true,
+        'html' => $html,
+        'count' => $reviews->count()
+    ]);
 }
-
 
 }

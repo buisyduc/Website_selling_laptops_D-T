@@ -914,15 +914,16 @@
             @endif
         </div>
     </div>
-    <div class="card p-4">
-        <h4 class="fw-bold">Đánh giá</h4>
+    {{-- rate --}}
+    <div class="card p-5" style="font-size: 1.05rem;">
+        <h4 class="fw-bold mb-4" style="font-size: 1.5rem;">Đánh giá</h4>
 
         <div class="row mt-3">
             <!-- Điểm trung bình -->
-            <div class="col-md-3 text-center">
-                <h2 class="mb-0">{{ number_format($product->average_rating, 1) }}</h2>
-                <p class="text-muted">{{ $totalReviews }} lượt đánh giá</p>
-                <div class="text-warning">
+            <div class="col-md-3 pt-4 text-center">
+                <h2 class="mb-1" style="font-size: 2.5rem;">{{ number_format($product->average_rating, 1) }}</h2>
+                <p class="text-muted mb-2 fw-bold" style="font-size: 1rem;">{{ $totalReviews }} lượt đánh giá</p>
+                <div class="text-warning" style="font-size: 1.3rem;">
                     @for ($i = 1; $i <= 5; $i++)
                         @if ($i <= floor($product->average_rating))
                             <i class="fas fa-star"></i>
@@ -938,12 +939,12 @@
             <!-- Thanh phân bố đánh giá -->
             <div class="col-md-6">
                 @for ($i = 5; $i >= 1; $i--)
-                    <div class="d-flex align-items-center mb-1">
+                    <div class="d-flex align-items-center mb-2" style="font-size: 1rem;">
                         <div class="me-2">{{ $i }} <i class="fas fa-star text-warning"></i></div>
                         <div class="progress flex-grow-1"
-                            style="height: 12px; border-radius: 6px; background-color: #e9ecef;">
+                            style="height: 16px; border-radius: 8px; background-color: #e9ecef;">
                             <div class="progress-bar bg-danger" role="progressbar"
-                                style="width: {{ $totalReviews > 0 ? ($ratingSummary[$i] / $totalReviews) * 100 : 0 }}%; border-radius: 6px;">
+                                style="width: {{ $totalReviews > 0 ? ($ratingSummary[$i] / $totalReviews) * 100 : 0 }}%; border-radius: 8px;">
                             </div>
                         </div>
                         <div class="ms-2">{{ $ratingSummary[$i] }}</div>
@@ -953,22 +954,53 @@
         </div>
 
         <!-- Nút đánh giá & bộ lọc -->
-        <div class="review-filters mt-3 d-flex flex-wrap align-items-center gap-2">
-            <button class="btn btn-danger">Đánh giá sản phẩm</button>
-            <button class="btn btn-outline-danger filter-btn" data-rating="all"
-                data-product="{{ $product->id }}">Tất cả</button>
-            @for ($i = 5; $i >= 1; $i--)
-                <button class="btn btn-outline-danger filter-btn" data-rating="{{ $i }}"
-                    data-product="{{ $product->id }}">{{ $i }} ★</button>
-            @endfor
+        <div class="row mt-4">
+            <!-- Nút đánh giá sản phẩm -->
+            <div class="col-md-3">
+                <button class="btn btn-danger btn-lg w-80" id="btn-review">Đánh giá sản phẩm</button>
+            </div>
+
+            <!-- Modal Thông báo đánh giá sản phẩm -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content text-center p-3">
+
+                        <!-- Nút đóng -->
+                        <button type="button" class="btn-close ms-auto me-2 mt-2" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+
+                        <!-- Hình minh họa -->
+                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="error"
+                            class="mx-auto mb-3" width="100">
+
+                        <!-- Nội dung -->
+                        <h5 class="fw-bold text-danger">Gửi đánh giá không thành công!</h5>
+                        <p class="text-muted">Quý khách vui lòng mua hàng để tham gia đánh giá sản phẩm.</p>
+
+                        <!-- Nút hành động -->
+                        <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Đã hiểu</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bộ lọc căn thẳng hàng với thanh phân bố -->
+            <div class="col-md-6 d-flex flex-wrap justify-content-end gap-2 mt-2 mt-md-0">
+                <button class="btn btn-outline-danger btn-sm filter-btn" data-rating="all"
+                    data-product="{{ $product->id }}">Tất cả</button>
+                @for ($i = 5; $i >= 1; $i--)
+                    <button class="btn btn-outline-danger btn-sm filter-btn" data-rating="{{ $i }}"
+                        data-product="{{ $product->id }}">{{ $i }} ★</button>
+                @endfor
+            </div>
         </div>
 
         {{-- Khu vực hiển thị review --}}
-        <div id="reviews-container">
+        <div id="reviews-container" class="mt-4">
             @include('client.products.partials.reviews_list', ['reviews' => $product->reviews])
         </div>
-
     </div>
+
 
     {{-- comments --}}
     <div class="card mt-4 mb-3">
@@ -1093,32 +1125,82 @@
     </style>
     {{-- reviews --}}
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault(); // tránh reload trang
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
 
-                    let rating = this.dataset.rating;
-                    let productId = this.dataset.product;
+                let rating = this.dataset.rating;
+                let productId = this.dataset.product;
 
-                    fetch(`/reviews/filter/${productId}?rating=${rating}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.html) {
-                                document.querySelector('#reviews-container').innerHTML = data
-                                    .html;
-                            } else {
-                                document.querySelector('#reviews-container').innerHTML =
-                                    '<p class="text-muted">Không có đánh giá nào.</p>';
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Lỗi khi gọi API filter:", err);
-                        });
+                console.log("ProductID:", productId, "Rating:", rating);
+
+                // 🔥 Xóa active ở tất cả nút trước
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active');
                 });
+                // 🔥 Thêm active cho nút hiện tại
+                this.classList.add('active');
+
+                fetch(`/reviews/filter/${productId}?rating=${rating}`, {
+                        method: "GET",
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("API trả về:", data);
+
+                        let container = document.querySelector('#reviews-container');
+
+                        if (data.html && data.html.trim() !== "") {
+                            // Có dữ liệu review
+                            container.innerHTML = data.html;
+                        } else {
+                            // Không có review → show thông báo sinh động
+                            let msg = "";
+
+                            if (rating === "all") {
+                                msg = `Chưa có đánh giá nào cho sản phẩm này.`;
+                            } else {
+                                msg = `Chưa có đánh giá <span class="text-warning">`;
+                                // ⭐ thêm icon sao theo rating
+                                for (let i = 0; i < rating; i++) {
+                                    msg += `<i class="fas fa-star"></i>`;
+                                }
+                                msg += `</span> nào cho sản phẩm này.`;
+                            }
+
+                            container.innerHTML = `<p class="text-muted py-4 mb-0">${msg}</p>`;
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi gọi API filter:", err);
+                    });
+            });
+        });
+
+        // 🔥 Mặc định highlight "Tất cả" khi load trang
+        let defaultBtn = document.querySelector('.filter-btn[data-rating="all"]');
+        if (defaultBtn) defaultBtn.classList.add('active');
+    });
+</script>
+
+
+    <!-- Script mở modal tbao đánh giá sp -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("btn-review").addEventListener("click", function() {
+                var myModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+                myModal.show();
             });
         });
     </script>
+
+
+
 
     {{-- comment --}}
     <script>
