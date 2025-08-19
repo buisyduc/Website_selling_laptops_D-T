@@ -916,7 +916,7 @@
     </div>
     {{-- rate --}}
     <div class="card p-5" style="font-size: 1.05rem;">
-        <h4 class="fw-bold mb-4" style="font-size: 1.5rem;">Đánh giá</h4>
+        <h3 class="fw-bold mb-4" style="font-size: 1.5rem;">Đánh giá</h3>
 
         <div class="row mt-3">
             <!-- Điểm trung bình -->
@@ -956,7 +956,7 @@
         <!-- Nút đánh giá & bộ lọc -->
         <div class="row mt-4">
             <!-- Nút đánh giá sản phẩm -->
-            <div class="col-md-3">
+            <div class="col-md-3 ms-4">
                 <button class="btn btn-danger btn-lg w-80" id="btn-review">Đánh giá sản phẩm</button>
             </div>
 

@@ -19,12 +19,17 @@ class DashboardController extends Controller
 
     public function getData(Request $request)
     {
-        // Bộ lọc thời gian
-        $startDate = $request->start_date ?? Carbon::now()->startOfMonth()->toDateString();
-        $endDate = $request->end_date ?? Carbon::now()->endOfMonth()->toDateString();
+        // Bộ lọc thời gian (mặc định là tháng hiện tại)
+        $startDate = $request->start_date 
+            ? Carbon::parse($request->start_date)->startOfDay() 
+            : Carbon::now()->startOfMonth();
 
-         // 1. Doanh thu theo thời gian
-        $revenueData = Order::select(
+        $endDate = $request->end_date 
+            ? Carbon::parse($request->end_date)->endOfDay() 
+            : Carbon::now()->endOfMonth();
+
+        // 1. Doanh thu theo ngày
+        $revenues = Order::select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('SUM(total_amount) as total')
             )
@@ -33,15 +38,17 @@ class DashboardController extends Controller
             ->orderBy('date', 'asc')
             ->get();
 
-        // 2. Top sản phẩm bán chạy
-            $topProducts = order_item::select('product_id', DB::raw('SUM(quantity) as total_qty'))
-                ->with('product:id,name')
-                ->groupBy('product_id')
-                ->orderByDesc('total_qty')
-                ->take(5)
-                ->get();
+        $totalRevenue = $revenues->sum('total');
 
-         // 3. Top khách hàng mua nhiều nhất
+        // 2. Top sản phẩm bán chạy
+        $topProducts = order_item::select('product_id', DB::raw('SUM(quantity) as total_qty'))
+            ->with('product:id,name')
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->take(5)
+            ->get();
+
+        // 3. Top khách hàng mua nhiều nhất
         $topCustomers = Order::select('user_id', DB::raw('SUM(total_amount) as total_spent'))
             ->with('user:id,name')
             ->groupBy('user_id')
@@ -64,12 +71,18 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Trả về JSON duy nhất
         return response()->json([
-            'revenueData' => $revenueData,
+            'revenueData' => $revenues,
+            'totalRevenue' => $totalRevenue,
             'topProducts' => $topProducts,
             'topCustomers' => $topCustomers,
             'recentOrders' => $recentOrders,
-            'topCategories' => $topCategories
+            'topCategories' => $topCategories,
+            'startDate' => $startDate->toDateString(),
+            'endDate' => $endDate->toDateString()
         ]);
     }
+
+
 }
