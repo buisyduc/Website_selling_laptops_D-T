@@ -90,6 +90,11 @@ Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
     Route::delete('/client/orders/{id}/cancelReturnRefund', [OrderController::class, 'cancelReturnRefund'])->name('orders.cancelReturnRefund');
     Route::delete('/client/orders/{id}/received', [OrderController::class, 'received'])->name('orders.received');
     Route::delete('/client/orders/{id}/traHang', [OrderController::class, 'traHang'])->name('orders.traHang');
+    Route::delete('/client/orders/{id}/huyTraHang', [OrderController::class, 'huyTraHang'])->name('orders.huyTraHang');
+
+    // Return/Return-Refund Form
+    Route::get('/client/orders/{id}/return/create', [OrderController::class, 'returnForm'])->name('orders.return.form');
+    Route::post('/client/orders/{id}/return', [OrderController::class, 'returnSubmit'])->name('orders.return.submit');
 
 //VNPay
 Route::get('/payment/vnpay/{orderId}', [VNPayController::class, 'redirectToVNPay'])->name('vnpay.redirect');

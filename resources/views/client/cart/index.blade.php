@@ -100,7 +100,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ route('index') }}" class="btn btn-outline-secondary">← Tiếp tục mua hàng</a>
                     <div>
-                        <a href="{{ route('checkout.index') }}" class="btn btn-success">Mua ngay</a>
+                        <a href="{{ route('checkout.index') }}" class="btn btn-success" id="buyNowBtn" onclick="disableBuyNowButton(this)">Mua ngay</a>
                     </div>
                 </div>
             </form>
@@ -171,6 +171,34 @@
                 });
             });
         });
+
+        // Disable buy now button to prevent multiple clicks
+        function disableBuyNowButton(button) {
+            // Disable the button immediately
+            button.style.pointerEvents = 'none';
+            button.classList.add('disabled');
+            
+            // Store original text
+            const originalText = button.textContent;
+            
+            // Show loading state
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Đang xử lý...';
+            
+            // Add a small delay to allow the UI to update before navigation
+            setTimeout(() => {
+                window.location.href = button.href;
+            }, 100);
+            
+            // Re-enable button after 3 seconds as fallback (in case navigation fails)
+            setTimeout(() => {
+                button.style.pointerEvents = 'auto';
+                button.classList.remove('disabled');
+                button.textContent = originalText;
+            }, 3000);
+            
+            // Prevent default link behavior since we're handling navigation manually
+            return false;
+        }
 
         // Clear entire cart function
         function clearCart() {

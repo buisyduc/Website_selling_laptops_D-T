@@ -156,24 +156,15 @@
                         <div class="text-end">
 
                             @if ($order->status === 'shipping' && $order->payment_status === 'paid')
-                            <form class="cancel-order-return-refund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
-                                    action="{{ route('orders.returnRefund', $order->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        Trả hàng/hoàn tiền
-                                    </button>
-                                </form>
+                                <a href="{{ route('orders.return.form', [$order->id]) }}" class="btn btn-outline-secondary btn-sm d-inline-block ms-2" style="border-radius: 12px">
+                                    Trả hàng/hoàn tiền
+                                </a>
                             @endif
+                          
                             @if ($order->status === 'shipping' && $order->payment_status === 'waiting_payment')
-                            <form class="cancel-order-traHang-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
-                                    action="{{ route('orders.traHang', $order->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        Trả hàng
-                                    </button>
-                                </form>
+                                <a href="{{ route('orders.return.form', [$order->id]) }}" class="btn btn-outline-secondary btn-sm d-inline-block ms-2" style="border-radius: 12px">
+                                    Trả hàng
+                                </a>
                             @endif
                             @if ($order->status === 'shipping')
                                 <form class="d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
@@ -185,13 +176,23 @@
                                     </button>
                                 </form>
                             @endif
-                            @if ($order->payment_status === 'returned_refunded')
+                            @if (($order->payment_status === 'refund_pending' && $order->status === 'returned') || $order->payment_status === 'returned_refunded')
                                 <form class="cancel-order-cancelReturnRefund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
                                     action="{{ route('orders.cancelReturnRefund', $order->id) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
                                         Hủy trả hàng/hoàn tiền
+                                    </button>
+                                </form>
+                            @endif
+                            @if (($order->payment_status === 'unpaid' && $order->status === 'returned'))
+                                <form class="cancel-order-huyTraHang-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
+                                    action="{{ route('orders.huyTraHang', $order->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
+                                        Hủy trả hàng
                                     </button>
                                 </form>
                             @endif
@@ -205,17 +206,13 @@
                                     </button>
                                 </form>
                             @endif
-                                 @if ($order->payment_status === 'pending')
-                                 <form class="cancel-order-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
-                                    action="{{ route('orders.refundPending', $order->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="border-radius: 12px">
-                                        Hủy đơn/hoàn tiền
-                                    </button>
-                                </form>
+                                 @if ($order->payment_status === 'pending'  )
+                                <a href="{{ route('orders.return.form', [$order->id, 'action' => 'cancel']) }}"
+                                   class="btn btn-outline-secondary btn-sm d-inline-block ms-2" style="border-radius: 12px">
+                                    Hủy đơn/hoàn tiền
+                                </a>
                             @endif
-                            @if ($order->payment_status === 'refund_pending')
+                            @if ($order->payment_status === 'refund_pending' && $order->status === 'pending')
                                  <form class="cancel-order-refund-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
                                     action="{{ route('orders.refundCanceled', $order->id) }}">
                                     @csrf
@@ -292,6 +289,26 @@
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#6c757d',
                         confirmButtonText: 'Hủy ',
+                        cancelButtonText: 'Thoát'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit nếu xác nhận
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.cancel-order-huyTraHang-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+
+                    Swal.fire({
+                        title: 'Khách hàng yêu cầu hủy yêu cầu trả hàng',
+                        text: 'Bạn có chắc muốn gửi yêu cầu hủy yêu cầu trả hàng?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Thoát'
                     }).then((result) => {
                         if (result.isConfirmed) {
