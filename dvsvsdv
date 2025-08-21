@@ -1,0 +1,10 @@
+[33mfafd2aa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{0}: checkout: moving from buisyduc to master
+[33m47f25e9[m[33m ([m[1;31morigin/buisyduc[m[33m, [m[1;32mbuisyduc[m[33m)[m HEAD@{1}: checkout: moving from master to buisyduc
+[33mfafd2aa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{2}: commit: Hoan thien logic mua hang
+[33m6bd5e8a[m HEAD@{3}: commit: Hoàn thiện giao diện và cải tién mua hàng
+[33mebfa255[m HEAD@{4}: commit: Hoàn thiện client thêm vào giỏ hàng mua ngay áp dụng mã giảm giá
+[33m82505d1[m HEAD@{5}: commit: Đã hoàn thiện giao diện và giõ hàng -quản lý giỏ hàng bằng db
+[33m52edcac[m HEAD@{6}: commit: hoàn thiện quản lý sản phâmr đã có thể thêm sản phẩm cùng biến thể động có xóa mền xoad vĩnh viễn và khôi phục
+[33m47f25e9[m[33m ([m[1;31morigin/buisyduc[m[33m, [m[1;32mbuisyduc[m[33m)[m HEAD@{7}: commit: Quan ly san pham
+[33mb0c93a2[m HEAD@{8}: commit: hoan thien
+[33mb8b39a9[m HEAD@{9}: commit (initial): Add Website_selling_laptops_D&T

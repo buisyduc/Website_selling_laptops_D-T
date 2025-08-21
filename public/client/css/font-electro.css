@@ -1,0 +1,428 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "font-electro";
+  src:url("https://transvelo.github.io/electro-html/2.0/assets/fonts/font-electro.eot");
+  src:url("https://transvelo.github.io/electro-html/2.0/assets/fonts/font-electro.eot?#iefix") format("embedded-opentype"),
+    url("https://transvelo.github.io/electro-html/2.0/assets/fonts/font-electro.woff") format("woff"),
+    url("https://transvelo.github.io/electro-html/2.0/assets/fonts/font-electro.ttf") format("truetype"),
+    url("https://transvelo.github.io/electro-html/2.0/assets/fonts/font-electro.svg#font-electro") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+    font-family: "font-electro" !important;
+    content: attr(data-icon);
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+    font-family: "font-electro" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ec {
+    display: inline-block;
+    font: normal normal normal 14px/1 font-electro;
+    font-size: inherit;
+    text-rendering: auto;
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ec-menu:before {
+  content: "\61";
+}
+.ec-list-view-medium:before {
+  content: "\62";
+}
+.ec-transport:before {
+  content: "\63";
+}
+.ec-add-to-cart:before {
+  content: "\64";
+}
+.ec-arrow-right-categproes:before {
+  content: "\65";
+}
+.ec-comment:before {
+  content: "\66";
+}
+.ec-compare:before {
+  content: "\67";
+}
+.ec-customers:before {
+  content: "\68";
+}
+.ec-dollar:before {
+  content: "\69";
+}
+.ec-favorites:before {
+  content: "\6a";
+}
+.ec-grid-view:before {
+  content: "\6b";
+}
+.ec-list-view:before {
+  content: "\6c";
+}
+.ec-blog-likes:before {
+  content: "\6d";
+}
+.ec-phone:before {
+  content: "\6e";
+}
+.ec-returning:before {
+  content: "\6f";
+}
+.ec-search:before {
+  content: "\70";
+}
+.ec-shopping-bag:before {
+  content: "\71";
+}
+.ec-support:before {
+  content: "\72";
+}
+.ec-tag:before {
+  content: "\73";
+}
+.ec-thing-arrow-right:before {
+  content: "\74";
+}
+.ec-user:before {
+  content: "\75";
+}
+.ec-category-icon:before {
+  content: "\76";
+}
+.ec-mail:before {
+  content: "\77";
+}
+.ec-map-pointer:before {
+  content: "\78";
+}
+.ec-newsletter:before {
+  content: "\79";
+}
+.ec-close-remove:before {
+  content: "\7a";
+}
+.ec-payment:before {
+  content: "\41";
+}
+.ec-arrow-down-search:before {
+  content: "\42";
+}
+.ec-list-view-small:before {
+  content: "\43";
+}
+.ec-cameras:before {
+  content: "\44";
+}
+.ec-drone:before {
+  content: "\45";
+}
+.ec-gamepad:before {
+  content: "\46";
+}
+.ec-headphones:before {
+  content: "\47";
+}
+.ec-laptop:before {
+  content: "\48";
+}
+.ec-printer:before {
+  content: "\49";
+}
+.ec-smartphones:before {
+  content: "\4a";
+}
+.ec-smartwatch:before {
+  content: "\4b";
+}
+.ec-speaker:before {
+  content: "\4c";
+}
+.ec-tvs:before {
+  content: "\4d";
+}
+.input-icon {
+    position: relative;
+}
+.custom-input-wrapper {
+    position: relative;
+}
+
+.custom-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+.custom-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.custom-input {
+    width: 100%;
+    padding: 10px 45px 10px 35px; /* L:35px để icon không đè */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    height: 44px;
+}
+
+.lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #007bff;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 14px;
+}
+.toggle-btn:hover {
+    text-decoration: underline;
+}
+
+
+.custom-input {
+    width: 100%;
+    padding: 10px 45px 10px 35px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+}
+
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #007bff;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 14px;
+}
+.toggle-btn:hover {
+    text-decoration: underline;
+}
+
+.input-icon i {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.input-icon input {
+    padding-left: 35px; /* chừa chỗ cho icon */
+}
+.custom-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+/* Input chính */
+.custom-input {
+    width: 100%;
+    height: 44px;
+    padding-left: 33px;   /* icon rộng 16px + 12px left + 5px space = 33px */
+    padding-right: 50px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Icon ổ khóa */
+.lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* Nút "Hiện" */
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #007bff;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+}
+.toggle-btn:hover {
+    text-decoration: underline;
+}
+.custom-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.custom-input {
+    width: 100%;
+    height: 44px;
+    padding-left: 33px;   /* Chừa chỗ cho icon ổ khóa */
+    padding-right: 33px;  /* Chừa chỗ cho icon con mắt */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px; /* Đúng vị trí chữ "Hiện" cũ */
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #888;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.toggle-btn:hover {
+    color: #000;
+}
+.custom-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Input chính */
+.custom-input {
+    width: 100%;
+    height: 44px;
+    padding-left: 33px;   /* Chừa chỗ cho icon ổ khóa bên trái */
+    padding-right: 33px;  /* Chừa chỗ cho icon mắt bên phải */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Icon ổ khóa bên trái */
+.lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* Icon mắt bên phải */
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 40px; /* Đặt icon con mắt bên phải */
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #888;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Thay đổi màu khi hover */
+.toggle-btn:hover {
+    color: #000;
+}
+
+
+.search-icon-inside-input {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #000; /* icon màu đen */
+    pointer-events: none;
+}
+
+.search-input-custom {
+    padding-left: 40px !important; /* chừa chỗ cho icon */
+    border-radius: 20px !important;
+    background-color: #f5f5f5 !important;
+    border: none !important;
+    box-shadow: none;
+}

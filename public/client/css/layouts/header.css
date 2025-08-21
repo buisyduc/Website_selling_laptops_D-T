@@ -1,0 +1,414 @@
+ /* Container input + nút search */
+    .cart-btn {
+
+        color: white !important;
+    }
+
+    .cart-btn i {
+        color: white !important;
+    }
+
+    .cps-group-input {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 12px;
+        padding: 4px 12px;
+        height: 40px;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Nút search (icon kính lúp) */
+    /* Nút search (icon kính lúp) */
+    .input-group-btn button {
+        background: transparent;
+        border: none;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        height: 100%;
+        /* Đảm bảo chiếm hết chiều cao input */
+    }
+
+    .cps-group-input {
+        height: 48px;
+        /* tăng nhẹ để icon nằm đẹp */
+        padding: 4px 12px;
+    }
+
+    /* Icon kính lúp svg */
+    .input-group-btn svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    /* Input chính */
+    .cps-input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 15px;
+        color: #333;
+        background: transparent;
+    }
+
+    /* Placeholder mờ */
+    .cps-input::placeholder {
+        color: #bbb;
+    }
+
+    /* Bo tròn viền input và nút */
+    .input-group-btn button {
+        border-radius: 999px;
+    }
+
+    /* Xử lý span đóng (ẩn theo mặc định) */
+    #btn-close-search {
+        margin-left: 8px;
+        cursor: pointer;
+        color: #999;
+        font-size: 18px;
+    }
+
+    /* Ẩn viền focus */
+    .js-focus-state:focus-within .cps-group-input {
+        box-shadow: 0 0 0 2px #d70018;
+    }
+    .bg-warning {
+    background-color: #e60c2c !important;
+    }
+  
+
+    header.fixed-top {
+    background-color: #e60c2c; /* Đỏ chủ đạo như CellphoneS */
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+    z-index: 1030;
+    min-height: 64px;
+    transition: min-height 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.header {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    min-height: 64px;
+}
+
+.navbar-brand {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: #fff !important;
+    padding-right: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.cps-group-input {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 4px 18px;
+    height: 48px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    flex: 1 1 500px;
+    max-width: 700px;
+    margin: 0 24px;
+    transition: box-shadow 0.2s;
+}
+
+.cps-input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    background: transparent;
+    color: #222;
+    padding: 6px 8px;
+}
+
+.cps-input::placeholder {
+    color: #bbb;
+}
+
+.input-group-btn button {
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+}
+
+.input-group-btn svg {
+    width: 26px;
+    height: 26px;
+}
+
+#btn-close-search {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+}
+
+.cart-btn {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff !important;
+    position: relative;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+}
+
+.cart-btn i {
+    color: #fff !important;
+    font-size: 22px;
+}
+
+#cart-count {
+    background-color: #dc3545;
+    font-size: 12px;
+    min-width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    color: #fff;
+    padding: 0 5px;
+}
+
+#cart-total {
+    color: #fff;
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+#sidebarNavToggler {
+    font-size: 15px;
+    background: #fff3f3;
+    color: #e60c2c;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 8px 18px;
+    margin-left: 8px;
+    transition: all 0.3s;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#sidebarNavToggler:hover {
+    background: #e60c2c;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .header {
+        max-width: 100%;
+        padding: 0 8px;
+    }
+    .cps-group-input {
+        margin: 0 8px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        padding: 8px 0;
+    }
+    .cps-group-input {
+        flex: 1 1 100%;
+        width: 100%;
+        margin: 8px 0;
+    }
+    .cart-btn {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .header {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+    .navbar-brand {
+        font-size: 22px;
+        padding-right: 10px;
+    }
+    .cps-group-input {
+        padding: 2px 8px;
+        height: 38px;
+        max-width: 100%;
+    }
+    .cart-btn {
+        font-size: 14px;
+    }
+    #cart-count {
+        font-size: 10px;
+        min-width: 16px;
+        height: 16px;
+        top: -6px;
+        right: -6px;
+    }
+    #sidebarNavToggler {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+}
+
+
+/* === Header Container === */
+.header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* === Logo === */
+.navbar-brand {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+/* === Tìm kiếm === */
+.cps-group-input {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cps-input {
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 16px;
+    background: transparent;
+}
+
+/* === Nút tìm kiếm === */
+.input-group-btn button {
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+}
+
+/* === Giỏ hàng === */
+.cart-btn {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+}
+
+#cart-count {
+    background-color: #dc3545;
+    font-size: 12px;
+    min-width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === Đăng nhập === */
+#sidebarNavToggler {
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#sidebarNavToggler:hover {
+    background-color: #e64949;
+    color: #fff;
+}
+
+/* === Responsive === */
+@media (max-width: 991.98px) {
+    .cps-group-input {
+        display: none;
+    }
+
+    #cart-total {
+        display: none !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .header {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .navbar-brand {
+        font-size: 22px;
+    }
+
+    .cart-btn {
+        font-size: 14px;
+    }
+
+    #cart-count {
+        font-size: 10px;
+        min-width: 18px;
+        height: 18px;
+    }
+}
+
+    .button__menu {
+        background-color: #ef4444; /* A shade of red */
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .button__menu:hover {
+        background-color: #dc2626; /* A darker red on hover */
+    }
+
+    .button__menu .navbar__item-text {
+        font-size: 14px;
+    }
+
+    .button__menu svg {
+        width: 40px;
+        height: 40px;
+    }
