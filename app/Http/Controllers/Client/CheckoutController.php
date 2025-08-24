@@ -10,6 +10,8 @@ use App\Models\Order;
 use App\Models\Cart;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Notifications\OrderPlaced;
 
 class CheckoutController extends Controller
 {
@@ -289,6 +291,16 @@ class CheckoutController extends Controller
             if ($cart = Cart::where('user_id', $user->id)->first()) {
                 $cart->items()->delete();
                 $cart->delete();
+            }
+
+            // Thông báo cho admin: có đơn hàng mới (COD)
+            try {
+                $admins = User::where('role', 'admin')->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new OrderPlaced($order));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Không thể gửi thông báo OrderPlaced (COD): ' . $e->getMessage());
             }
 
             // COD: Chuyển thẳng tới trang cảm ơn

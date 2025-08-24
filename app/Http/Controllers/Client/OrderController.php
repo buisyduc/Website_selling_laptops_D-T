@@ -209,10 +209,9 @@ class OrderController extends Controller
         $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
         $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
     
-        // Online: trả hàng hoàn tiền -> chờ hoàn tiền
-        // COD: chỉ trả hàng, không hoàn tiền -> để unpaid
+        // Khi khách yêu cầu trả hàng (có/không hoàn tiền), đặt trạng thái thanh toán về 'Waiting_for_order_confirmation'
         $order->update([
-            'payment_status' => $isOnline ? 'refund_pending' : 'unpaid'
+            'payment_status' => 'Waiting_for_order_confirmation'
         ]);
     
         // 🔑 Refresh lại order sau khi update để tránh notify sai dữ liệu
@@ -355,16 +354,14 @@ class OrderController extends Controller
             if (($data['type'] ?? 'return') === 'return_refund') {
                 $order->update([
                     'status' => 'returned',
-                    'payment_status' => $isOnline ? 'refund_pending' : 'unpaid',
+                    'payment_status' => 'Waiting_for_order_confirmation',
                 ]);
                 $event = 'return_refund_requested';
             } else {
-                // Trả hàng (không hoàn tiền):
-                //  - COD: chuyển payment_status về 'unpaid'
-                //  - Online: giữ nguyên trạng thái thanh toán (thường là 'paid')
+                // Trả hàng (không hoàn tiền)
                 $order->update([
                     'status' => 'returned',
-                    'payment_status' => $isOnline ? ($order->payment_status ?? 'paid') : 'unpaid',
+                    'payment_status' => 'Waiting_for_order_confirmation',
                 ]);
                 $event = 'return_requested';
             }
@@ -432,7 +429,7 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => 'returned']);
-        $order->update(['payment_status' => 'unpaid']);
+        $order->update(['payment_status' => 'Waiting_for_order_confirmation']);
         return back()->with('success', 'Đã yêu cầu trả hàng.');
     }
 

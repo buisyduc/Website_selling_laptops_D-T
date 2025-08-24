@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Notifications\OrderPlaced;
 
 class VNPayController extends Controller
 {
@@ -97,6 +99,16 @@ class VNPayController extends Controller
                         'payment_method' => 'vnpay', // Thêm dòng này!
                         'paid_at'        => now(),
                     ]);
+
+                    // Thông báo admin có đơn hàng mới (VNPay)
+                    try {
+                        $admins = User::where('role', 'admin')->get();
+                        foreach ($admins as $admin) {
+                            $admin->notify(new OrderPlaced($order));
+                        }
+                    } catch (\Throwable $e) {
+                        // Không chặn flow nếu thông báo lỗi
+                    }
                 } else {
                     // Nếu thanh toán thất bại từ VNPay, cập nhật trạng thái thất bại
                     $order->update([

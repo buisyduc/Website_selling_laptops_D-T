@@ -102,7 +102,10 @@
                                     <span class="text-warning">Chưa thanh toán</span>
                                 @elseif ($order->payment_status === 'waiting_payment')
                                     <span class="text-warning">Chờ thanh toán</span>
-
+                                @elseif ($order->payment_status === 'Waiting_for_order_confirmation')
+                                    <span class="text-warning">Chờ xác nhận đơn hàng</span>
+                                @elseif ($order->payment_status === 'returned')
+                                    <span class="text-warning">Đã trả hàng</span>
                                 @elseif ($order->payment_status === 'pending')
                                     <span class="text-success">Đang chờ xử lý</span>
                                 @elseif ($order->payment_status === 'paid')
@@ -186,7 +189,7 @@
                                     </button>
                                 </form>
                             @endif
-                            @if (($order->payment_status === 'unpaid' && $order->status === 'returned'))
+                            @if (($order->payment_status === 'Waiting_for_order_confirmation' && $order->status === 'returned'))
                                 <form class="cancel-order-huyTraHang-form d-inline-block ms-2" data-order-id="{{ $order->id }}" method="POST"
                                     action="{{ route('orders.huyTraHang', $order->id) }}">
                                     @csrf

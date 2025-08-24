@@ -1,201 +1,203 @@
 @extends('admin.index')
 @section('container-fluid')
-    <div class="container-fluid">
-        <!-- Page Title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Create product</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Product</a></li>
-                            <li class="breadcrumb-item active">Create product</li>
-                        </ol>
-                    </div>
+  <div class="container-fluid">
+    <!-- Page Title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Create product</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Product</a></li>
+                        <li class="breadcrumb-item active">Create product</li>
+                    </ol>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="container-fluid py-3">
-            <form id="product-form" method="POST" action="{{ route('product.store') }}" enctype="multipart/form-data">
-                @csrf
+    <div class="container-fluid py-3">
+        <form id="product-form" method="POST" action="{{ route('product.store') }}" enctype="multipart/form-data">
+            @csrf
 
-                @if (session('message'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('message') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
+            @if (session('message'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('message') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                <div class="row">
-                    <!-- Left side -->
-                    <div class="col-lg-9">
-                        <!-- Product Info -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h5 class="mb-0">Thông Tin Sản Phẩm</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Tên sản phẩm</label>
-                                            <input type="text" class="form-control" id="product-name" name="name"
-                                                value="{{ old('name') }}">
-                                            @error('name')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Slug sản phẩm</label>
-                                        <input type="text" class="form-control" id="product-slug" name="slug"
-                                            value="{{ old('slug') }}">
-                                        @error('slug')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">Mô tả</label>
-                                        <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
-                                        @error('description')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Thương hiệu</label>
-                                        <select name="brand_id" class="form-select">
-                                            <option value="">Chọn thương hiệu</option>
-                                            @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}"
-                                                    {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
-                                                    {{ $brand->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('brand_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Danh mục</label>
-                                        <select name="category_id" class="form-select">
-                                            <option value="">Chọn danh mục</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('category_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
+            <div class="row">
+                <!-- Left side -->
+                <div class="col-lg-9">
+                    <!-- Product Info -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Thông Tin Sản Phẩm</h5>
                         </div>
-
-                        <!-- Product Images -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h5 class="mb-0">Hình Ảnh Sản Phẩm</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Hình ảnh đại diện</label>
-                                        <input type="file" class="form-control" name="image" accept="image/*">
-                                        @error('image')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Hình ảnh gallery</label>
-                                        <div class="dropzone my-dropzone" id="productImagesDropzone">
-                                            <div class="dz-message text-center">
-                                                <div class="mb-3">
-                                                    <i class="bi bi-cloud-arrow-up display-4" id="upload-icon"
-                                                        style="cursor: pointer;"></i>
-                                                    <input type="file" class="form-control" name="images[]"
-                                                        id="product-images-input" multiple accept="image/*"
-                                                        style="display: none;" />
-                                                    <div id="image-preview-container" class="mt-3 d-flex flex-wrap gap-3">
-                                                    </div>
-                                                </div>
-                                                <h5>Drop files here or click to upload.</h5>
-                                            </div>
-                                        </div>
-                                        @error('images')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                        @error('images.*')
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="product-name" name="name"
+                                            value="{{ old('name') }}">
+                                        @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Variants -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Biến Thể Sản Phẩm</h5>
-                                <button type="button" class="btn btn-sm btn-primary" onclick="addVariant()">
-                                    <i class="bi bi-plus-circle me-1"></i> Thêm biến thể
-                                </button>
-                            </div>
-                            <div class="card-body" id="variants-container">
-                                <!-- Biến thể sẽ được thêm bằng JS -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right sidebar -->
-                    <div class="col-lg-3">
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h5 class="mb-0">Xuất Bản</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Trạng thái</label>
-                                    <select name="status" class="form-select">
-                                        <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Hiển thị
-                                        </option>
-                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Ẩn</option>
+                                <div class="col-md-6">
+                                    <label class="form-label">Slug sản phẩm <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="product-slug" name="slug"
+                                        value="{{ old('slug') }}">
+                                    @error('slug')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Mô tả <span class="text-danger">*</span></label>
+                                    <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Thương hiệu <span class="text-danger">*</span></label>
+                                    <select name="brand_id" class="form-select">
+                                        <option value="">Chọn thương hiệu</option>
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand->id }}"
+                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                {{ $brand->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
+                                    @error('brand_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Ngày xuất bản</label>
-                                    <input type="date" name="release_date" class="form-control"
-                                        value="{{ old('release_date') }}">
-                                    @error('release_date')
+                                <div class="col-md-6">
+                                    <label class="form-label">Danh mục <span class="text-danger">*</span></label>
+                                    <select name="category_id" class="form-select">
+                                        <option value="">Chọn danh mục</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('category_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
                         </div>
-
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-check-circle me-2"></i> Lưu Sản Phẩm
-                        </button>
                     </div>
+
+                    <!-- Product Images -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Hình Ảnh Sản Phẩm</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Hình ảnh đại diện <span class="text-danger">*</span></label>
+                                    <input type="file" class="form-control" name="image" accept="image/*">
+                                    @error('image')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Hình ảnh gallery</label>
+                                    <div class="dropzone my-dropzone" id="productImagesDropzone">
+                                        <div class="dz-message text-center">
+                                            <div class="mb-3">
+                                                <i class="bi bi-cloud-arrow-up display-4" id="upload-icon"
+                                                    style="cursor: pointer;"></i>
+                                                <input type="file" class="form-control" name="images[]"
+                                                    id="product-images-input" multiple accept="image/*"
+                                                    style="display: none;" />
+                                                <div id="image-preview-container" class="mt-3 d-flex flex-wrap gap-3">
+                                                </div>
+                                            </div>
+                                            <h5>Drop files here or click to upload.</h5>
+                                        </div>
+                                    </div>
+                                    @error('images')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                    @error('images.*')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Variants -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Biến thể sản phẩm</h5>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="addVariant()">
+                                <i class="bi bi-plus-circle me-1"></i> Thêm biến thể
+                            </button>
+                        </div>
+                        <div class="card-body" id="variants-container">
+                            <!-- Biến thể sẽ được thêm bằng JS -->
+                        </div>
+                    </div>
+
                 </div>
-            </form>
-        </div>
+
+                <!-- Right sidebar -->
+                <div class="col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Xuất Bản</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select name="status" class="form-select">
+                                    <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Hiển thị
+                                    </option>
+                                    <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Ẩn</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ngày xuất bản</label>
+                                <input type="date" name="release_date" class="form-control"
+                                    value="{{ old('release_date') }}">
+                                @error('release_date')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle me-2"></i> Lưu Sản Phẩm
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-        <style>
+</div>
+
+    <style>
         /* Global Styles */
         body {
             background-color: #f8f9fa;
@@ -525,112 +527,111 @@
             background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         }
     </style>
-<script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Slug tự động từ tên sản phẩm
+            const nameInput = document.getElementById('product-name');
+            const slugInput = document.getElementById('product-slug');
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function() {
+                    const slug = nameInput.value
+                        .toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .trim().replace(/\s+/g, '-')
+                        .replace(/-+/g, '-');
+                    slugInput.value = slug;
+                });
+            }
 
-document.addEventListener('DOMContentLoaded', function () {
-    // 1. Slug tự động từ tên sản phẩm
-    const nameInput = document.getElementById('product-name');
-    const slugInput = document.getElementById('product-slug');
-    if (nameInput && slugInput) {
-        nameInput.addEventListener('input', function () {
-            const slug = nameInput.value
-                .toLowerCase()
-                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9\s-]/g, '')
-                .trim().replace(/\s+/g, '-')
-                .replace(/-+/g, '-');
-            slugInput.value = slug;
-        });
-    }
+            // 2. Upload ảnh phụ
+            const uploadIcon = document.getElementById('upload-icon');
+            const fileInput = document.getElementById('product-images-input');
+            const previewContainer = document.getElementById('image-preview-container');
+            const dropzone = document.getElementById('productImagesDropzone');
 
-    // 2. Upload ảnh phụ
-    const uploadIcon = document.getElementById('upload-icon');
-    const fileInput = document.getElementById('product-images-input');
-    const previewContainer = document.getElementById('image-preview-container');
-    const dropzone = document.getElementById('productImagesDropzone');
+            if (dropzone && fileInput) {
+                dropzone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = '#0d6efd';
+                });
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.style.borderColor = '#dee2e6';
+                });
+                dropzone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = '#dee2e6';
+                    const dt = new DataTransfer();
+                    Array.from(fileInput.files).forEach(file => dt.items.add(file));
+                    Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
+                    fileInput.files = dt.files;
+                    fileInput.dispatchEvent(new Event('change'));
+                });
+                uploadIcon?.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', event => {
+                    const files = event.target.files;
+                    previewContainer.innerHTML = '';
+                    Array.from(files).forEach((file, index) => {
+                        if (!file.type.startsWith('image/')) return;
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            const previewItem = document.createElement('div');
+                            previewItem.classList.add('preview-item');
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'img-thumbnail';
+                            Object.assign(img.style, {
+                                width: '100px',
+                                height: '100px',
+                                objectFit: 'cover'
+                            });
 
-    if (dropzone && fileInput) {
-        dropzone.addEventListener('dragover', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#0d6efd';
-        });
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.style.borderColor = '#dee2e6';
-        });
-        dropzone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropzone.style.borderColor = '#dee2e6';
-            const dt = new DataTransfer();
-            Array.from(fileInput.files).forEach(file => dt.items.add(file));
-            Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
-            fileInput.dispatchEvent(new Event('change'));
-        });
-        uploadIcon?.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', event => {
-            const files = event.target.files;
-            previewContainer.innerHTML = '';
-            Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'img-thumbnail';
-                    Object.assign(img.style, {
-                        width: '100px',
-                        height: '100px',
-                        objectFit: 'cover'
+                            const removeBtn = document.createElement('button');
+                            removeBtn.type = 'button';
+                            removeBtn.className = 'btn btn-danger btn-sm mt-2';
+                            removeBtn.textContent = 'Xóa';
+                            removeBtn.addEventListener('click', e => {
+                                e.preventDefault();
+                                previewItem.remove();
+                                const dt = new DataTransfer();
+                                Array.from(fileInput.files).forEach((f, i) => {
+                                    if (i !== index) dt.items.add(f);
+                                });
+                                fileInput.files = dt.files;
+                                fileInput.dispatchEvent(new Event('change'));
+                            });
+
+                            previewItem.appendChild(img);
+                            previewItem.appendChild(removeBtn);
+                            previewContainer.appendChild(previewItem);
+                        };
+                        reader.readAsDataURL(file);
                     });
+                });
+            }
 
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn btn-danger btn-sm mt-2';
-                    removeBtn.textContent = 'Xóa';
-                    removeBtn.addEventListener('click', e => {
-                        e.preventDefault();
-                        previewItem.remove();
-                        const dt = new DataTransfer();
-                        Array.from(fileInput.files).forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        fileInput.files = dt.files;
-                        fileInput.dispatchEvent(new Event('change'));
-                    });
+            // 3. Biến thể sản phẩm
+            let variantCount = 0;
+            let attributeCounter = 0;
+            const availableAttributes = @json($availableAttributes);
+            const oldVariants = @json(old('variants', []));
 
-                    previewItem.appendChild(img);
-                    previewItem.appendChild(removeBtn);
-                    previewContainer.appendChild(previewItem);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-    }
+            if (typeof oldVariants === 'object' && oldVariants !== null) {
+                Object.entries(oldVariants).forEach(([key, variant]) => {
+                    addVariant(key, variant);
+                });
+            }
 
-    // 3. Biến thể sản phẩm
-    let variantCount = 0;
-    let attributeCounter = 0;
-    const availableAttributes = @json($availableAttributes);
-    const oldVariants = @json(old('variants', []));
-
-    if (typeof oldVariants === 'object' && oldVariants !== null) {
-        Object.entries(oldVariants).forEach(([key, variant]) => {
-            addVariant(key, variant);
-        });
-    }
-
-    window.addVariant = function (variantKey = null, variantData = null) {
-        const id = variantKey || (++variantCount);
-        variantCount = Math.max(variantCount, parseInt(id));
-        const container = document.getElementById('variants-container');
-        const price = variantData?.price || '';
-        const stock = variantData?.stock_quantity || '';
-        const variantDiv = document.createElement('div');
-        variantDiv.className = 'variant-item';
-        variantDiv.id = `variant-${id}`;
-        variantDiv.innerHTML = `
+            window.addVariant = function(variantKey = null, variantData = null) {
+                const id = variantKey || (++variantCount);
+                variantCount = Math.max(variantCount, parseInt(id));
+                const container = document.getElementById('variants-container');
+                const price = variantData?.price || '';
+                const stock = variantData?.stock_quantity || '';
+                const variantDiv = document.createElement('div');
+                variantDiv.className = 'variant-item';
+                variantDiv.id = `variant-${id}`;
+                variantDiv.innerHTML = `
             <div class="position-relative border rounded p-3 mb-3 bg-light-subtle">
                 <button type="button" class="btn btn-outline-danger position-absolute top-0 end-0 m-2 remove-variant-btn"
                     data-variant-id="${id}" aria-label="Xoá"><i class="bi bi-trash"></i></button>
@@ -660,29 +661,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     </button>
                 </div>
             </div>`;
-        container.appendChild(variantDiv);
+                container.appendChild(variantDiv);
 
-        if (variantData?.attributes) {
-            Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
-                addAttribute(id, attrKey, attrData);
-            });
-        }
-    };
+                if (variantData?.attributes) {
+                    Object.entries(variantData.attributes).forEach(([attrKey, attrData]) => {
+                        addAttribute(id, attrKey, attrData);
+                    });
 
-    function addAttribute(variantId, attributeKey = null, attributeData = null) {
-        const container = document.getElementById(`attributes-container-${variantId}`);
-        const attributeId = attributeKey || (++attributeCounter);
-        attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
-        const selectedAttribute = attributeData?.attribute_id || '';
-        const selectedOptions = attributeData?.options || [];
-        const attributeDiv = document.createElement('div');
-        attributeDiv.className = 'attribute-group mb-3';
-        attributeDiv.id = `attribute-${variantId}-${attributeId}`;
-        const selectHTML = availableAttributes.map(attr => `
+                    // 🔥 gọi refresh để disable trùng khi load lại
+                    refreshAttributeNames(id);
+                }
+            };
+
+            function addAttribute(variantId, attributeKey = null, attributeData = null) {
+                const container = document.getElementById(`attributes-container-${variantId}`);
+                const attributeId = attributeKey || (++attributeCounter);
+                attributeCounter = Math.max(attributeCounter, parseInt(attributeId));
+                const selectedAttribute = attributeData?.attribute_id || '';
+                const selectedOptions = attributeData?.options || [];
+                const attributeDiv = document.createElement('div');
+                attributeDiv.className = 'attribute-group mb-3';
+                attributeDiv.id = `attribute-${variantId}-${attributeId}`;
+                const selectHTML = availableAttributes.map(attr => `
             <option value="${attr.id}" ${attr.id == selectedAttribute ? 'selected' : ''}>${attr.name}</option>
         `).join('');
 
-        attributeDiv.innerHTML = `
+                attributeDiv.innerHTML = `
             <div class="d-flex gap-2 align-items-center">
                 <select class="form-select attribute-select"
                     name="variants[${variantId}][attributes][${attributeId}][attribute_id]"
@@ -698,103 +702,150 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button type="button" class="btn btn-outline-danger btn-sm remove-attribute-btn"
                     data-variant-id="${variantId}" data-attribute-id="${attributeId}"><i class="bi bi-trash"></i></button>
             </div>`;
-        container.appendChild(attributeDiv);
+                container.appendChild(attributeDiv);
 
-        const attrSelect = attributeDiv.querySelector('.attribute-select');
-        if (attrSelect) {
-            attrSelect.addEventListener('change', function () {
-                updateOptionsSelect(this.dataset.variantId, this.dataset.attributeId, this.value, []);
-            });
-        }
+                const attrSelect = attributeDiv.querySelector('.attribute-select');
+                if (attrSelect) {
+                    attrSelect.addEventListener('change', function() {
+                        const variantId = this.dataset.variantId;
+                        const attributeId = this.dataset.attributeId;
+                        const selectedAttr = this.value;
 
-        if (selectedAttribute) {
-            updateOptionsSelect(variantId, attributeId, selectedAttribute, selectedOptions);
-        }
-    }
+                        updateOptionsSelect(variantId, attributeId, selectedAttr, []);
 
-    function updateOptionsSelect(variantId, attributeId, attributeValue, selected = []) {
-        const selectEl = document.getElementById(`option-select-${variantId}-${attributeId}`);
-        const spanEl = document.getElementById(`selected-value-${variantId}-${attributeId}`);
-        if (!selectEl || !spanEl) return;
-        const attr = availableAttributes.find(a => a.id == attributeValue);
-        if (!attr) return;
+                        // ✅ Sau khi chọn thì refresh để disable option trùng
+                        refreshAttributeNames(variantId);
+                    });
+                }
 
-        selectEl.innerHTML = attr.options.map(opt => {
-            const isSelected = selected.includes(opt.id.toString()) || selected.includes(opt.id);
-            return `<option value="${opt.id}" ${isSelected ? 'selected' : ''}>${opt.value}</option>`;
-        }).join('');
+                if (selectedAttribute) {
+                    updateOptionsSelect(variantId, attributeId, selectedAttribute, selectedOptions);
+                }
 
-        selectEl.onchange = () => {
-            const selectedOption = selectEl.options[selectEl.selectedIndex];
-            if (!selectedOption) return;
-            spanEl.innerText = selectedOption.text;
-            spanEl.style.display = 'inline-block';
-            selectEl.style.display = 'none';
-        };
-
-        spanEl.onclick = () => {
-            spanEl.style.display = 'none';
-            selectEl.style.display = 'block';
-        };
-
-        if (selected.length > 0) {
-            const selectedOption = attr.options.find(opt => selected.includes(opt.id.toString()) || selected.includes(opt.id));
-            if (selectedOption) {
-                spanEl.innerText = selectedOption.value;
-                spanEl.style.display = 'inline-block';
-                selectEl.style.display = 'none';
+                // ✅ Gọi refresh ngay khi thêm attribute
+                refreshAttributeNames(variantId);
             }
-        } else {
-            spanEl.style.display = 'none';
-            selectEl.style.display = 'block';
-        }
-    }
 
-    // 4. Các sự kiện động: thêm, xoá, copy
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.add-attribute-btn')) {
-            const btn = e.target.closest('.add-attribute-btn');
-            addAttribute(btn.dataset.variantId);
-        }
+            function refreshAttributeNames(variantId) {
+                const selects = document.querySelectorAll(`#attributes-container-${variantId} .attribute-select`);
 
-        if (e.target.closest('.remove-variant-btn')) {
-            const id = e.target.closest('.remove-variant-btn').dataset.variantId;
-            document.getElementById(`variant-${id}`)?.remove();
-        }
+                // Lấy tất cả attribute đã chọn trong biến thể
+                let chosen = Array.from(selects).map(s => s.value).filter(v => v !== "");
 
-        if (e.target.closest('.remove-attribute-btn')) {
-            const btn = e.target.closest('.remove-attribute-btn');
-            const variantId = btn.dataset.variantId;
-            const attributeId = btn.dataset.attributeId;
-            document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
-        }
+                selects.forEach(select => {
+                    const currentVal = select.value;
+                    Array.from(select.options).forEach(opt => {
+                        if (!opt.value) return;
 
-        if (e.target.closest('.copy-variant-btn')) {
-            const btn = e.target.closest('.copy-variant-btn');
-            const variantId = btn.dataset.variantId;
-            const el = document.getElementById(`variant-${variantId}`);
-            if (!el) return;
+                        // reset trước
+                        opt.disabled = false;
 
-            const price = el.querySelector(`[name="variants[${variantId}][price]"]`)?.value || '';
-            const stock = el.querySelector(`[name="variants[${variantId}][stock_quantity]"]`)?.value || '';
+                        // nếu đã chọn ở select khác thì disable
+                        if (chosen.includes(opt.value) && opt.value !== currentVal) {
+                            opt.disabled = true;
+                        }
+                    });
+                });
+            }
 
-            const attributes = [];
-            el.querySelectorAll('.attribute-group').forEach(group => {
-                const attrId = group.querySelector('.attribute-select')?.value;
-                const selectedOpts = Array.from(group.querySelectorAll('.option-select option:checked')).map(opt => opt.value);
-                if (attrId) {
-                    attributes.push({ attribute_id: attrId, options: selectedOpts });
+            function updateOptionsSelect(variantId, attributeId, attributeValue, selected = []) {
+                const selectEl = document.getElementById(`option-select-${variantId}-${attributeId}`);
+                const spanEl = document.getElementById(`selected-value-${variantId}-${attributeId}`);
+                if (!selectEl || !spanEl) return;
+                const attr = availableAttributes.find(a => a.id == attributeValue);
+                if (!attr) return;
+
+                selectEl.innerHTML = attr.options.map(opt => {
+                    const isSelected = selected.includes(opt.id.toString()) || selected.includes(opt.id);
+                    return `<option value="${opt.id}" ${isSelected ? 'selected' : ''}>${opt.value}</option>`;
+                }).join('');
+
+                selectEl.onchange = () => {
+                    const selectedOption = selectEl.options[selectEl.selectedIndex];
+                    if (!selectedOption) return;
+                    spanEl.innerText = selectedOption.text;
+                    spanEl.style.display = 'inline-block';
+                    selectEl.style.display = 'none';
+                };
+
+                spanEl.onclick = () => {
+                    spanEl.style.display = 'none';
+                    selectEl.style.display = 'block';
+                };
+
+                if (selected.length > 0) {
+                    const selectedOption = attr.options.find(opt => selected.includes(opt.id.toString()) || selected
+                        .includes(opt.id));
+                    if (selectedOption) {
+                        spanEl.innerText = selectedOption.value;
+                        spanEl.style.display = 'inline-block';
+                        selectEl.style.display = 'none';
+                    }
+                } else {
+                    spanEl.style.display = 'none';
+                    selectEl.style.display = 'block';
+                }
+            }
+
+
+
+            // 4. Các sự kiện động
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.add-attribute-btn')) {
+                    const btn = e.target.closest('.add-attribute-btn');
+                    addAttribute(btn.dataset.variantId);
+                }
+
+                if (e.target.closest('.remove-variant-btn')) {
+                    const id = e.target.closest('.remove-variant-btn').dataset.variantId;
+                    document.getElementById(`variant-${id}`)?.remove();
+                }
+
+                if (e.target.closest('.remove-attribute-btn')) {
+                    const btn = e.target.closest('.remove-attribute-btn');
+                    const variantId = btn.dataset.variantId;
+                    const attributeId = btn.dataset.attributeId;
+                    document.getElementById(`attribute-${variantId}-${attributeId}`)?.remove();
+                }
+
+                if (e.target.closest('.copy-variant-btn')) {
+                    const btn = e.target.closest('.copy-variant-btn');
+                    const variantId = btn.dataset.variantId;
+                    const el = document.getElementById(`variant-${variantId}`);
+                    if (!el) return;
+
+                    const price = el.querySelector(`[name="variants[${variantId}][price]"]`)?.value || '';
+                    const stock = el.querySelector(`[name="variants[${variantId}][stock_quantity]"]`)
+                        ?.value || '';
+
+                    const attributes = [];
+                    el.querySelectorAll('.attribute-group').forEach(group => {
+                        const attrId = group.querySelector('.attribute-select')?.value;
+                        const selectedOpts = Array.from(group.querySelectorAll(
+                                '.option-select option:checked'))
+                            .map(opt => opt.value);
+                        if (attrId) {
+                            attributes.push({
+                                attribute_id: attrId,
+                                options: selectedOpts
+                            });
+                        }
+                    });
+
+                    const attrObj = {};
+                    attributes.forEach((a, i) => attrObj[i + 1] = a);
+
+                    addVariant(null, {
+                        price: price,
+                        stock_quantity: stock,
+                        attributes: attrObj
+                    });
                 }
             });
 
-            const attrObj = {};
-            attributes.forEach((a, i) => attrObj[i + 1] = a);
+        });
+    </script>
 
-            
-        }
-    });
-});
-</script>
 
 
 @endsection

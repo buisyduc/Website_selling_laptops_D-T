@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AttributesProduct;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategorieController;
@@ -159,9 +160,17 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('admin/coupons',[CouponController::class,'index'])->name('coupons-list');
     Route::post('admin/coupons-store', [CouponController::class, 'store'])->name('admin.coupons.store');
 //oder
-    Route::get('admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
-    Route::get('admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
-    Route::post('admin/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+     //oder
+     Route::get('admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+     Route::get('admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+     Route::get('admin/orders/{order}/return-info', [AdminOrderController::class, 'returnInfo'])->name('admin.orders.returnInfo');
+     Route::post('admin/orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+     // Return actions
+     Route::post('admin/orders/{order}/return/approve', [AdminOrderController::class, 'approveReturn'])->name('admin.orders.return.approve');
+     Route::post('admin/orders/{order}/return/reject', [AdminOrderController::class, 'rejectReturn'])->name('admin.orders.return.reject');
+
+    // Notifications: mark as read then redirect to target
+    Route::get('admin/notifications/{id}', [AdminNotificationController::class, 'redirect'])->name('admin.notifications.redirect');
 
 
 

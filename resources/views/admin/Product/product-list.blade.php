@@ -90,9 +90,7 @@
                                     <th scope="col" class="text-center" style="width: 120px;">
                                         <i class="fas fa-star me-1"></i>Rating
                                     </th>
-                                    <th scope="col" class="text-center" style="width: 100px;">
-                                        <i class="fas fa-dollar-sign me-1"></i>Price
-                                    </th>
+                                   
                                     <th scope="col" class="text-center" style="width: 80px;">
                                         <i class="fas fa-shopping-cart me-1"></i>Sold
                                     </th>
@@ -163,10 +161,7 @@
                                             </div>
                                         </td>
 
-                                        <!-- Price -->
-                                        <td class="text-center">
-                                            <span class="fw-bold text-success">${{ number_format($product->price, 2) }}</span>
-                                        </td>
+                                       
 
                                         <!-- Sold -->
                                         <td class="text-center">
@@ -197,15 +192,15 @@
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
                                                 <a href="{{route('product.view',$product->id)}}" class="btn btn-sm btn-outline-primary" title="View">
-                                                    <i class="fas fa-eye"></i>view
+                                                    <i class="fas fa-eye"></i>Xem 
                                                 </a>
                                                  <a href="{{ route('product.edit', $product->id) }}" class="btn btn-outline-secondary btn-sm flex-fill">
-                                                    <i class="ri-edit-line me-1"></i>Edit
+                                                    <i class="ri-edit-line me-1"></i>Sửa
                                                 </a>
                                                 <button class="btn btn-sm btn-outline-danger"
                                                         data-bs-toggle="modal" data-bs-target="#deleteModal{{ $product->id }}"
                                                         title="Delete">
-                                                    <i class="fas fa-trash"></i>xoa
+                                                    <i class="fas fa-trash"></i>Xóa
                                                 </button>
                                             </div>
                                         </td>
