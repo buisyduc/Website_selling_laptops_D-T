@@ -588,13 +588,14 @@
                             Trả góp 0%
                         </button>
                         <!-- Mua ngay -->
-                        <button class=" text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="buyNow()" id="buyNowBtn" data-buy-now="1"
+                        <button class=" text-white fw-bold flex-grow-1 rounded-3 py-3" onclick="buyNow()" id="buyNowBtn"
+                            data-buy-now="1"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
                             style="border-radius: 8px; background: linear-gradient(to bottom, #f42424, #c60000); border: none;">
                             MUA NGAY<br>
                             <small class="fw-normal">Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng</small>
                         </button>
-                      
+
                         <!-- Thêm vào giỏ -->
                         <button class="btn btn-outline-danger rounded-3 py-3" style="border-radius: 8px;"
                             onclick="addToCart()" id="addToCartBtn"
@@ -607,9 +608,10 @@
                             style="border-radius: 8px;">
                             Trả góp 0%
                         </button>
- 
+
                         <!-- Mua ngay -->
-                        <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3 login-required-btn" onclick="openLoginModal()" data-buy-now="1"
+                        <button class="btn text-white fw-bold flex-grow-1 rounded-3 py-3 login-required-btn"
+                            onclick="openLoginModal()" data-buy-now="1"
                             style="border-radius: 8px; background: linear-gradient(to bottom, #f42424, #c60000); border: none;">
                             MUA NGAY<br>
                             <small class="fw-normal">Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng</small>
@@ -798,13 +800,12 @@
                         </button>
                         <button onclick="buyNow()" id="buyNowBtn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
-
-                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;" data-buy-now="1">
+                            style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"
+                            data-buy-now="1">
                             Mua Ngay
                         </button>
                         <button onclick="addToCart()" id="addToCartBtn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
-
                             style="background: #f5f5f5; border: 1px solid #e20808; padding: 6px; border-radius: 6px; cursor: pointer;">
                             <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Giỏ hàng"
                                 style="width: 16px; height: 16px;" />
@@ -821,7 +822,6 @@
                         </button>
                         <button onclick="openLoginModal()" id="addToCartBtn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
-
                             style="background: #f5f5f5; border: 1px solid #e20808; padding: 6px; border-radius: 6px; cursor: pointer;">
                             <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Giỏ hàng"
                                 style="width: 16px; height: 16px;" />
@@ -835,6 +835,104 @@
 
                 </div>
             </div>
+        </div>
+        <div id="comment-section" class="card shadow-sm p-4 mb-4">
+
+            <h5 class="fs-5 mb-3">Bình luận về sản phẩm</h5>
+
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @auth
+                <form action="{{ route('comments.store', $product->id) }}" method="POST" class="mb-3">
+                    @csrf
+                    <div class="mb-2">
+                        <textarea name="comment" class="form-control" placeholder="Viết bình luận của bạn..." rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary">Gửi bình luận</button>
+                </form>
+            @else
+                <p><a href="{{ route('login') }}">Đăng nhập</a> để gửi bình luận.</p>
+            @endauth
+
+            <hr>
+
+            @foreach ($product->comments()->latest()->get() as $comment)
+                <div class="comment-item mb-3 border p-2 rounded" id="comment-{{ $comment->id }}">
+                    <p><strong>{{ $comment->user->name }}</strong>
+                        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                    </p>
+                    <p id="comment-text-{{ $comment->id }}">{{ $comment->comment }}</p>
+
+                    @if ($comment->user_id == Auth::id())
+                        <div class="d-flex gap-2 mb-2">
+                            <!-- Nút Sửa -->
+                            <button class="btn btn-sm btn-warning"
+                                onclick="toggleCommentEditForm({{ $comment->id }})">Sửa</button>
+
+                            <!-- Nút Xóa -->
+                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-danger">Xóa</button>
+                            </form>
+                        </div>
+
+                        <!-- Form chỉnh sửa comment -->
+                        <div id="edit-comment-form-{{ $comment->id }}" style="display:none;">
+                            <form action="{{ route('comments.update', $comment->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <textarea name="comment" class="form-control mb-1" rows="3">{{ $comment->comment }}</textarea>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                        onclick="toggleCommentEditForm({{ $comment->id }})">Hủy</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+
+            <script>
+                function toggleCommentEditForm(id) {
+                    const form = document.getElementById('edit-comment-form-' + id);
+                    const text = document.getElementById('comment-text-' + id);
+                    if (form.style.display === 'none') {
+                        form.style.display = 'block';
+                        text.style.display = 'none';
+                    } else {
+                        form.style.display = 'none';
+                        text.style.display = 'block';
+                    }
+                }
+
+                function deleteComment(commentId) {
+                    if (!confirm('Bạn có chắc muốn xóa bình luận này?')) return;
+
+                    fetch(`/comments/${commentId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                const commentDiv = document.getElementById('comment-' + commentId);
+                                commentDiv.style.transition = 'opacity 0.3s ease';
+                                commentDiv.style.opacity = 0;
+                                setTimeout(() => commentDiv.remove(), 300);
+                            } else {
+                                alert('Xóa thất bại!');
+                            }
+                        })
+                        .catch(() => alert('Có lỗi xảy ra!'));
+                }
+            </script>
         </div>
         <div>
             <div class="nav nav-classic nav-tab">
@@ -943,8 +1041,10 @@
         window.cartBuyNowUrl = "{{ route('cart.buyNow') }}";
         window.selectedPrice = {{ $product->variants->count() > 0 ? $product->variants->first()->price : 0 }};
     </script>
-    <script src="{{ asset('client/js/Products/product-show.js') }}?v={{ filemtime(public_path('client/js/Products/product-show.js')) }}"></script>
-    
+    <script
+        src="{{ asset('client/js/Products/product-show.js') }}?v={{ filemtime(public_path('client/js/Products/product-show.js')) }}">
+    </script>
+
     <style>
         /* Red prohibited cursor for disabled buy-now buttons */
         button[data-buy-now][disabled],

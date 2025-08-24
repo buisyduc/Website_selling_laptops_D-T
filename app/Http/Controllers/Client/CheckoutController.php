@@ -12,6 +12,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Notifications\OrderPlaced;
+use App\Mail\OrderMail;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -231,7 +233,7 @@ class CheckoutController extends Controller
 
         $totalAmount = $cartTotal - $discountAmount;
 
-        
+
         // Kiểm tra tồn kho trước khi xử lý (nhưng chưa trừ kho)
         foreach ($order->items as $item) {
             $variant = $item->variant;
@@ -292,7 +294,8 @@ class CheckoutController extends Controller
                 $cart->items()->delete();
                 $cart->delete();
             }
-
+            Mail::to($order->user->email)->send(new OrderMail($order, 'new'));
+            
             // Thông báo cho admin: có đơn hàng mới (COD)
             try {
                 $admins = User::where('role', 'admin')->get();
@@ -303,11 +306,12 @@ class CheckoutController extends Controller
                 Log::warning('Không thể gửi thông báo OrderPlaced (COD): ' . $e->getMessage());
             }
 
+
             // COD: Chuyển thẳng tới trang cảm ơn
             return redirect()->route('checkout.orderInformation', $order->id)->with('success', 'Đặt hàng thành công!');
         }
     }
-    
+
     /**
      * Hoàn tất thanh toán
      */
@@ -416,7 +420,7 @@ class CheckoutController extends Controller
         session()->forget('is_reorder');
         // Lấy thông tin đơn hàng vừa tạo để xác định trạng thái
         $currentOrder = Order::where('user_id', Auth::id())->findOrFail($orderId);
-        
+
         // Lấy tất cả đơn hàng có cùng trạng thái với đơn vừa tạo
         $orders = Order::with([
             'items',
@@ -424,11 +428,11 @@ class CheckoutController extends Controller
             'items.variant.options.attribute',
             'items.variant.options.option'
         ])
-        ->where('user_id', Auth::id())
-        ->where('status', $currentOrder->status)
-        ->orderByDesc('created_at')
-        ->get();
-        
+            ->where('user_id', Auth::id())
+            ->where('status', $currentOrder->status)
+            ->orderByDesc('created_at')
+            ->get();
+
         // Tạo thông báo thành công dựa trên trạng thái
         $statusMessage = '';
         if ($currentOrder->status === 'pending') {
@@ -438,10 +442,10 @@ class CheckoutController extends Controller
         } else {
             $statusMessage = 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại D&T.';
         }
-        
+
         // Truyền trạng thái hiện tại để hiển thị đúng tab
         request()->merge(['status' => $currentOrder->status]);
-        
+
         return view('client.user.purchase_order', compact('orders'))
             ->with('success', $statusMessage);
     }

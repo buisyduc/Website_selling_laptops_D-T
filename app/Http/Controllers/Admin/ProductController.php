@@ -78,36 +78,36 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new product
      */
-   public function create(): View
-{
-    // Lấy danh mục và thương hiệu
-    $categories = categorie::all();
-    $brands = Brand::all();
+    public function create(): View
+    {
+        // Lấy danh mục và thương hiệu
+        $categories = categorie::all();
+        $brands = Brand::all();
 
-    // Lấy các thuộc tính và giá trị tương ứng (options)
-    $availableAttributes = variant_attributes::with('options')->get()->map(function ($attr) {
-        return [
-            'id' => $attr->id,
-            'name' => $attr->name,
-            'options' => $attr->options->map(function ($opt) {
-                return [
-                    'id' => $opt->id,
-                    'value' => $opt->value,
-                ];
-            })->toArray(),
-        ];
-    });
+        // Lấy các thuộc tính và giá trị tương ứng (options)
+        $availableAttributes = variant_attributes::with('options')->get()->map(function ($attr) {
+            return [
+                'id' => $attr->id,
+                'name' => $attr->name,
+                'options' => $attr->options->map(function ($opt) {
+                    return [
+                        'id' => $opt->id,
+                        'value' => $opt->value,
+                    ];
+                })->toArray(),
+            ];
+        });
 
-    // Nếu có logic đặc biệt để xử lý attributes riêng
-    $attributes = $this->productService->getVariantAttributes(); // (Nếu bạn đang dùng service)
+        // Nếu có logic đặc biệt để xử lý attributes riêng
+        $attributes = $this->productService->getVariantAttributes(); // (Nếu bạn đang dùng service)
 
-    return view('admin.Product.product-create', compact(
-        'categories',
-        'brands',
-        'attributes',
-        'availableAttributes'
-    ));
-}
+        return view('admin.Product.product-create', compact(
+            'categories',
+            'brands',
+            'attributes',
+            'availableAttributes'
+        ));
+    }
 
     /**
      * Store a newly created product
@@ -166,169 +166,169 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified product
      */
-public function edit($id)
-{
-    $product = Product::with([
-        'variants.variantOptions.attribute',
-        'variants.variantOptions.option',
-        'images',
-        'brand',
-        'category'
-    ])->findOrFail($id);
+    public function edit($id)
+    {
+        $product = Product::with([
+            'variants.variantOptions.attribute',
+            'variants.variantOptions.option',
+            'images',
+            'brand',
+            'category'
+        ])->findOrFail($id);
 
-    $variants = $product->variants;
-    $brands = Brand::all();
-    $categories = Categorie::all();
+        $variants = $product->variants;
+        $brands = Brand::all();
+        $categories = Categorie::all();
 
-    // ✅ Dữ liệu truyền sang Blade sẽ có options để JS dùng
-    $availableAttributes = variant_attributes::with('options')->get();
+        // ✅ Dữ liệu truyền sang Blade sẽ có options để JS dùng
+        $availableAttributes = variant_attributes::with('options')->get();
 
-    return view('admin.Product.editProduct', compact(
-        'product',
-        'variants',
-        'brands',
-        'categories',
-        'availableAttributes'
-    ));
-}
-public function update(Request $request, $id)
-{
-    try {
-        DB::beginTransaction();
+        return view('admin.Product.editProduct', compact(
+            'product',
+            'variants',
+            'brands',
+            'categories',
+            'availableAttributes'
+        ));
+    }
+    public function update(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
 
-        $product = Product::findOrFail($id);
+            $product = Product::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:products,slug,' . $id,
-            'description' => 'required|string',
-            'brand_id' => 'required|exists:brands,id',
-            'category_id' => 'required|exists:categories,id',
-            'status' => 'required|boolean',
-            'release_date' => 'nullable|date',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'variants' => 'nullable|array',
-            'variants.*.id' => 'nullable|exists:product_variants,id',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.stock_quantity' => 'required|integer|min:0',
-        ]);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'slug' => 'required|string|max:255|unique:products,slug,' . $id,
+                'description' => 'required|string',
+                'brand_id' => 'required|exists:brands,id',
+                'category_id' => 'required|exists:categories,id',
+                'status' => 'required|boolean',
+                'release_date' => 'nullable|date',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+                'variants' => 'nullable|array',
+                'variants.*.id' => 'nullable|exists:product_variants,id',
+                'variants.*.price' => 'required|numeric|min:0',
+                'variants.*.stock_quantity' => 'required|integer|min:0',
+            ]);
 
-        $product->update([
-            'name' => $validatedData['name'],
-            'slug' => $validatedData['slug'],
-            'description' => $validatedData['description'],
-            'brand_id' => $validatedData['brand_id'],
-            'category_id' => $validatedData['category_id'],
-            'status' => $validatedData['status'],
-            'release_date' => $validatedData['release_date'],
-        ]);
+            $product->update([
+                'name' => $validatedData['name'],
+                'slug' => $validatedData['slug'],
+                'description' => $validatedData['description'],
+                'brand_id' => $validatedData['brand_id'],
+                'category_id' => $validatedData['category_id'],
+                'status' => $validatedData['status'],
+                'release_date' => $validatedData['release_date'],
+            ]);
 
-        // Ảnh đại diện
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $imagePath = $request->file('image')->store('products', 'public');
-            $product->update(['image' => $imagePath]);
-        }
-
-        // Ảnh gallery
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('products/gallery', 'public');
-                $product->productImages()->create([
-                    'image_path' => $imagePath
-                ]);
-            }
-        }
-
-        // Biến thể
-        if ($request->has('variants') && is_array($request->variants)) {
-            $variantsInput = $request->variants;
-            $existingVariantIds = collect($variantsInput)->pluck('id')->filter()->toArray();
-
-            if (!empty($existingVariantIds)) {
-                $product->variants()->whereNotIn('id', $existingVariantIds)->delete();
+            // Ảnh đại diện
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                $imagePath = $request->file('image')->store('products', 'public');
+                $product->update(['image' => $imagePath]);
             }
 
-            foreach ($variantsInput as $variantData) {
-                if (!empty($variantData['id'])) {
-                    $variant = product_variants::find($variantData['id']);
+            // Ảnh gallery
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imagePath = $image->store('products/gallery', 'public');
+                    $product->productImages()->create([
+                        'image_path' => $imagePath
+                    ]);
+                }
+            }
 
-                    if ($variant && $variant->product_id == $product->id) {
-                        if ((int)$variant->stock_quantity !== (int)$variantData['stock_quantity']) {
-                            throw new \Exception("Không được thay đổi số lượng tồn kho của biến thể ID {$variant->id}.");
+            // Biến thể
+            if ($request->has('variants') && is_array($request->variants)) {
+                $variantsInput = $request->variants;
+                $existingVariantIds = collect($variantsInput)->pluck('id')->filter()->toArray();
+
+                if (!empty($existingVariantIds)) {
+                    $product->variants()->whereNotIn('id', $existingVariantIds)->delete();
+                }
+
+                foreach ($variantsInput as $variantData) {
+                    if (!empty($variantData['id'])) {
+                        $variant = product_variants::find($variantData['id']);
+
+                        if ($variant && $variant->product_id == $product->id) {
+                            if ((int)$variant->stock_quantity !== (int)$variantData['stock_quantity']) {
+                                throw new \Exception("Không được thay đổi số lượng tồn kho của biến thể ID {$variant->id}.");
+                            }
+
+                            $variant->update([
+                                'price' => $variantData['price'],
+                                'sale_price' => $variantData['sale_price'] ?? null,
+
+                            ]);
+
+                            $this->updateVariantOptions($variant, $variantData);
                         }
-
-                        $variant->update([
+                    } else {
+                        $variant = $product->variants()->create([
                             'price' => $variantData['price'],
                             'sale_price' => $variantData['sale_price'] ?? null,
+                            'stock_quantity' => $variantData['stock_quantity'],
 
                         ]);
 
-                        $this->updateVariantOptions($variant, $variantData);
+                        $this->createVariantOptions($variant, $variantData);
                     }
-                } else {
-                    $variant = $product->variants()->create([
-                        'price' => $variantData['price'],
-                        'sale_price' => $variantData['sale_price'] ?? null,
-                        'stock_quantity' => $variantData['stock_quantity'],
-
-                    ]);
-
-                    $this->createVariantOptions($variant, $variantData);
                 }
             }
+
+            DB::commit();
+
+            return redirect()->route('product-list', $product->id)
+                ->with('message', 'Cập nhật sản phẩm thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi cập nhật sản phẩm: ' . $e->getMessage());
+
+            return redirect()->back()->withInput()->withErrors([
+                'error' => $e->getMessage()
+            ]);
         }
-
-        DB::commit();
-
-        return redirect()->route('product-list', $product->id)
-            ->with('message', 'Cập nhật sản phẩm thành công!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Lỗi cập nhật sản phẩm: ' . $e->getMessage());
-
-        return redirect()->back()->withInput()->withErrors([
-            'error' => $e->getMessage()
-        ]);
     }
-}
 
-protected function createVariantOptions($variant, $variantData)
-{
-    if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-        foreach ($variantData['attributes'] as $attributeData) {
-            if (!empty($attributeData['attribute_id']) && !empty($attributeData['options'])) {
-                foreach ($attributeData['options'] as $optionId) {
-                    $variant->variantOptions()->create([
-                        'attribute_id' => $attributeData['attribute_id'],
-                        'option_id' => $optionId
-                    ]);
+    protected function createVariantOptions($variant, $variantData)
+    {
+        if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+            foreach ($variantData['attributes'] as $attributeData) {
+                if (!empty($attributeData['attribute_id']) && !empty($attributeData['options'])) {
+                    foreach ($attributeData['options'] as $optionId) {
+                        $variant->variantOptions()->create([
+                            'attribute_id' => $attributeData['attribute_id'],
+                            'option_id' => $optionId
+                        ]);
+                    }
                 }
             }
         }
     }
-}
 
-protected function updateVariantOptions($variant, $variantData)
-{
-    $variant->variantOptions()->delete();
+    protected function updateVariantOptions($variant, $variantData)
+    {
+        $variant->variantOptions()->delete();
 
-    if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-        foreach ($variantData['attributes'] as $attributeData) {
-            if (!empty($attributeData['attribute_id']) && !empty($attributeData['options'])) {
-                foreach ($attributeData['options'] as $optionId) {
-                    $variant->variantOptions()->create([
-                        'attribute_id' => $attributeData['attribute_id'],
-                        'option_id' => $optionId
-                    ]);
+        if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+            foreach ($variantData['attributes'] as $attributeData) {
+                if (!empty($attributeData['attribute_id']) && !empty($attributeData['options'])) {
+                    foreach ($attributeData['options'] as $optionId) {
+                        $variant->variantOptions()->create([
+                            'attribute_id' => $attributeData['attribute_id'],
+                            'option_id' => $optionId
+                        ]);
+                    }
                 }
             }
         }
     }
-}
 
 
 
@@ -587,88 +587,104 @@ protected function updateVariantOptions($variant, $variantData)
     }
 
 
-private function createProductVariant(int $productId, array $variantData, int $index): void
-{
-    $commonAttributes = [];
-    $colors = [];
-    $colorAttributeId = null;
+    private function createProductVariant(int $productId, array $variantData, int $index): void
+    {
+        $commonAttributes = [];
+        $colors = [];
+        $colorAttributeId = null;
 
-    // 1. Tách riêng thuộc tính "màu" và các thuộc tính khác
-    foreach ($variantData['attributes'] as $attr) {
-        $attributeId = $attr['attribute_id'];
-        $options = $attr['options'] ?? [];
+        // 1. Tách riêng thuộc tính "màu" và các thuộc tính khác
+        foreach ($variantData['attributes'] as $attr) {
+            $attributeId = $attr['attribute_id'];
+            $options = $attr['options'] ?? [];
 
-        if (!$attributeId || !is_array($options)) continue;
+            if (!$attributeId || !is_array($options)) continue;
 
-        $attribute = \App\Models\variant_attributes::find($attributeId);
-        if (!$attribute) continue;
+            $attribute = \App\Models\variant_attributes::find($attributeId);
+            if (!$attribute) continue;
 
-        if (stripos($attribute->name, 'màu') !== false) {
-            $colors = $options;
-            $colorAttributeId = $attributeId;
-        } else {
-            $commonAttributes[] = [
-                'attribute_id' => $attributeId,
-                'options' => $options,
-            ];
+            if (stripos($attribute->name, 'màu') !== false) {
+                $colors = $options;
+                $colorAttributeId = $attributeId;
+            } else {
+                $commonAttributes[] = [
+                    'attribute_id' => $attributeId,
+                    'options' => $options,
+                ];
+            }
         }
-    }
 
-    // 2. Sinh tổ hợp biến thể
-    $combinations = $this->generateCombinations($commonAttributes);
+        // 2. Sinh tổ hợp biến thể
+        $combinations = $this->generateCombinations($commonAttributes);
 
-    if (empty($colors)) {
-        // Không có màu → chỉ tạo các biến thể từ common attributes
-        foreach ($combinations as $combo) {
-            $variant = $this->createSingleVariant($productId, $variantData, $index++);
-            $this->attachCombination($variant, $combo);
-        }
-    } else {
-        // Có màu → lặp từng màu kết hợp với common attributes
-        foreach ($colors as $colorOption) {
+        if (empty($colors)) {
+            // Không có màu → chỉ tạo các biến thể từ common attributes
             foreach ($combinations as $combo) {
                 $variant = $this->createSingleVariant($productId, $variantData, $index++);
                 $this->attachCombination($variant, $combo);
-                $this->attachSingleAttribute($variant, $colorAttributeId, $colorOption);
+            }
+        } else {
+            // Có màu → lặp từng màu kết hợp với common attributes
+            foreach ($colors as $colorOption) {
+                foreach ($combinations as $combo) {
+                    $variant = $this->createSingleVariant($productId, $variantData, $index++);
+                    $this->attachCombination($variant, $combo);
+                    $this->attachSingleAttribute($variant, $colorAttributeId, $colorOption);
+                }
             }
         }
     }
-}
 
-private function generateCombinations(array $attributes): array
-{
-    $result = [[]];
+    private function generateCombinations(array $attributes): array
+    {
+        $result = [[]];
 
-    foreach ($attributes as $attribute) {
-        $attributeId = $attribute['attribute_id'];
-        $options = $attribute['options'];
+        foreach ($attributes as $attribute) {
+            $attributeId = $attribute['attribute_id'];
+            $options = $attribute['options'];
 
-        $temp = [];
+            $temp = [];
 
-        foreach ($result as $combination) {
-            foreach ($options as $option) {
-                $temp[] = $combination + [$attributeId => $option];
+            foreach ($result as $combination) {
+                foreach ($options as $option) {
+                    $temp[] = $combination + [$attributeId => $option];
+                }
             }
+
+            $result = $temp;
         }
 
-        $result = $temp;
+        return $result;
+    }
+    private function createSingleVariant(int $productId, array $data, int $index): \App\Models\product_variants
+    {
+        return \App\Models\product_variants::create([
+            'product_id'     => $productId,
+            'price'          => $data['price'],
+            'stock_quantity' => $data['stock_quantity'] ?? 0,
+            'status'         => $data['status'] ?? true,
+        ]);
     }
 
-    return $result;
-}
-private function createSingleVariant(int $productId, array $data, int $index): \App\Models\product_variants
-{
-    return \App\Models\product_variants::create([
-        'product_id'     => $productId,
-        'price'          => $data['price'],
-        'stock_quantity' => $data['stock_quantity'] ?? 0,
-        'status'         => $data['status'] ?? true,
-    ]);
-}
+    private function attachCombination($variant, array $combo): void
+    {
+        foreach ($combo as $attributeId => $optionId) {
+            $option = \App\Models\variant_options::where('attribute_id', $attributeId)
+                ->where('id', $optionId)
+                ->first();
 
-private function attachCombination($variant, array $combo): void
-{
-    foreach ($combo as $attributeId => $optionId) {
+            if ($option) {
+                $variant->variantOptions()->create([
+                    'attribute_id' => $attributeId,
+                    'option_id' => $option->id,
+                ]);
+            }
+        }
+    }
+
+
+    private function attachSingleAttribute($variant, int $attributeId, string $optionId): void
+    {
         $option = \App\Models\variant_options::where('attribute_id', $attributeId)
             ->where('id', $optionId)
             ->first();
@@ -680,48 +696,32 @@ private function attachCombination($variant, array $combo): void
             ]);
         }
     }
-}
-
-
-private function attachSingleAttribute($variant, int $attributeId, string $optionId): void
-{
-    $option = \App\Models\variant_options::where('attribute_id', $attributeId)
-        ->where('id', $optionId)
-        ->first();
-
-    if ($option) {
-        $variant->variantOptions()->create([
-            'attribute_id' => $attributeId,
-            'option_id' => $option->id,
-        ]);
-    }
-}
 
 
 
-private function attachAttributes(product_variants $variant, array $attributes): void
-{
-    foreach ($attributes as $item) {
-        foreach ($item['options'] as $value) {
-            $this->attachSingleAttribute($variant, $item['attribute']->name, $value);
+    private function attachAttributes(product_variants $variant, array $attributes): void
+    {
+        foreach ($attributes as $item) {
+            foreach ($item['options'] as $value) {
+                $this->attachSingleAttribute($variant, $item['attribute']->name, $value);
+            }
         }
     }
-}
 
-// private function attachSingleAttribute(product_variants $variant, string $attributeName, string $value): void
-// {
-//     $attribute = variant_attributes::firstOrCreate(['name' => $attributeName]);
-//     $option = variant_options::firstOrCreate([
-//         'attribute_id' => $attribute->id,
-//         'value' => trim($value),
-//     ]);
+    // private function attachSingleAttribute(product_variants $variant, string $attributeName, string $value): void
+    // {
+    //     $attribute = variant_attributes::firstOrCreate(['name' => $attributeName]);
+    //     $option = variant_options::firstOrCreate([
+    //         'attribute_id' => $attribute->id,
+    //         'value' => trim($value),
+    //     ]);
 
-//     product_variant_options::firstOrCreate([
-//         'variant_id' => $variant->id,
-//         'attribute_id' => $attribute->id,
-//         'option_id' => $option->id,
-//     ]);
-// }
+    //     product_variant_options::firstOrCreate([
+    //         'variant_id' => $variant->id,
+    //         'attribute_id' => $attribute->id,
+    //         'option_id' => $option->id,
+    //     ]);
+    // }
 
     /**
      * Extract attributes from flat variant structure
@@ -1136,12 +1136,6 @@ private function attachAttributes(product_variants $variant, array $attributes):
         return 'Đã vô hiệu hóa ' . count($productIds) . ' sản phẩm.';
     }
 
-
-
-
-
-
-
     public function destroy(product $product)
     {
         $product->delete(); // xóa mềm danh mục
@@ -1188,10 +1182,11 @@ private function attachAttributes(product_variants $variant, array $attributes):
 
         return redirect()->back()->with('success', 'Đã xóa vĩnh viễn tất cả sản phẩm đã xoá mềm.');
     }
-    function view($id){
+    function view($id)
+    {
 
 
-         $product = Product::with('category')->findOrFail($id);
+        $product = Product::with('category')->findOrFail($id);
 
         return view('admin/Product/product-view', compact('product'));
     }

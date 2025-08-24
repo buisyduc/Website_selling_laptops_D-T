@@ -7,7 +7,9 @@ use App\Mail\OrderNotification;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderReturn;
+use App\Mail\OrderMail;
 use Illuminate\Support\Facades\Mail;
+
 
 class AdminOrderController extends Controller
 {
@@ -96,13 +98,6 @@ class AdminOrderController extends Controller
         if ($order->status === 'completed') {
             return back()->with('error', '❌ Đơn hàng đã hoàn thành, không thể thay đổi trạng thái.');
         }
-        // Khi chuyển qua các trạng thái xử lý/giao hàng => đặt trạng thái thanh toán chờ thanh toán
-        // Không ghi đè các trạng thái đã kết thúc như 'paid', 'refunded', 'returned'
-        if (in_array($request->status, ['processing_seller', 'processing', 'shipping'])) {
-            if (!in_array((string) $order->payment_status, ['paid', 'refunded', 'returned'], true)) {
-                $order->payment_status = 'waiting_payment';
-            }
-        }
 
         $request->validate([
             'status' => 'required|in:pending,processing_seller,confirmed,shipping,processing,completed,cancelled,canceled,returned',
@@ -110,6 +105,11 @@ class AdminOrderController extends Controller
 
         // Cập nhật trạng thái đơn hàng
         $order->status = $request->status;
+
+        // 👉 Nếu là VNPAY/MOMO và trạng thái = "processing_seller" (đã xác nhận) => coi như đã thanh toán
+        if ($request->status === 'processing_seller' && in_array($order->payment_method, ['vnpay', 'momo'])) {
+            $order->payment_status = 'paid';
+        }
 
         // 👉 Nếu hủy đơn hàng mà đã thanh toán online thì chuyển payment_status -> refunded
         if (in_array($request->status, ['cancelled', 'canceled', 'returned'])) {
@@ -124,6 +124,7 @@ class AdminOrderController extends Controller
         }
 
         $order->save();
+        Mail::to($order->user->email)->send(new OrderMail($order, 'status'));
 
         return back()->with('success', '✅ Cập nhật trạng thái thành công.');
     }

@@ -184,7 +184,7 @@
                                 $paymentStatus = 'processing';
                             }
                         }
-                                            }
+                                            
 
                                             // Nếu đơn ở trạng thái trả hàng và là COD -> hiển thị Đã trả hàng
                                             if ($order->status === 'returned' && strtolower((string)$order->payment_method) === 'cod') {

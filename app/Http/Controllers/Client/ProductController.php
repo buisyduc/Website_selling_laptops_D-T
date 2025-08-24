@@ -17,24 +17,28 @@ public function show($id)
         'variants.options.option',
         'images',
         'brand',
-        'category'
+        'category',
+        'reviews.user' // load luôn reviews kèm user
     ])->findOrFail($id);
+
+    // Tính trung bình rating (lấy 1 số lẻ)
+    $averageRating = round($product->reviews()->avg('rating') ?? 0, 1);
 
     // Tìm ID của thuộc tính RAM
     $ramAttr = \App\Models\variant_attributes::where('name', 'RAM')->first();
     $ramAttrId = $ramAttr ? $ramAttr->id : null;
 
     // Dữ liệu phục vụ cho JavaScript
-$variantsForJs = $product->variants->map(function ($variant) {
-    return [
-        'id' => $variant->id,
-        'price' => $variant->price,
-        'stock_quantity' => $variant->stock_quantity,
-        'options' => $variant->options->mapWithKeys(function ($opt) {
-            return [$opt->attribute_id => $opt->option_id];
-        }),
-    ];
-})->toArray();
+    $variantsForJs = $product->variants->map(function ($variant) {
+        return [
+            'id' => $variant->id,
+            'price' => $variant->price,
+            'stock_quantity' => $variant->stock_quantity,
+            'options' => $variant->options->mapWithKeys(function ($opt) {
+                return [$opt->attribute_id => $opt->option_id];
+            }),
+        ];
+    })->toArray();
 
 
 
@@ -144,14 +148,15 @@ $variantsForJs = $product->variants->map(function ($variant) {
         }
     }
 
-    return view('client.products.show', compact(
+ return view('client.products.show', compact(
         'product',
         'relatedProducts',
         'breadcrumbs',
         'variantsForJs',
         'ramAttrId',
         'attributeOptionsWithPrices',
-        'variantGroupsReadable'
+        'variantGroupsReadable',
+        'averageRating' 
     ));
 }
 

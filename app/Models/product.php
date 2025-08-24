@@ -87,4 +87,12 @@ class product extends Model
             });
         });
     }
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

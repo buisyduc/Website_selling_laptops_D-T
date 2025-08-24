@@ -360,13 +360,26 @@
                             </div>
                         </li> --}}
 
-                        <li><a href="{{ route('coupons-list') }}" class="nav-link menu-link"><i
+                         <li><a href="{{ route('coupons-list') }}" class="nav-link menu-link"><i
                                     class="bi bi-tag"></i> <span>Mã giảm giá</span></a></li>
+
+                        <li><a href="{{ route('admin.reviews.index') }}" class="nav-link menu-link"><i
+                                    class="bi bi-star"></i>
+                                <span>Đánh giá </span></a></li>
+                                
+                        <li><a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i
+                                    class="bi bi-star"></i>
+                                <span>Bình luận </span></a></li>
+                        {{-- <li><a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span>Thương
+                                    hiệu</span></a></li> --}}
+                        <li><a href="{{ route('admin.dashboard') }}" class="nav-link menu-link"><i
+                                    class="bi bi-pie-chart"></i>
+                                <span>Thống kê</span></a></li>
 
                        
                         
 
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarAccounts" data-bs-toggle="collapse">
                                 <i class="bi bi-person-circle"></i> <span>Tài khoản</span>
                             </a>
@@ -388,9 +401,9 @@
                                     <li><a href="coming-soon.html" class="nav-link">Sắp ra mắt</a></li>
                                 </ul>
                             </div>
-                        </li>
+                        </li> --}}
 
-                        <li><a href="https://themesbrand.com/toner/html/components/index.html" target="_blank"
+                        {{-- <li><a href="https://themesbrand.com/toner/html/components/index.html" target="_blank"
                                 class="nav-link menu-link">
                                 <i class="bi bi-layers"></i> <span>Thành phần</span> <span
                                     class="badge badge-pill bg-secondary">v1.0</span>
@@ -422,7 +435,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </li> 
+                        </li>  --}}
                     </ul>
                 </div>
             </div>
