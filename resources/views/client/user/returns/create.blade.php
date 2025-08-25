@@ -25,9 +25,15 @@
         } else {
             $defaultType = $isOnline ? 'return_refund' : 'return';
         }
+        // Chế độ chỉ xem: khi đã có yêu cầu hoàn tiền lúc hủy đơn (VNPay) và đơn đang pending + payment_status refund_pending
+        $isViewOnly = ($order->payment_status === 'refund_pending' && $isPending && isset($orderReturn) && $orderReturn);
     @endphp
     <h3 class="mb-3">
-        {{ $forceCancelRefund ? 'Yêu cầu hủy đơn/hoàn tiền' : ($isOnline ? 'Yêu cầu trả hàng hoàn tiền' : 'Yêu cầu trả hàng') }}
+        @if($isViewOnly)
+            Thông tin hủy đơn / hoàn tiền
+        @else
+            {{ $forceCancelRefund ? 'Yêu cầu hủy đơn/hoàn tiền' : ($isOnline ? 'Yêu cầu trả hàng hoàn tiền' : 'Yêu cầu trả hàng') }}
+        @endif
     </h3>
 
     @if(session('error'))
@@ -51,6 +57,52 @@
                 <strong>Phương thức thanh toán:</strong> {{ strtoupper($order->payment_method ?? 'COD') }}
             </div>
 
+            @if($isViewOnly)
+                <div class="mb-3">
+                    <label class="form-label">Hình thức</label>
+                    <input type="text" class="form-control" value="Hủy đơn/hoàn tiền" disabled>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Lý do hủy đơn</label>
+                    <textarea class="form-control" rows="4" disabled>{{ $orderReturn->reason }}</textarea>
+                </div>
+                @if($isOnline)
+                <div class="mb-3">
+                    <label class="form-label">Thông tin ngân hàng</label>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Tên ngân hàng" value="{{ $orderReturn->bank_name }}" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Tên chủ tài khoản" value="{{ $orderReturn->bank_account_name }}" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Số tài khoản" value="{{ $orderReturn->bank_account_number }}" disabled>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @php
+                    $images = [];
+                    if (!empty($orderReturn->images)) {
+                        $decoded = is_array($orderReturn->images) ? $orderReturn->images : json_decode($orderReturn->images, true);
+                        $images = is_array($decoded) ? $decoded : [];
+                    }
+                @endphp
+                @if(!empty($images))
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh đính kèm</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach($images as $img)
+                                <a href="{{ asset('storage/' . ltrim($img, '/')) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . ltrim($img, '/')) }}" alt="Ảnh" style="width: 100px; height: 100px; object-fit: cover;" class="rounded border">
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                <a href="{{ route('client.orders.show', $order->id) }}" class="btn btn-outline-secondary">Quay lại</a>
+            @else
             <form method="POST" action="{{ route('orders.return.submit', $order->id) }}" enctype="multipart/form-data">
                 @csrf
                 @if(request('action'))
@@ -105,6 +157,7 @@
                     <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
                 </div>
             </form>
+            @endif
         </div>
     </div>
 </div>

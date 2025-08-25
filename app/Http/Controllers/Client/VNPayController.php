@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Mail\OrderMail;
 use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Notifications\OrderPlaced;
 
 class VNPayController extends Controller
 {
@@ -102,13 +104,24 @@ class VNPayController extends Controller
 
                     // Cập nhật trạng thái đơn hàng
                     $order->update([
-                        'payment_status' => 'pending',
+                        'payment_status' => 'paid',
                         'status'         => 'pending',
                         'payment_method' => 'vnpay', // Thêm dòng này!
                         'paid_at'        => now(),
                     ]);
                     if ($order->user && $order->user->email) {
                         Mail::to($order->user->email)->send(new OrderMail($order, 'paid_vnpay'));
+                    }
+
+                    // Gửi thông báo Database cho tất cả admin: có đơn hàng mới (VNPay)
+                    try {
+                        $admins = User::where('role', 'admin')->get();
+                        foreach ($admins as $admin) {
+                            $admin->notify(new OrderPlaced($order));
+                        }
+                    } catch (\Throwable $e) {
+                        // Tránh làm hỏng luồng thanh toán nếu notify lỗi
+                        \Log::warning('Không thể gửi thông báo OrderPlaced (VNPay): ' . $e->getMessage());
                     }
                 } else {
                     // Nếu thanh toán thất bại từ VNPay, cập nhật trạng thái thất bại

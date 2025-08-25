@@ -201,7 +201,7 @@
                                         'pending' => ['bg-info', 'Đang xử lý'],
                                         'paid' => ['bg-success', 'Đã thanh toán'],
                                         'refunded' => ['bg-secondary', 'Hoàn tiền'],
-                                        'refund_pending' => ['bg-info', 'Đang hoàn tiền'],
+                                        'refund_pending' => ['bg-info', 'Đang chờ hoàn tiền'],
                                         'refund_canceled' => ['bg-danger', 'Hủy hoàn tiền'],
                                         'returned_refunded' => ['bg-secondary', 'Trả hàng/Hoàn tiền'],
                                         'failed' => ['bg-danger', 'Thanh toán thất bại'],
@@ -370,18 +370,20 @@
                             @csrf
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Trạng thái đơn hàng</label>
-                                <select name="status" class="form-select form-select-lg"
-                                    @if (in_array($order->status, ['completed', 'canceled'])) disabled @endif>
-                                    @php
-                                        $statusOptions = [
-                                            'pending' => ['class' => 'text-warning', 'label' => 'Chờ xác nhận'],
+                                @if ($order->status === 'completed')
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                @else
+                                    <select name="status" class="form-select form-select-lg"
+                                        @if (in_array($order->status, ['completed', 'canceled'])) disabled @endif>
+                                        @php
+                                            $statusOptions = [
+                                                'pending' => ['class' => 'text-warning', 'label' => 'Chờ xác nhận'],
                                             'processing_seller' => [
                                                 'class' => 'text-primary',
                                                 'label' => 'Đã xác nhận',
                                             ],
                                             'processing' => ['class' => 'text-info', 'label' => 'Đang giao hàng'],
                                             'shipping' => ['class' => 'text-secondary', 'label' => 'Đã giao hàng'],
-                                            'completed' => ['class' => 'text-success', 'label' => 'Hoàn thành'],
                                             'canceled' => ['class' => 'text-danger', 'label' => 'Đã hủy'],
                                             'returned' => [
                                                 'class' => 'text-secondary',
@@ -429,6 +431,7 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                @endif
 
 
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
@@ -436,8 +439,14 @@
                                         <i class="fas fa-arrow-left me-1"></i> Quay lại
                                     </a>
 
-                                    {{-- Chỉ hiển thị nút cập nhật nếu không phải completed/cancelled/returned --}}
-                                    @if (!in_array($order->status, ['completed', 'cancelled', 'returned']))
+                                    {{-- Chỉ hiển thị nút cập nhật nếu không phải completed/cancelled/returned và không ở trạng thái hủy đơn hoàn tiền (VNPay) --}}
+                                    @php
+                                        $methodInline = strtolower((string)($order->payment_method ?? ''));
+                                        $refundPendingInline = ($order->payment_status ?? '') === 'refund_pending';
+                                        $hideUpdateBtn = in_array($order->status, ['completed', 'cancelled', 'returned'])
+                                            || ($methodInline === 'vnpay' && $refundPendingInline);
+                                    @endphp
+                                    @if (!$hideUpdateBtn)
                                         <button type="submit" class="btn btn-success btn-lg" id="updateBtn">
                                             <i class="fas fa-save me-1"></i> Cập nhật trạng thái
                                         </button>
@@ -465,6 +474,25 @@
                                         <a href="{{ route('admin.orders.returnInfo', $order->id) }}" class="btn btn-info btn-lg">
                                             <i class="fas fa-undo me-1"></i> {{ $returnInfoLabel }}
                                         </a>
+                                    @endif
+
+                                    {{-- Nút xem yêu cầu hủy/hoàn tiền (VNPay): khi đơn đang pending và payment_status = refund_pending --}}
+                                    @php
+                                        $isVnpay = strtolower((string)($order->payment_method ?? '')) === 'vnpay';
+                                        $isPending = ($order->status ?? '') === 'pending';
+                                        $isRefundPending = ($order->payment_status ?? '') === 'refund_pending';
+                                    @endphp
+                                    @if ($isVnpay && $isPending && $isRefundPending)
+                                        @php
+                                            $latestReturn = \App\Models\OrderReturn::where('order_id', $order->id)
+                                                ->orderByDesc('created_at')
+                                                ->first();
+                                        @endphp
+                                        @if ($latestReturn)
+                                            <a href="{{ route('admin.orders.returnInfo', $order->id) }}" class="btn btn-warning btn-lg">
+                                                <i class="fas fa-money-bill-wave me-1"></i> Thông tin hủy đơn / hoàn tiền
+                                            </a>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

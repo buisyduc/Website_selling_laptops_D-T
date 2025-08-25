@@ -8,6 +8,16 @@
                     Yêu cầu trả hàng / hoàn tiền
                 </a>
             @endif
+            @php
+                $method = strtolower(trim((string)($order->payment_method ?? '')));
+                $codKeywords = ['cod','code','cash_on_delivery','cash','offline'];
+                $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
+            @endphp
+            @if (isset($order) && $isOnline && $order->status === 'pending' && $order->payment_status === 'refund_pending')
+                <a href="{{ route('orders.return.form', [$order->id, 'action' => 'cancel']) }}" class="btn btn-outline-secondary ms-2">
+                    Thông tin hủy đơn / hoàn tiền
+                </a>
+            @endif
         </div>
 
         {{-- Nội dung chi tiết đơn hàng hiện có của bạn đặt ở đây --}}

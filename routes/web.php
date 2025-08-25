@@ -50,7 +50,17 @@ Route::post('/logout', action: [AuthController::class, 'logout'])->name('logout'
 
 //giao diện chung
 Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+Route::get('/products/laptopsinhvien', [ClientProductController::class, 'laptopsinhvien'])->name('client.products.laptopsinhvien');
+Route::get('/products/laptopgaming', [ClientProductController::class, 'laptopgaming'])->name('client.products.laptopgaming');
+Route::get('/products/laptopdohoa', [ClientProductController::class, 'laptopdohoa'])->name('client.products.laptopdohoa');
+Route::get('/products/laptopAI', [ClientProductController::class, 'laptopAI'])->name('client.products.laptopAI');
+Route::get('/products/laptopmongnhe', [ClientProductController::class, 'laptopmongnhe'])->name('client.products.laptopmongnhe');
+Route::get('/products/laptopvanphong', [ClientProductController::class, 'laptopvanphong'])->name('client.products.laptopvanphong');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
+// Các trang khác: Điện thoại, Tablet, Âm thanh, Mic… => Coming soon
+Route::get('/coming-soon', function() {
+    return view('coming-soon');
+})->name('client.coming-soon');
 
 
 

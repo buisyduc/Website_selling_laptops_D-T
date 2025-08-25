@@ -7,18 +7,18 @@
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
                     <div>
-                        <h3 class="mb-1 fw-bold">Edit Brand Management</h3>
-                        <p class="mb-0 opacity-75">Update your brand information</p>
+                        <h3 class="mb-1 fw-bold">Chỉnh sửa thương hiệu</h3>
+                        <p class="mb-0 opacity-75">Cập nhật thông tin thương hiệu</p>
                     </div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 bg-transparent">
                             <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-white-50 text-decoration-none">Products</a>
+                                <a href="javascript:void(0);" class="text-white-50 text-decoration-none">Sản phẩm</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('brands') }}" class="text-white-50 text-decoration-none">Brands</a>
+                                <a href="{{ route('brands') }}" class="text-white-50 text-decoration-none">Thương hiệu</a>
                             </li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Edit Brand</li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Chỉnh sửa thương hiệu</li>
                         </ol>
                     </nav>
                 </div>
@@ -33,10 +33,10 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
                                 <i class="ri-edit-circle-line fs-4 me-2"></i>
-                                <h5 class="card-title mb-0 fw-semibold">Edit Brand: {{ $brand->name }}</h5>
+                                <h5 class="card-title mb-0 fw-semibold">Chỉnh sửa thương hiệu: {{ $brand->name }}</h5>
                             </div>
                             <a href="{{ route('brands') }}" class="btn btn-light btn-sm">
-                                <i class="ri-arrow-left-line me-1"></i>Back to List
+                                <i class="ri-arrow-left-line me-1"></i>Quay lại danh sách
                             </a>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
 
                         @if ($errors->any())
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="ri-error-warning-line me-2"></i>Please fix the following errors:
+                                <i class="ri-error-warning-line me-2"></i>Vui lòng sửa các lỗi sau:
                                 <ul class="mb-0 mt-2">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
@@ -72,7 +72,7 @@
                                     <!-- Brand Name -->
                                     <div class="mb-4">
                                         <label for="name" class="form-label fw-semibold">
-                                            <i class="ri-bookmark-line me-1 text-primary"></i>Brand Name
+                                            <i class="ri-bookmark-line me-1 text-primary"></i>Tên thương hiệu
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="input-group">
@@ -80,7 +80,7 @@
                                                 <i class="ri-text text-muted"></i>
                                             </span>
                                             <input type="text" class="form-control border-start-0 @error('name') is-invalid @enderror"
-                                                   id="name" name="name" placeholder="Enter brand name"
+                                                   id="name" name="name" placeholder="Nhập tên thương hiệu"
                                                    value="{{ old('name', $brand->name) }}" required>
                                             @error('name')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -91,7 +91,7 @@
                                     <!-- Slug -->
                                     <div class="mb-4">
                                         <label for="slug" class="form-label fw-semibold">
-                                            <i class="ri-link me-1 text-info"></i>Slug
+                                            <i class="ri-link me-1 text-info"></i>Đường dẫn (slug)
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="input-group">
@@ -99,27 +99,27 @@
                                                 <i class="ri-hashtag text-muted"></i>
                                             </span>
                                             <input type="text" class="form-control border-start-0 @error('slug') is-invalid @enderror"
-                                                   id="slug" name="slug" placeholder="auto-generated-slug"
+                                                   id="slug" name="slug" placeholder="slug-tự-động"
                                                    value="{{ old('slug', $brand->slug) }}" required>
                                             @error('slug')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="form-text">
-                                            <i class="ri-information-line me-1"></i>URL-friendly version of the brand name
+                                            <i class="ri-information-line me-1"></i>Phiên bản thân thiện URL của tên thương hiệu
                                         </div>
                                     </div>
 
                                     <!-- Description -->
                                     <div class="mb-4">
                                         <label for="description" class="form-label fw-semibold">
-                                            <i class="ri-file-text-line me-1 text-info"></i>Description
+                                            <i class="ri-file-text-line me-1 text-info"></i>Mô tả
                                         </label>
                                         <textarea class="form-control @error('description') is-invalid @enderror"
                                                   id="description" name="description" rows="4"
-                                                  placeholder="Enter detailed brand description">{{ old('description', $brand->description) }}</textarea>
+                                                  placeholder="Nhập mô tả chi tiết về thương hiệu">{{ old('description', $brand->description) }}</textarea>
                                         <div class="form-text">
-                                            <i class="ri-information-line me-1"></i>Provide a detailed description of this brand
+                                            <i class="ri-information-line me-1"></i>Cung cấp mô tả chi tiết về thương hiệu này
                                         </div>
                                         @error('description')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -132,7 +132,7 @@
                                     <!-- Current Logo Display -->
                                     <div class="mb-4">
                                         <label class="form-label fw-semibold">
-                                            <i class="ri-image-line me-1 text-warning"></i>Current Logo
+                                            <i class="ri-image-line me-1 text-warning"></i>Logo hiện tại
                                         </label>
                                         <div class="current-logo-container p-3 bg-light rounded">
                                             @if($brand->logo)
@@ -142,13 +142,13 @@
                                                          class="img-fluid rounded border shadow-sm current-logo"
                                                          style="max-width: 200px; max-height: 150px; object-fit: contain; background: white; padding: 10px;">
                                                     <p class="text-muted small mt-2 mb-0">
-                                                        <i class="ri-information-line me-1"></i>Current brand logo
+                                                        <i class="ri-information-line me-1"></i>Logo thương hiệu hiện tại
                                                     </p>
                                                 </div>
                                             @else
                                                 <div class="text-center text-muted py-4">
                                                     <i class="ri-image-line fs-1 mb-2"></i>
-                                                    <p class="mb-0">No logo uploaded</p>
+                                                    <p class="mb-0">Chưa tải lên logo</p>
                                                 </div>
                                             @endif
                                         </div>
@@ -157,18 +157,18 @@
                                     <!-- New Logo Upload -->
                                     <div class="mb-4">
                                         <label for="logo" class="form-label fw-semibold">
-                                            <i class="ri-upload-line me-1 text-warning"></i>Update Logo
+                                            <i class="ri-upload-line me-1 text-warning"></i>Cập nhật logo
                                         </label>
                                         <input type="file" class="form-control @error('logo') is-invalid @enderror"
                                                id="logo" name="logo" accept="image/*" onchange="previewNewLogo(this)">
                                         <div class="form-text">
-                                            <i class="ri-information-line me-1"></i>Leave empty to keep current logo.
-                                            Accepted formats: JPG, PNG, GIF, SVG (Max: 2MB)
+                                            <i class="ri-information-line me-1"></i>Để trống nếu muốn giữ logo hiện tại.
+                                            Định dạng hỗ trợ: JPG, PNG, GIF, SVG (Tối đa: 2MB)
                                         </div>
 
                                         <!-- New Logo Preview -->
                                         <div class="mt-3" id="new-logo-preview" style="display: none;">
-                                            <label class="form-label small text-success fw-semibold">New Logo Preview:</label>
+                                            <label class="form-label small text-success fw-semibold">Xem trước logo mới:</label>
                                             <div class="text-center p-3 bg-success-subtle rounded">
                                                 <img id="preview-new-logo" class="img-fluid rounded border"
                                                      style="max-width: 200px; max-height: 150px; object-fit: contain; background: white; padding: 10px;">
@@ -183,26 +183,26 @@
                                     <div class="card bg-light border-0">
                                         <div class="card-header bg-transparent border-0 pb-2">
                                             <h6 class="card-title mb-0 text-muted">
-                                                <i class="ri-information-line me-2"></i>Brand Details
+                                                <i class="ri-information-line me-2"></i>Chi tiết thương hiệu
                                             </h6>
                                         </div>
                                         <div class="card-body pt-2">
                                             <div class="row g-2">
                                                 <div class="col-12">
                                                     <div class="d-flex justify-content-between align-items-center py-1">
-                                                        <span class="text-muted small">Brand ID:</span>
+                                                        <span class="text-muted small">Mã thương hiệu:</span>
                                                         <span class="fw-medium">#{{ $brand->id }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-flex justify-content-between align-items-center py-1">
-                                                        <span class="text-muted small">Created:</span>
+                                                        <span class="text-muted small">Ngày tạo:</span>
                                                         <span class="fw-medium">{{ $brand->created_at->format('M d, Y') }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-flex justify-content-between align-items-center py-1">
-                                                        <span class="text-muted small">Updated:</span>
+                                                        <span class="text-muted small">Cập nhật:</span>
                                                         <span class="fw-medium">{{ $brand->updated_at->format('M d, Y') }}</span>
                                                     </div>
                                                 </div>
@@ -217,11 +217,11 @@
                                 <div class="col-12">
                                     <div class="d-flex gap-3 justify-content-end pt-3 border-top">
                                         <a href="{{ route('brands') }}" class="btn btn-light btn-lg px-4">
-                                            <i class="ri-close-line me-2"></i>Cancel
+                                            <i class="ri-close-line me-2"></i>Hủy
                                         </a>
 
                                         <button type="submit" class="btn btn-success btn-lg px-5">
-                                            <i class="ri-save-line me-2"></i>Update Brand
+                                            <i class="ri-save-line me-2"></i>Cập nhật thương hiệu
                                         </button>
                                     </div>
                                 </div>
@@ -234,7 +234,7 @@
                 <div class="card border-0 shadow-sm mt-4">
                     <div class="card-header bg-light">
                         <h6 class="card-title mb-0">
-                            <i class="ri-bar-chart-line me-2 text-info"></i>Brand Statistics
+                            <i class="ri-bar-chart-line me-2 text-info"></i>Thống kê thương hiệu
                         </h6>
                     </div>
                     <div class="card-body">
@@ -244,7 +244,7 @@
                                     <div class="badge bg-primary-subtle text-primary p-2 rounded-circle mb-2">
                                         <i class="ri-calendar-line fs-5"></i>
                                     </div>
-                                    <h6 class="mb-1">Created</h6>
+                                    <h6 class="mb-1">Ngày tạo</h6>
                                     <p class="text-muted small mb-0">{{ $brand->created_at->format('M d, Y') }}</p>
                                 </div>
                             </div>
@@ -253,7 +253,7 @@
                                     <div class="badge bg-info-subtle text-info p-2 rounded-circle mb-2">
                                         <i class="ri-refresh-line fs-5"></i>
                                     </div>
-                                    <h6 class="mb-1">Last Updated</h6>
+                                    <h6 class="mb-1">Cập nhật gần nhất</h6>
                                     <p class="text-muted small mb-0">{{ $brand->updated_at->format('M d, Y') }}</p>
                                 </div>
                             </div>
@@ -262,7 +262,7 @@
                                     <div class="badge bg-warning-subtle text-warning p-2 rounded-circle mb-2">
                                         <i class="ri-database-line fs-5"></i>
                                     </div>
-                                    <h6 class="mb-1">Brand ID</h6>
+                                    <h6 class="mb-1">Mã thương hiệu</h6>
                                     <p class="text-muted small mb-0">#{{ $brand->id }}</p>
                                 </div>
                             </div>
@@ -271,10 +271,10 @@
                                     <div class="badge bg-success-subtle text-success p-2 rounded-circle mb-2">
                                         <i class="ri-shopping-bag-line fs-5"></i>
                                     </div>
-                                    <h6 class="mb-1">Products</h6>
+                                    <h6 class="mb-1">Sản phẩm</h6>
                                     <p class="text-muted small mb-0">
                                         {{-- You can add product count here if you have relationship --}}
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge bg-success">Hoạt động</span>
                                     </p>
                                 </div>
                             </div>

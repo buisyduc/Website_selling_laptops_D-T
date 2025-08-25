@@ -7,13 +7,13 @@
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
                     <div>
-                        <h3 class="mb-1 fw-bold">Brand Management</h3>
-                        <p class="mb-0 opacity-75">Manage your product brands efficiently</p>
+                        <h3 class="mb-1 fw-bold">Quản lý thương hiệu</h3>
+                        <p class="mb-0 opacity-75">Quản lý thương hiệu sản phẩm hiệu quả</p>
                     </div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 bg-transparent">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50 text-decoration-none">Products</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Brands</li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50 text-decoration-none">Sản phẩm</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Thương hiệu</li>
                         </ol>
                     </nav>
                 </div>
@@ -27,7 +27,7 @@
                     <div class="card-header bg-gradient-success text-white">
                         <div class="d-flex align-items-center">
                             <i class="ri-add-circle-line fs-4 me-2"></i>
-                            <h5 class="card-title mb-0 fw-semibold">Create New Brand</h5>
+                            <h5 class="card-title mb-0 fw-semibold">Tạo thương hiệu mới</h5>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -44,7 +44,7 @@
                             <!-- Brand Name -->
                             <div class="mb-4">
                                 <label for="name" class="form-label fw-semibold">
-                                    <i class="ri-bookmark-line me-1 text-primary"></i>Brand Name
+                                    <i class="ri-bookmark-line me-1 text-primary"></i>Tên thương hiệu
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
@@ -52,7 +52,7 @@
                                         <i class="ri-text text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control border-start-0 @error('name') is-invalid @enderror"
-                                           id="name" name="name" placeholder="Enter brand name"
+                                           id="name" name="name" placeholder="Nhập tên thương hiệu"
                                            value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -63,7 +63,7 @@
                             <!-- Slug -->
                             <div class="mb-4">
                                 <label for="slug" class="form-label fw-semibold">
-                                    <i class="ri-link me-1 text-info"></i>Slug
+                                    <i class="ri-link me-1 text-info"></i>Đường dẫn (slug)
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
@@ -71,7 +71,7 @@
                                         <i class="ri-hashtag text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control border-start-0 @error('slug') is-invalid @enderror"
-                                           id="slug" name="slug" placeholder="auto-generated-slug"
+                                           id="slug" name="slug" placeholder="slug-tự-động"
                                            value="{{ old('slug') }}" required>
                                     @error('slug')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -82,7 +82,7 @@
                             <!-- Logo Upload -->
                             <div class="mb-4">
                                 <label for="logo" class="form-label fw-semibold">
-                                    <i class="ri-image-line me-1 text-warning"></i>Brand Logo
+                                    <i class="ri-image-line me-1 text-warning"></i>Logo thương hiệu
                                 </label>
                                 <div class="position-relative">
                                     <input type="file" class="form-control" id="logo" name="logo"
@@ -96,11 +96,11 @@
                             <!-- Description -->
                             <div class="mb-4">
                                 <label for="description" class="form-label fw-semibold">
-                                    <i class="ri-file-text-line me-1 text-info"></i>Description
+                                    <i class="ri-file-text-line me-1 text-info"></i>Mô tả
                                 </label>
                                 <textarea class="form-control @error('description') is-invalid @enderror"
                                           id="description" name="description" rows="4"
-                                          placeholder="Enter brand description">{{ old('description') }}</textarea>
+                                          placeholder="Nhập mô tả thương hiệu">{{ old('description') }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -109,7 +109,7 @@
                             <!-- Submit Button -->
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-success btn-lg fw-semibold">
-                                    <i class="ri-add-line me-2"></i>Create Brand
+                                    <i class="ri-add-line me-2"></i>Tạo thương hiệu
                                 </button>
                             </div>
                         </form>
@@ -128,13 +128,13 @@
                                     <i class="ri-search-line text-muted"></i>
                                 </span>
                                 <input type="text" name="search" value="{{ request('search') }}"
-                                       placeholder="Search brands..." class="form-control border-start-0">
+                                       placeholder="Tìm kiếm thương hiệu..." class="form-control border-start-0">
                             </div>
                             <button type="submit" class="btn btn-primary px-4">
-                                <i class="ri-search-line me-1"></i>Search
+                                <i class="ri-search-line me-1"></i>Tìm kiếm
                             </button>
                             <a href="{{ route('brands') }}" class="btn btn-outline-secondary">
-                                <i class="ri-refresh-line me-1"></i>Reset
+                                <i class="ri-refresh-line me-1"></i>Làm mới
                             </a>
                         </form>
                     </div>
@@ -160,7 +160,7 @@
                                     <!-- Brand Badge -->
                                     <div class="position-absolute top-0 end-0 m-2">
                                         <span class="badge bg-primary">
-                                            <i class="ri-price-tag-line me-1"></i>Brand
+                                            <i class="ri-price-tag-line me-1"></i>Thương hiệu
                                         </span>
                                     </div>
                                 </div>
@@ -189,10 +189,10 @@
                                                 data-slug="{{ $brand->slug }}"
                                                 data-description="{{ $brand->description }}"
                                                 data-logo="{{ $brand->logo ? asset('storage/' . $brand->logo) : '' }}">
-                                            <i class="ri-eye-line me-1"></i>View
+                                            <i class="ri-eye-line me-1"></i>Xem
                                         </button>
                                            <a href="{{ route('brands.edit', $brand->id) }}" class="btn btn-outline-secondary btn-sm flex-fill">
-                                            <i class="ri-edit-line me-1"></i>Edit
+                                            <i class="ri-edit-line me-1"></i>Sửa
                                         </a>
                                         <form action="{{ route('brands.destroy', $brand->id) }}" method="POST" class="d-inline flex-fill">
                                             @csrf
@@ -200,7 +200,7 @@
                                             <button type="submit"
                                                     onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này không?')"
                                                     class="btn btn-outline-danger btn-sm w-100">
-                                                <i class="ri-delete-bin-line me-1"></i>Delete
+                                                <i class="ri-delete-bin-line me-1"></i>Xóa
                                             </button>
                                         </form>
 
@@ -223,7 +223,7 @@
     <div class="offcanvas offcanvas-end" tabindex="-1" id="overviewOffcanvas" style="width: 400px;">
         <div class="offcanvas-header bg-gradient-primary text-white">
             <h5 class="offcanvas-title fw-bold">
-                <i class="ri-information-line me-2"></i>Brand Details
+                <i class="ri-information-line me-2"></i>Chi tiết thương hiệu
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
@@ -231,7 +231,7 @@
             <!-- Logo Section -->
             <div class="text-center p-4 bg-light">
                 <div class="position-relative d-inline-block">
-                    <img src="" alt="Brand Logo"
+                    <img src="" alt="Logo thương hiệu"
                          class="overview-logo rounded-circle border border-3 border-white shadow"
                          style="width: 120px; height: 120px; object-fit: cover;">
                 </div>
@@ -240,7 +240,7 @@
             <!-- Details Section -->
             <div class="p-4">
                 <div class="text-center mb-4">
-                    <h4 class="overview-title fw-bold mb-1">Brand Name</h4>
+                    <h4 class="overview-title fw-bold mb-1">Tên thương hiệu</h4>
                     <p class="text-muted mb-0">
                         <i class="ri-link me-1"></i><span class="overview-slug"></span>
                     </p>
@@ -251,7 +251,7 @@
                         <div class="card bg-light border-0">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-2">
-                                    <i class="ri-file-text-line text-info me-2"></i>Description
+                                    <i class="ri-file-text-line text-info me-2"></i>Mô tả
                                 </h6>
                                 <p class="overview-description text-muted mb-0 small"></p>
                             </div>
@@ -266,12 +266,12 @@
             <div class="row g-2">
                 <div class="col-6">
                     <button type="button" class="btn btn-outline-danger w-100" data-bs-dismiss="offcanvas">
-                        <i class="ri-delete-bin-line me-1"></i>Delete
+                        <i class="ri-delete-bin-line me-1"></i>Xóa
                     </button>
                 </div>
                 <div class="col-6">
                     <button type="button" class="btn btn-primary w-100" data-bs-dismiss="offcanvas">
-                        <i class="ri-pencil-line me-1"></i>Edit
+                        <i class="ri-pencil-line me-1"></i>Sửa
                     </button>
                 </div>
             </div>
@@ -313,7 +313,7 @@
                 item.addEventListener("click", function () {
                     const title = this.getAttribute("data-title");
                     const slug = this.getAttribute("data-slug");
-                    const description = this.getAttribute("data-description") || "No description available";
+                    const description = this.getAttribute("data-description") || "Không có mô tả";
                     const logo = this.getAttribute("data-logo");
 
                     // Update logo

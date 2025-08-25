@@ -15,7 +15,7 @@ class StoreOrderReturnRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|in:return,return_refund',
+            'type' => 'required|in:return,return_refund,cancel_refund',
             'reason' => 'required|string|min:10',
             'bank_name' => 'nullable|string|max:255',
             'bank_account_name' => 'nullable|string|max:255',
@@ -39,7 +39,8 @@ class StoreOrderReturnRequest extends FormRequest
             $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
             $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
 
-            if ($this->input('type') === 'return_refund' && $isOnline) {
+            $needsBank = in_array($this->input('type'), ['return_refund','cancel_refund'], true);
+            if ($needsBank && $isOnline) {
                 if (!$this->filled('bank_name')) {
                     $validator->errors()->add('bank_name', 'Vui lòng nhập tên ngân hàng.');
                 }

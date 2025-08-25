@@ -188,14 +188,33 @@ class AdminOrderController extends Controller
         $orderReturn->status = 'approved';
         $orderReturn->save();
 
-        // Cập nhật đơn hàng: giữ trạng thái returned
-        $order->status = 'returned';
+        // Phân nhánh theo luồng xử lý
+        $method = strtolower((string)($order->payment_method ?? ''));
+        $isOnline = in_array($method, ['vnpay','momo','bank'], true);
+        $isCod = in_array($method, ['cod','code','cash_on_delivery','cash','offline'], true);
 
-        // Nếu đơn thanh toán COD -> cập nhật payment_status thành 'returned'
-        if (strtolower((string) $order->payment_method) === 'cod') {
-            $order->payment_status = 'returned';
+        // 1) Nếu là luồng hủy đơn hoàn tiền (online) khi đang pending: payment_status = refund_pending
+        if ($isOnline && ($order->payment_status ?? '') === 'refund_pending' && $order->status === 'pending') {
+            // Đơn đã được hoàn tiền -> chuyển trạng thái về canceled + refunded
+            $order->status = 'canceled';
+            $order->payment_status = 'refunded';
+            $order->save();
+            return back()->with('success', 'Đã xác nhận hoàn tiền. Đơn hàng đã được hủy và cập nhật trạng thái thanh toán là Đã hoàn tiền.');
+        }
+        if ($isOnline && ($order->payment_status ?? '') === 'refund_pending' && $order->status === 'returned') {
+            // Đơn đã được hoàn tiền -> chuyển trạng thái về canceled + refunded
+            $order->status = 'returned';
+            $order->payment_status = 'refunded';
+            $order->save();
+            return back()->with('success', 'Đã xác nhận hoàn tiền. Đơn hàng sẽ được thu hồi và cập nhật trạng thái thanh toán là Đã hoàn tiền.');
         }
 
+        // 2) Mặc định: duyệt yêu cầu trả hàng/hoàn tiền (sau khi giao)
+        //    Giữ trạng thái đơn là returned. Với COD: payment_status = waiting_for_order_confirmation
+        $order->status = 'returned';
+        if ($isCod) {
+            $order->payment_status = 'waiting_for_order_confirmation';
+        }
         $order->save();
 
         return back()->with('success', 'Đã duyệt yêu cầu trả hàng/hoàn tiền.');
@@ -220,6 +239,23 @@ class AdminOrderController extends Controller
 
         $orderReturn->status = 'rejected';
         $orderReturn->save();
+
+        // Nếu admin từ chối yêu cầu hủy đơn hoàn tiền (cancel_refund) cho đơn thanh toán VNPay
+        // thì cập nhật đơn về trạng thái "Đã xác nhận" và trạng thái thanh toán "Đã thanh toán"
+        $method = strtolower((string)($order->payment_method ?? ''));
+        if (($orderReturn->type ?? null) === 'cancel_refund' && $method === 'vnpay') {
+            $order->status = 'processing_seller'; // Đã xác nhận
+            $order->payment_status = 'paid';      // Đã thanh toán
+            $order->save();
+        }
+
+        // Nếu admin từ chối yêu cầu trả hàng/hoàn tiền (return_refund | return)
+        // => đưa đơn về 'completed' và thanh toán 'paid' (áp dụng cho mọi phương thức, bao gồm COD)
+        if (in_array(($orderReturn->type ?? ''), ['return_refund', 'return'], true)) {
+            $order->status = 'completed';
+            $order->payment_status = 'paid';
+            $order->save();
+        }
 
         return back()->with('success', 'Đã từ chối yêu cầu trả hàng/hoàn tiền.');
     }

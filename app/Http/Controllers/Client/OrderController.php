@@ -82,7 +82,7 @@ class OrderController extends Controller
                     $item->variant->save();
                 }
             }
-            $order->update(['status' => 'canceled', 'payment_status' => 'canceled']);
+            $order->update(['status' => 'canceled', 'payment_status' => 'unpaid']);
 
             // Notify admin
             $admins = User::where('role', 'admin')->get();
@@ -137,16 +137,23 @@ class OrderController extends Controller
             return back()->with('error', 'Không thể hủy đơn hàng này.');
         }
 
+        // Xác định phương thức thanh toán để quyết định trạng thái thanh toán sau khi hủy trả hàng
+        $method = strtolower(trim((string)($order->payment_method ?? '')));
+        $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
+        $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
+
+        // Hoàn tác lại tồn kho do trước đó traHang()/return đã +stock; giờ hủy trả hàng nên -stock tương ứng
         foreach ($order->items as $item) {
             if ($item->variant) {
-                $item->variant->stock_quantity += $item->quantity;
+                $item->variant->stock_quantity = max(0, (int)$item->variant->stock_quantity - (int)$item->quantity);
                 $item->variant->save();
             }
         }
 
+        // Trả về trạng thái đã giao hàng; thanh toán: COD giữ unpaid, Online giữ paid
         $order->update([
             'status' => 'shipping',
-            'payment_status' => 'waiting_payment',
+            'payment_status' => $isOnline ? 'paid' : 'unpaid',
         ]);
 
         // Thông báo admin: khách hàng yêu cầu hủy yêu cầu trả hàng
@@ -155,9 +162,8 @@ class OrderController extends Controller
             $admin->notify(new OrderCancellationRequested($order, 'return_cancel_requested'));
         }
 
-        return back()->with('success', 'Ban đã hủy yêu cầu trả hàng thành công.');
+        return back()->with('success', 'Bạn đã hủy yêu cầu trả hàng thành công.');
     }
-
     public function refundCanceled($id)
     {
         $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
@@ -174,7 +180,7 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => 'pending']);
-        $order->update(['payment_status' => 'pending']);
+        $order->update(['payment_status' => 'paid']);
 
         // Thông báo admin: khách hủy yêu cầu hoàn tiền
         $admins = User::where('role', 'admin')->get();
@@ -201,22 +207,23 @@ class OrderController extends Controller
                 $item->variant->save(); // ✅ nhớ lưu lại stock
             }
         }
-    
+
         $order->update(['status' => 'returned']);
-    
+
         // Xác định hình thức thanh toán: COD hay online
         $method = strtolower(trim((string)($order->payment_method ?? '')));
         $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
         $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
-    
-        // Khi khách yêu cầu trả hàng (có/không hoàn tiền), đặt trạng thái thanh toán về 'Waiting_for_order_confirmation'
+
+        // Khi khách yêu cầu trả hàng hoàn tiền:
+        // Online (VNPay) -> refund_pending; COD/offline -> unpaid
         $order->update([
-            'payment_status' => 'Waiting_for_order_confirmation'
+            'payment_status' => $isOnline ? 'refund_pending' : 'unpaid',
         ]);
-    
+
         // 🔑 Refresh lại order sau khi update để tránh notify sai dữ liệu
         $order->refresh();
-    
+
         // Thông báo admin
         $type = $isOnline ? 'return_refund_requested' : 'return_requested';
         $admins = User::where('role', 'admin')->get();
@@ -276,7 +283,9 @@ class OrderController extends Controller
         $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
 
         $action = request()->query('action'); // ví dụ: cancel
-        return view('client.user.returns.create', compact('order', 'isOnline', 'action'));
+        // Lấy yêu cầu trả hàng/hoàn tiền gần nhất (nếu có) để hiển thị chế độ xem thông tin
+        $orderReturn = OrderReturn::where('order_id', $order->id)->latest()->first();
+        return view('client.user.returns.create', compact('order', 'isOnline', 'action', 'orderReturn'));
     }
 
     // Xử lý submit yêu cầu trả hàng / trả hàng hoàn tiền
@@ -296,6 +305,16 @@ class OrderController extends Controller
         }
 
         $data = $request->validated();
+
+        // Xác định đơn online hay COD (cần sớm để set type)
+        $method = strtolower(trim((string)($order->payment_method ?? '')));
+        $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
+        $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
+
+        // Nếu là luồng hủy đơn (pending + action=cancel) và thanh toán online -> set type = cancel_refund
+        if ($isPendingCancelFlow && $isOnline) {
+            $data['type'] = 'cancel_refund';
+        }
 
         // Upload ảnh chứng minh (nếu có)
         $imagePaths = [];
@@ -320,10 +339,7 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
-        // Xác định đơn online hay COD
-        $method = strtolower(trim((string)($order->payment_method ?? '')));
-        $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
-        $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
+        // Xác định đơn online hay COD (đã có ở trên)
 
         // Cập nhật trạng thái theo luồng
         if ($isPendingCancelFlow) {
@@ -345,7 +361,7 @@ class OrderController extends Controller
                 // COD: hủy ngay
                 $order->update([
                     'status' => 'canceled',
-                    'payment_status' => 'canceled',
+                    'payment_status' => 'unpaid',
                 ]);
                 $event = 'order_canceled';
             }
@@ -354,14 +370,16 @@ class OrderController extends Controller
             if (($data['type'] ?? 'return') === 'return_refund') {
                 $order->update([
                     'status' => 'returned',
-                    'payment_status' => 'Waiting_for_order_confirmation',
+                    // Online (VNPay) -> refund_pending; COD/offline -> unpaid
+                    'payment_status' => $isOnline ? 'refund_pending' : 'unpaid',
                 ]);
                 $event = 'return_refund_requested';
             } else {
                 // Trả hàng (không hoàn tiền)
                 $order->update([
                     'status' => 'returned',
-                    'payment_status' => 'Waiting_for_order_confirmation',
+                    // COD/offline -> unpaid; Online (hiếm) vẫn pending xác nhận
+                    'payment_status' => $isOnline ? 'Waiting_for_order_confirmation' : 'unpaid',
                 ]);
                 $event = 'return_requested';
             }
@@ -417,7 +435,8 @@ class OrderController extends Controller
     {
         $order = Order::with('items.variant')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
 
-        if ($order->status !== 'shipping') {
+        // Chỉ cho phép trả hàng khi đơn đang giao hoặc đã giao
+        if (!in_array($order->status, ['shipping', 'delivered'], true)) {
             return back()->with('error', 'Không thể yêu cầu trả hàng.');
         }
 
@@ -428,8 +447,17 @@ class OrderController extends Controller
             }
         }
 
+        // Xác định phương thức thanh toán online (ví dụ: VNPay). Mặc định coi là COD/offline nếu không khớp.
+        $method = strtolower(trim((string)($order->payment_method ?? '')));
+        $onlineMethods = ['vnpay'];
+        $isOnline = in_array($method, $onlineMethods, true);
+
+        // Cập nhật trạng thái đơn và trạng thái thanh toán theo phương thức
         $order->update(['status' => 'returned']);
-        $order->update(['payment_status' => 'Waiting_for_order_confirmation']);
+        $order->update([
+            'payment_status' => $isOnline ? 'Waiting_for_order_confirmation' : 'unpaid',
+        ]);
+
         return back()->with('success', 'Đã yêu cầu trả hàng.');
     }
 

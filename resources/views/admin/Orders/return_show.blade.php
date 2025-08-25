@@ -4,9 +4,17 @@
 <div class="container-fluid py-4">
     <div class="row mb-3">
         <div class="col-12 d-flex justify-content-between align-items-center">
+            @php
+                $method = strtolower((string)($order->payment_method ?? ''));
+                $isCod = in_array($method, ['cod','code','cash_on_delivery','cash','offline'], true);
+                $headerText = match(($orderReturn->type ?? '')) {
+                    'cancel_refund' => 'Thông tin hủy đơn/hoàn tiền',
+                    default => ($isCod ? 'Thông tin trả hàng' : 'Thông tin trả hàng/hoàn tiền'),
+                };
+            @endphp
             <h3 class="mb-0">
                 <i class="fas fa-undo me-2 text-primary"></i>
-                Thông tin trả hàng/hoàn tiền - Đơn #{{ $order->order_code }}
+                {{ $headerText }} - Đơn #{{ $order->order_code }}
             </h3>
             <div>
                 <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-outline-secondary">
@@ -26,7 +34,8 @@
     <div class="row">
         @php
             $isVnpay = strtolower((string)($order->payment_method ?? '')) === 'vnpay';
-            $showBank = $isVnpay && ($orderReturn->type === 'return_refund');
+            $isCancelRefund = $isVnpay && (($order->payment_status ?? '') === 'refund_pending');
+            $showBank = $isVnpay && in_array($orderReturn->type, ['return_refund','cancel_refund'], true);
         @endphp
         <div class="col-lg-{{ $showBank ? '7' : '12' }} mb-4">
             <div class="card shadow-sm border-0 h-100">
@@ -38,7 +47,11 @@
                         <dt class="col-sm-4">Loại yêu cầu</dt>
                         <dd class="col-sm-8">
                             @php
-                                $typeText = $orderReturn->type === 'return_refund' ? 'Trả hàng hoàn tiền' : 'Trả hàng';
+                                $typeText = match($orderReturn->type) {
+                                    'cancel_refund' => 'Hủy đơn hoàn tiền',
+                                    'return_refund' => ($isCod ? 'Trả hàng' : 'Trả hàng hoàn tiền'),
+                                    default => 'Trả hàng',
+                                };
                             @endphp
                             <span class="badge bg-secondary">{{ $typeText }}</span>
                         </dd>
@@ -129,10 +142,10 @@
                     </button>
                 </form>
 
-                <form action="{{ route('admin.orders.return.approve', $order) }}" method="POST" onsubmit="return confirm('Xác nhận duyệt yêu cầu trả hàng/hoàn tiền?');">
+                <form action="{{ route('admin.orders.return.approve', $order) }}" method="POST" onsubmit="return confirm('{{ $isCancelRefund ? 'Xác nhận hoàn tiền và hủy đơn hàng?' : 'Xác nhận duyệt yêu cầu trả hàng/hoàn tiền?' }}');">
                     @csrf
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check me-1"></i> Xác nhận
+                        <i class="fas fa-check me-1"></i> {{ $isCancelRefund ? 'Xác nhận hoàn tiền & hủy đơn' : 'Xác nhận' }}
                     </button>
                 </form>
             </div>

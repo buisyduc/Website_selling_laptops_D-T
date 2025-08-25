@@ -292,4 +292,98 @@ public function show($id)
 
         return response()->json($variants);
     }
+    public function laptopsinhvien(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'laptop-cho-sinh-vien');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.laptopsinhvien');
+    }
+
+    public function laptopgaming(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'laptop-gaming');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.laptopgaming');
+    }
+    public function laptopmongnhe(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'laptop-mng-nh');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.laptopmongnhe');
+    }
+     public function laptopvanphong(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'Laptop văn phòng');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.laptopvanphong');
+    }
+     public function laptopAI(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'Laptop AI');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.LaptopAI');
+    }
+     public function laptopdohoa(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'Laptop đồ họa');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.laptopdohoa');
+    }
+
+    protected function filterAndPaginate(Request $request, $query, $view)
+    {
+        // luôn chỉ rõ bảng products.status
+        $query->where('products.status', true);
+
+        // Filter brand
+        if ($request->has('brand') && $request->brand) {
+            $query->whereHas('brand', function ($q) use ($request) {
+                $q->where('slug', $request->brand);
+            });
+        }
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->where('products.name', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'created_at');
+$sortOrder = $request->get('order', 'desc');
+
+        switch ($sortBy) {
+            case 'name':
+                $query->orderBy('products.name', $sortOrder);
+                break;
+            case 'rating':
+                $query->withAvg('reviews', 'rating')
+                    ->orderBy('reviews_avg_rating', $sortOrder);
+                break;
+            default:
+                $query->orderBy('products.created_at', $sortOrder);
+        }
+
+        $products = $query->paginate(12)->withQueryString();
+
+        return view($view, compact('products'));
+    }
+
 }

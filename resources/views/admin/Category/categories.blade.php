@@ -7,13 +7,13 @@
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
                     <div>
-                        <h3 class="mb-1 fw-bold">Category Management</h3>
-                        <p class="mb-0 opacity-75">Manage your product categories efficiently</p>
+                        <h3 class="mb-1 fw-bold">Quản lý danh mục</h3>
+                        <p class="mb-0 opacity-75">Quản lý danh mục sản phẩm hiệu quả</p>
                     </div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 bg-transparent">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50 text-decoration-none">Products</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Categories</li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50 text-decoration-none">Sản phẩm</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Danh mục</li>
                         </ol>
                     </nav>
                 </div>
@@ -27,7 +27,7 @@
                     <div class="card-header bg-gradient-success text-white">
                         <div class="d-flex align-items-center">
                             <i class="ri-add-circle-line fs-4 me-2"></i>
-                            <h5 class="card-title mb-0 fw-semibold">Create New Category</h5>
+                            <h5 class="card-title mb-0 fw-semibold">Thêm danh mục</h5>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -44,7 +44,7 @@
                             <!-- Category Name -->
                             <div class="mb-4">
                                 <label for="name" class="form-label fw-semibold">
-                                    <i class="ri-bookmark-line me-1 text-primary"></i>Category Name
+                                    <i class="ri-bookmark-line me-1 text-primary"></i>Tên danh mục
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
@@ -52,7 +52,7 @@
                                         <i class="ri-text text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control border-start-0 @error('name') is-invalid @enderror"
-                                           id="name" name="name" placeholder="Enter category name"
+                                           id="name" name="name" placeholder="Nhập tên danh mục"
                                            value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -71,7 +71,7 @@
                                         <i class="ri-hashtag text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control border-start-0 @error('slug') is-invalid @enderror"
-                                           id="slug" name="slug" placeholder="auto-generated-slug"
+                                           id="slug" name="slug" placeholder="slug-tu-dong-tao"
                                            value="{{ old('slug') }}" required>
                                     @error('slug')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -82,7 +82,7 @@
                             <!-- Image Upload -->
                             <div class="mb-4">
                                 <label for="image" class="form-label fw-semibold">
-                                    <i class="ri-image-line me-1 text-warning"></i>Category Image
+                                    <i class="ri-image-line me-1 text-warning"></i>Ảnh danh mục
                                 </label>
                                 <div class="position-relative">
                                     <input type="file" class="form-control" id="image" name="image"
@@ -96,10 +96,10 @@
                             <!-- Parent Category -->
                             <div class="mb-4">
                                 <label for="parent_id" class="form-label fw-semibold">
-                                    <i class="ri-node-tree me-1 text-secondary"></i>Parent Category
+                                    <i class="ri-node-tree me-1 text-secondary"></i>Danh mục cha
                                 </label>
                                 <select class="form-select" id="parent_id" name="parent_id">
-                                    <option value="">-- Select Parent Category --</option>
+                                    <option value="">-- Chọn danh mục cha --</option>
                                     {!! (new App\Http\Controllers\Admin\CategorieController)->renderCategoryOptions($categories) !!}
                                 </select>
                             </div>
@@ -107,11 +107,11 @@
                             <!-- Description -->
                             <div class="mb-4">
                                 <label for="description" class="form-label fw-semibold">
-                                    <i class="ri-file-text-line me-1 text-info"></i>Description
+                                    <i class="ri-file-text-line me-1 text-info"></i>Mô tả
                                 </label>
                                 <textarea class="form-control @error('description') is-invalid @enderror"
                                           id="description" name="description" rows="4"
-                                          placeholder="Enter category description">{{ old('description') }}</textarea>
+                                          placeholder="Nhập mô tả danh mục">{{ old('description') }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -120,13 +120,13 @@
                             <!-- Status Toggle -->
                             <div class="mb-4">
                                 <label for="status" class="form-label fw-semibold">
-                                    <i class="ri-eye-line me-1 text-success"></i>Status
+                                    <i class="ri-eye-line me-1 text-success"></i>Trạng thái
                                 </label>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="status" name="status"
                                            value="1" checked onchange="updateStatusText()">
                                     <label class="form-check-label fw-medium" for="status" id="status-label">
-                                        <span class="badge bg-success">Visible</span>
+                                        <span class="badge bg-success">Hiển thị</span>
                                     </label>
                                 </div>
                             </div>
@@ -134,7 +134,7 @@
                             <!-- Order -->
                             <div class="mb-4">
                                 <label for="order" class="form-label fw-semibold">
-                                    <i class="ri-sort-asc me-1 text-primary"></i>Display Order
+                                    <i class="ri-sort-asc me-1 text-primary"></i>Thứ tự hiển thị
                                 </label>
                                 <input type="number" class="form-control" id="order" name="order"
                                        value="0" min="0" placeholder="0">
@@ -143,7 +143,7 @@
                             <!-- Submit Button -->
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-success btn-lg fw-semibold">
-                                    <i class="ri-add-line me-2"></i>Create Category
+                                    <i class="ri-add-line me-2"></i>Tạo danh mục
                                 </button>
                             </div>
                         </form>
@@ -162,13 +162,13 @@
                                     <i class="ri-search-line text-muted"></i>
                                 </span>
                                 <input type="text" name="search" value="{{ request('search') }}"
-                                       placeholder="Search categories..." class="form-control border-start-0">
+                                       placeholder="Tìm kiếm danh mục..." class="form-control border-start-0">
                             </div>
                             <button type="submit" class="btn btn-primary px-4">
-                                <i class="ri-search-line me-1"></i>Search
+                                <i class="ri-search-line me-1"></i>Tìm kiếm
                             </button>
                             <a href="{{ route('categories') }}" class="btn btn-outline-secondary">
-                                <i class="ri-refresh-line me-1"></i>Reset
+                                <i class="ri-refresh-line me-1"></i>Làm mới
                             </a>
                         </form>
                     </div>
@@ -195,11 +195,11 @@
                                     <div class="position-absolute top-0 end-0 m-2">
                                         @if($category->status == 1)
                                             <span class="badge bg-success">
-                                                <i class="ri-eye-line me-1"></i>Visible
+                                                <i class="ri-eye-line me-1"></i>Hiển thị
                                             </span>
                                         @else
                                             <span class="badge bg-secondary">
-                                                <i class="ri-eye-off-line me-1"></i>Hidden
+                                                <i class="ri-eye-off-line me-1"></i>Ẩn
                                             </span>
                                         @endif
                                     </div>
@@ -220,9 +220,9 @@
 
                                         <!-- Meta Info -->
                                         <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
-                                            <span><i class="ri-sort-asc me-1"></i>Order: {{ $category->order }}</span>
+                                            <span><i class="ri-sort-asc me-1"></i>Thứ tự: {{ $category->order }}</span>
                                             @if($category->parent_id)
-                                                <span><i class="ri-node-tree me-1"></i>Has Parent</span>
+                                                <span><i class="ri-node-tree me-1"></i>Có danh mục cha</span>
                                             @endif
                                         </div>
                                     </div>
@@ -238,14 +238,14 @@
                                                 data-description="{{ $category->description }}"
                                                 data-image="{{ $category->image ? asset('storage/' . $category->image) : '' }}"
                                                 data-parent_id="{{ $category->parent_id }}"
-                                                data-parent_name="{{ $category->parent ? $category->parent->name : 'None' }}"
+                                                data-parent_name="{{ $category->parent ? $category->parent->name : 'Không có' }}"
 
                                                 data-status="{{ $category->status }}"
                                                 data-order="{{ $category->order }}">
-                                            <i class="ri-eye-line me-1"></i>View
+                                            <i class="ri-eye-line me-1"></i>Xem
                                         </button>
                                         <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-outline-secondary btn-sm flex-fill">
-                                            <i class="ri-edit-line me-1"></i>Edit
+                                            <i class="ri-edit-line me-1"></i>Sửa
                                         </a>
                                         <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline flex-fill">
                                             @csrf
@@ -253,11 +253,9 @@
                                             <button type="submit"
                                                     onclick="return confirm('Bạn có chắc chắn muốn xóa tạm thời danh mục này không?')"
                                                     class="btn btn-outline-danger btn-sm w-100">
-                                                <i class="ri-delete-bin-line me-1"></i>Delete
+                                                <i class="ri-delete-bin-line me-1"></i>Xóa
                                             </button>
                                         </form>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -277,7 +275,7 @@
     <div class="offcanvas offcanvas-end" tabindex="-1" id="overviewOffcanvas" style="width: 400px;">
         <div class="offcanvas-header bg-gradient-primary text-white">
             <h5 class="offcanvas-title fw-bold">
-                <i class="ri-information-line me-2"></i>Category Details
+                <i class="ri-information-line me-2"></i>Chi tiết danh mục
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
@@ -294,7 +292,7 @@
             <!-- Details Section -->
             <div class="p-4">
                 <div class="text-center mb-4">
-                    <h4 class="overview-title fw-bold mb-1">Category Name</h4>
+                    <h4 class="overview-title fw-bold mb-1">Tên danh mục</h4>
                     <p class="text-muted mb-0">
                         <i class="ri-link me-1"></i><span class="overview-slug"></span>
                     </p>
@@ -305,7 +303,7 @@
                         <div class="card bg-light border-0">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-2">
-                                    <i class="ri-file-text-line text-info me-2"></i>Description
+                                    <i class="ri-file-text-line text-info me-2"></i>Mô tả
                                 </h6>
                                 <p class="overview-description text-muted mb-0 small"></p>
                             </div>
@@ -316,7 +314,7 @@
                         <div class="card bg-light border-0">
                             <div class="card-body p-3 text-center">
                                 <h6 class="card-title mb-2">
-                                    <i class="ri-eye-line text-success me-1"></i>Status
+                                    <i class="ri-eye-line text-success me-1"></i>Trạng thái
                                 </h6>
                                 <span class="overview-status badge bg-success"></span>
                             </div>
@@ -327,7 +325,7 @@
                         <div class="card bg-light border-0">
                             <div class="card-body p-3 text-center">
                                 <h6 class="card-title mb-2">
-                                    <i class="ri-sort-asc text-primary me-1"></i>Order
+                                    <i class="ri-sort-asc text-primary me-1"></i>Thứ tự
                                 </h6>
                                 <span class="overview-order badge bg-primary"></span>
                             </div>
@@ -338,7 +336,7 @@
                         <div class="card bg-light border-0">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-2">
-                                    <i class="ri-node-tree text-secondary me-2"></i>Parent Category
+                                    <i class="ri-node-tree text-secondary me-2"></i>Danh mục cha
                                 </h6>
                                 <p class="overview-parent-id text-muted mb-0"></p>
 
@@ -374,9 +372,9 @@
             const label = document.getElementById('status-label');
 
             if (checkbox.checked) {
-                label.innerHTML = '<span class="badge bg-success">Visible</span>';
+                label.innerHTML = '<span class="badge bg-success">Hiển thị</span>';
             } else {
-                label.innerHTML = '<span class="badge bg-secondary">Hidden</span>';
+                label.innerHTML = '<span class="badge bg-secondary">Ẩn</span>';
             }
         }
 
@@ -397,10 +395,10 @@
                 item.addEventListener("click", function () {
                     const title = this.getAttribute("data-title");
                     const slug = this.getAttribute("data-slug");
-                    const description = this.getAttribute("data-description") || "No description available";
+                    const description = this.getAttribute("data-description") || "Chưa có mô tả";
                     const image = this.getAttribute("data-image");
-                    const parentId = this.getAttribute("data-parent_id") || "None";
-                    const parentName = this.getAttribute("data-parent_name") || "None"; // Tên cha
+                    const parentId = this.getAttribute("data-parent_id") || "Không có";
+                    const parentName = this.getAttribute("data-parent_name") || "Không có"; // Tên cha
                     const status = this.getAttribute("data-status");
                     const order = this.getAttribute("data-order");
 
@@ -422,10 +420,10 @@
 
                     const statusElement = document.querySelector(".overview-status");
                     if (status == "1") {
-                        statusElement.innerText = "Visible";
+                        statusElement.innerText = "Hiển thị";
                         statusElement.className = "badge bg-success";
                     } else {
-                        statusElement.innerText = "Hidden";
+                        statusElement.innerText = "Ẩn";
                         statusElement.className = "badge bg-secondary";
                     }
 

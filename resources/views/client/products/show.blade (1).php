@@ -68,8 +68,7 @@
                                 : number_format($activeCoupon->discount_value, 0, ',', '.') . '₫' }}
                         </span>
                     @endif
-
-                    <div class="border rounded-4 p-2 bg-white">
+<div class="border rounded-4 p-2 bg-white">
                         <img id="mainImage"
                             src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/500x350/e3f2fd/1976d2?text=' . urlencode($product->name) }}"
                             alt="{{ $product->name }}" class="img-fluid w-100"
@@ -120,7 +119,7 @@
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
                 <div class=" my-2">
-                    <h5 class="fw-bold">Cam kết sản phẩm</h5>
+<h5 class="fw-bold">Cam kết sản phẩm</h5>
                     <div class="row row-cols-1 row-cols-md-2 g-3 my-2">
                         <!-- Box 1 -->
                         <div class="col">
@@ -157,7 +156,7 @@
                                     <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_2)">
                                             <path
-                                                d="M8.59506 15.6345C6.33703 14.9346 4.44505 13.3743 3.32797 11.2908C2.21089 9.20739 1.9584 6.76808 2.62506 4.5C4.96171 4.60692 7.24819 3.79993 9.00006 2.25C10.7519 3.79993 13.0384 4.60692 15.3751 4.5C15.8841 6.23183 15.8605 8.07671 15.3076 9.795M11.2501 14.25L12.7501 15.75L15.7501 12.75"
+d="M8.59506 15.6345C6.33703 14.9346 4.44505 13.3743 3.32797 11.2908C2.21089 9.20739 1.9584 6.76808 2.62506 4.5C4.96171 4.60692 7.24819 3.79993 9.00006 2.25C10.7519 3.79993 13.0384 4.60692 15.3751 4.5C15.8841 6.23183 15.8605 8.07671 15.3076 9.795M11.2501 14.25L12.7501 15.75L15.7501 12.75"
                                                 stroke="white" stroke-width="1.5" stroke-linecap="round"
                                                 stroke-linejoin="round" />
                                         </g>
@@ -195,8 +194,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Box 4 -->
+<!-- Box 4 -->
                         <div class="col">
                             <div class="d-flex gap-3 align-items-start p-3 rounded-4 shadow-sm bg-light h-100">
                                 <div class="d-flex justify-content-center align-items-center rounded-3"
@@ -234,7 +232,7 @@
                     <div id="thong-so-ky-thuat" class="my-4 cps-block-technicalInfo mb-3 bg-white  shadow-sm"
                         style="
                         border: 1px solid rgba(0, 0, 0, 0.2);
-                        border-radius: 12px;
+border-radius: 12px;
                         background-color: #f2f1f1 ;
                         transition: 0.2s ease;
                     ">
@@ -286,7 +284,7 @@
                                     </td>
                                 </tr>
                                 <tr class="technical-content-item">
-                                    <td class="fw-semibold">Pin</td>
+<td class="fw-semibold">Pin</td>
                                     <td>
                                         <p class="mb-0">3 Cell Int (52.5Wh)</p>
                                     </td>
@@ -338,7 +336,7 @@
                         <!-- Hiển thị giá -->
                         <span class="fs-3 fw-bold text-dark" id="currentPrice">
                             {{ number_format($product->variants->first()->price) }}₫
-                        </span>
+</span>
 
                         <!-- Giá gạch ngang (giá cũ) -->
                         <del class="text-muted small">34.590.000₫</del>
@@ -398,7 +396,7 @@
                                                 $opt->attribute_id == $colorAttributeId &&
                                                 $opt->option_id == $optId &&
                                                 $variant->stock_quantity > 0
-                                            ) {
+) {
                                                 $hasStock = true;
                                                 break 2;
                                             }
@@ -451,7 +449,7 @@
                     ">
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <strong class="fs-5">Lựa chọn cấu hình tùy chỉnh</strong>
+<strong class="fs-5">Lựa chọn cấu hình tùy chỉnh</strong>
                         <a href="#" id="reset-options" class="text-primary text-decoration-none">🔄 Thiết lập
                             lại</a>
                     </div>
@@ -506,7 +504,7 @@
                                 Tiết kiệm thêm đến <strong>165.000đ</strong> cho Smember
                             </p>
                             <p class="mb-0" style="font-size: 14px;">
-                                Ưu đãi Học sinh - sinh viên, Giảng viên - giáo viên đến
+Ưu đãi Học sinh - sinh viên, Giảng viên - giáo viên đến
                                 <strong>494.700đ</strong>
                             </p>
                         </div>
@@ -538,7 +536,7 @@
                             <defs>
                                 <linearGradient id="gradient" x1="18" y1="-13.5" x2="-5.9444"
                                     y2="3.07082" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#ED8A95"></stop>
+<stop stop-color="#ED8A95"></stop>
                                     <stop offset="0.82" stop-color="#C40016"></stop>
                                 </linearGradient>
                             </defs>
@@ -584,7 +582,7 @@
                     @auth
                         <!-- Trả góp 0% -->
                         <button class="btn btn-outline-primary fw-semibold rounded-3 fw-semibold py-3"
-                            style="border-radius: 8px;">
+style="border-radius: 8px;">
                             Trả góp 0%
                         </button>
                         <!-- Mua ngay -->
@@ -636,7 +634,7 @@
                     <!-- Cột 1: Icon + Text -->
                     <div class="d-flex align-items-center flex-fill">
                         <div class="me-3">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+<div class="rounded-circle d-flex align-items-center justify-content-center"
                                 style="background: linear-gradient(to bottom right, #ED8A95, #C40016); width: 40px; height: 40px;">
                                 <i class="fas fa-upload text-white"></i>
                             </div>
@@ -690,7 +688,7 @@
                             <span>Giảm 500K khi thanh toán qua thẻ tín dụng OCB <a href="#">Xem chi tiết</a></span>
                         </li>
                         <li class="mb-2 d-flex align-items-start">
-                            <span class="badge bg-primary me-2">4</span>
+<span class="badge bg-primary me-2">4</span>
                             <span>Giảm đến 500K khi thanh toán qua Kredivo <a href="#">Xem chi tiết</a></span>
                         </li>
                         <li class="mb-2 d-flex align-items-start">
@@ -745,7 +743,7 @@
                 bottom: 10px;
                 left: 50%;
                 transform: translateX(-50%);
-                justify-content: space-between;
+justify-content: space-between;
                 align-items: center;
                 border: 1px solid #ddd;
                 border-radius: 12px;
@@ -802,7 +800,7 @@
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
                             style="background: #d70018; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;"
                             data-buy-now="1">
-                            Mua Ngay
+Mua Ngay
                         </button>
                         <button onclick="addToCart()" id="addToCartBtn"
                             {{ $product->variants->where('stock_quantity', '>', 0)->count() === 0 ? 'disabled' : '' }}
@@ -836,104 +834,96 @@
                 </div>
             </div>
         </div>
-        <div id="comment-section" class="card shadow-sm p-4 mb-4">
+       <div id="review-section" class="card shadow-sm p-4 mb-4">
 
-            <h5 class="fs-5 mb-3">Bình luận về sản phẩm</h5>
+                    <h5 class="fs-5 mb-3">Đánh giá sản phẩm</h5>
 
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-
-            @auth
-                <form action="{{ route('comments.store', $product->id) }}" method="POST" class="mb-3">
-                    @csrf
-                    <div class="mb-2">
-                        <textarea name="comment" class="form-control" placeholder="Viết bình luận của bạn..." rows="3"></textarea>
-                    </div>
-                    <button class="btn btn-primary">Gửi bình luận</button>
-                </form>
-            @else
-                <p><a href="{{ route('login') }}">Đăng nhập</a> để gửi bình luận.</p>
-            @endauth
-
-            <hr>
-
-            @foreach ($product->comments()->latest()->get() as $comment)
-                <div class="comment-item mb-3 border p-2 rounded" id="comment-{{ $comment->id }}">
-                    <p><strong>{{ $comment->user->name }}</strong>
-                        <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-                    </p>
-                    <p id="comment-text-{{ $comment->id }}">{{ $comment->comment }}</p>
-
-                    @if ($comment->user_id == Auth::id())
-                        <div class="d-flex gap-2 mb-2">
-                            <!-- Nút Sửa -->
-                            <button class="btn btn-sm btn-warning"
-                                onclick="toggleCommentEditForm({{ $comment->id }})">Sửa</button>
-
-                            <!-- Nút Xóa -->
-                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger">Xóa</button>
-                            </form>
-                        </div>
-
-                        <!-- Form chỉnh sửa comment -->
-                        <div id="edit-comment-form-{{ $comment->id }}" style="display:none;">
-                            <form action="{{ route('comments.update', $comment->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <textarea name="comment" class="form-control mb-1" rows="3">{{ $comment->comment }}</textarea>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="toggleCommentEditForm({{ $comment->id }})">Hủy</button>
-                                </div>
-                            </form>
-                        </div>
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                </div>
-            @endforeach
 
-            <script>
-                function toggleCommentEditForm(id) {
-                    const form = document.getElementById('edit-comment-form-' + id);
-                    const text = document.getElementById('comment-text-' + id);
-                    if (form.style.display === 'none') {
-                        form.style.display = 'block';
-                        text.style.display = 'none';
-                    } else {
-                        form.style.display = 'none';
-                        text.style.display = 'block';
-                    }
-                }
+                    <p><strong>{{ $product->name }}</strong></p>
+                    @if ($product->reviews->count() > 0)
+                        <p>
+                            Đánh giá trung bình: {{ $product->average_rating }}/5 ⭐
+                            ({{ $product->reviews->count() }} đánh giá)
+                        </p>
+                    @else
+                        <p>Chưa có đánh giá nào.</p>
+                    @endif
 
-                function deleteComment(commentId) {
-                    if (!confirm('Bạn có chắc muốn xóa bình luận này?')) return;
+                    @auth
+                    @else
+                        <p><a href="{{ route('login') }}">Đăng nhập</a> để gửi đánh giá.</p>
+                    @endauth
 
-                    fetch(`/comments/${commentId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                            },
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                const commentDiv = document.getElementById('comment-' + commentId);
-                                commentDiv.style.transition = 'opacity 0.3s ease';
-                                commentDiv.style.opacity = 0;
-                                setTimeout(() => commentDiv.remove(), 300);
-                            } else {
-                                alert('Xóa thất bại!');
+                    <hr>
+
+                    <!-- Danh sách đánh giá -->
+                    @foreach ($product->reviews()->latest()->get() as $review)
+                        <div class="comment-item mb-3 border p-2 rounded" id="review-{{ $review->id }}">
+                            <p><strong>{{ $review->user->name }}</strong> — <span>{{ $review->rating }} ⭐</span></p>
+                            <p id="review-text-{{ $review->id }}">{{ $review->comment }}</p>
+
+                            @if ($review->user_id == Auth::id())
+                                <div class="d-flex gap-2 mb-2">
+                                    <!-- Nút sửa -->
+                                    {{-- <button class="btn btn-sm btn-warning" onclick="toggleEditForm({{ $review->id }})">
+                                        ✏️ Sửa
+                                    </button> --}}
+
+                                    <!-- Nút xóa với confirm -->
+                                    {{-- <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
+                                        onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger">🗑 Xóa</button>
+                                    </form> --}}
+                                </div>
+
+                                <!-- Form chỉnh sửa ẩn sẵn -->
+                                <div id="edit-form-{{ $review->id }}" class="mt-2" style="display:none;">
+                                    <form action="{{ route('reviews.update', $review->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <div class="mb-2">
+                                            <label for="rating-{{ $review->id }}" class="form-label">Đánh giá:</label>
+                                            <select name="rating" id="rating-{{ $review->id }}" class="form-select"
+                                                required>
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <option value="{{ $i }}"
+                                                        {{ $review->rating == $i ? 'selected' : '' }}>
+                                                        {{ $i }} ⭐
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="comment-{{ $review->id }}" class="form-label">Bình luận:</label>
+                                            <textarea name="comment" id="comment-{{ $review->id }}" class="form-control" rows="3" maxlength="1000">{{ $review->comment }}</textarea>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary btn-sm">💾 Cập nhật</button>
+                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                onclick="toggleEditForm({{ $review->id }})">❌ Hủy</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
+
+                        <script>
+                            function toggleEditForm(id) {
+                                const form = document.getElementById('edit-form-' + id);
+                                form.style.display = (form.style.display === 'none') ? 'block' : 'none';
                             }
-                        })
-                        .catch(() => alert('Có lỗi xảy ra!'));
-                }
-            </script>
-        </div>
+                        </script>
+                    @endforeach
+
+                </div>
         <div>
             <div class="nav nav-classic nav-tab">
                 <h2 class="nav-link active">Có thể bạn cũng thích</h2>
@@ -963,8 +953,7 @@
                                                         class="card-img-top p-3" alt="{{ $relatedProduct->name }}"
                                                         style="height: 180px; object-fit: contain;">
                                                 </a>
-
-                                                @php
+@php
                                                     $variant = $relatedProduct->variants
                                                         ->sortBy(function ($v) {
                                                             return $v->sale_price ?? $v->price;
@@ -1003,7 +992,7 @@
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-secondary w-50">
                                                         <i class="bi bi-heart"></i>
-                                                    </button>
+</button>
                                                 </div>
                                             </div>
 

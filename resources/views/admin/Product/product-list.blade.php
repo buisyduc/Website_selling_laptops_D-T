@@ -2,48 +2,48 @@
 @section('container-fluid')
 
 <div class="container-fluid">
-    <!-- Page Title -->
+    <!-- Tiêu đề trang -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-light p-3 rounded">
                 <div>
                     <h4 class="mb-0 fw-bold text-primary">
-                        <i class="fas fa-box me-2"></i>Product Management
+                        <i class="fas fa-box me-2"></i>Quản lý sản phẩm
                     </h4>
-                    <p class="text-muted mb-0 mt-1">Manage your product inventory</p>
+                    <p class="text-muted mb-0 mt-1">Quản lý kho sản phẩm của bạn</p>
                 </div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item">
-                            <a href="#" class="text-decoration-none">Dashboard</a>
+                            <a href="#" class="text-decoration-none">Bảng điều khiển</a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="#" class="text-decoration-none">Products</a>
+                            <a href="#" class="text-decoration-none">Sản phẩm</a>
                         </li>
-                        <li class="breadcrumb-item active">Product List</li>
+                        <li class="breadcrumb-item active">Danh sách sản phẩm</li>
                     </ol>
                 </nav>
             </div>
         </div>
     </div>
 
-    <!-- Action Bar -->
+    <!-- Thanh thao tác -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
-                        <!-- Add Product Button -->
+                        <!-- Nút thêm sản phẩm -->
                         <div class="col-md-6">
                             <a href="{{route('product.create')}}" class="btn btn-success btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>Add New Product
+                                <i class="fas fa-plus-circle me-2"></i>Thêm sản phẩm mới
                             </a>
                             <button class="btn btn-outline-info btn-lg ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
-                                <i class="fas fa-filter me-2"></i>Filters
+                                <i class="fas fa-filter me-2"></i>Bộ lọc
                             </button>
                         </div>
 
-                        <!-- Search Box -->
+                        <!-- Ô tìm kiếm -->
                         <div class="col-md-6">
                             <form method="GET" action="{{ route('product-list') }}" class="d-flex gap-2">
                                 <div class="input-group">
@@ -51,11 +51,11 @@
                                         <i class="fas fa-search"></i>
                                     </span>
                                     <input type="text" name="search" value="{{ request('search') }}"
-                                           placeholder="Search products..." class="form-control form-control-lg">
+                                           placeholder="Tìm kiếm sản phẩm..." class="form-control form-control-lg">
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-lg">Search</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Tìm kiếm</button>
                                 <a href="{{ route('product-list') }}" class="btn btn-outline-secondary btn-lg">
-                                    <i class="fas fa-redo"></i>
+<i class="fas fa-redo"></i>
                                 </a>
                             </form>
                         </div>
@@ -65,14 +65,14 @@
         </div>
     </div>
 
-    <!-- Products Table -->
+    <!-- Bảng sản phẩm -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-list me-2"></i>Product List
-                        <span class="badge bg-light text-primary ms-2">{{ $products->total() ?? 0 }} items</span>
+                        <i class="fas fa-list me-2"></i>Danh sách sản phẩm
+                        <span class="badge bg-light text-primary ms-2">{{ $products->total() ?? 0 }} sản phẩm</span>
                     </h5>
                 </div>
                 <div class="card-body p-0">
@@ -82,26 +82,25 @@
                                 <tr>
                                     <th scope="col" class="text-center" style="width: 60px;">#</th>
                                     <th scope="col" style="min-width: 200px;">
-                                        <i class="fas fa-tag me-1"></i>Product Details
+                                        <i class="fas fa-tag me-1"></i>Thông tin sản phẩm
                                     </th>
                                     <th scope="col" class="text-center" style="width: 100px;">
-                                        <i class="fas fa-boxes me-1"></i>Stock
+                                        <i class="fas fa-boxes me-1"></i>Tồn kho
                                     </th>
                                     <th scope="col" class="text-center" style="width: 120px;">
-                                        <i class="fas fa-star me-1"></i>Rating
+                                        <i class="fas fa-star me-1"></i>Đánh giá
                                     </th>
-                                   
                                     <th scope="col" class="text-center" style="width: 80px;">
-                                        <i class="fas fa-shopping-cart me-1"></i>Sold
+                                        <i class="fas fa-shopping-cart me-1"></i>Đã bán
                                     </th>
                                     <th scope="col" class="text-center" style="width: 100px;">
-                                        <i class="fas fa-calendar me-1"></i>Published
+                                        <i class="fas fa-calendar me-1"></i>Ngày đăng
                                     </th>
                                     <th scope="col" class="text-center" style="width: 100px;">
-                                        <i class="fas fa-toggle-on me-1"></i>Status
+                                        <i class="fas fa-toggle-on me-1"></i>Trạng thái
                                     </th>
                                     <th scope="col" class="text-center" style="width: 120px;">
-                                        <i class="fas fa-cogs me-1"></i>Actions
+                                        <i class="fas fa-cogs me-1"></i>Thao tác
                                     </th>
                                 </tr>
                             </thead>
@@ -109,10 +108,9 @@
                                 @forelse ($products as $index => $product)
                                     <tr>
                                         <td class="text-center fw-bold">
-                                            {{ ($products->currentPage() - 1) * $products->perPage() + $index + 1 }}
+{{ ($products->currentPage() - 1) * $products->perPage() + $index + 1 }}
                                         </td>
-
-                                        <!-- Product Details with Image -->
+                                        <!-- Thông tin sản phẩm kèm ảnh -->
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-3">
@@ -129,13 +127,12 @@
                                                     <h6 class="mb-1 fw-bold">{{ $product->name }}</h6>
                                                     <small class="text-muted">
                                                         <i class="fas fa-layer-group me-1"></i>
-                                                        {{ $product->category->name ?? 'N/A' }}
+                                                        {{ $product->category->name ?? 'Chưa có' }}
                                                     </small>
                                                 </div>
                                             </div>
                                         </td>
-
-                                        <!-- Stock with Status -->
+                                        <!-- Tồn kho -->
                                         <td class="text-center">
                                             @if($product->stock > 10)
                                                 <span class="badge bg-success fs-6">{{ $product->stock }}</span>
@@ -145,13 +142,12 @@
                                                 <span class="badge bg-danger fs-6">{{ $product->stock }}</span>
                                             @endif
                                         </td>
-
-                                        <!-- Rating -->
+                                        <!-- Đánh giá -->
                                         <td class="text-center">
                                             @php
                                                 $avgRating = round($product->averageRating(), 1);
                                             @endphp
-                                            <div class="d-flex flex-column align-items-center">
+<div class="d-flex flex-column align-items-center">
                                                 <div class="mb-1">
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         <i class="fas fa-star {{ $i <= $avgRating ? 'text-warning' : 'text-muted' }}"></i>
@@ -160,87 +156,54 @@
                                                 <small class="text-muted">{{ $avgRating }}/5</small>
                                             </div>
                                         </td>
-
-                                       
-
-                                        <!-- Sold -->
+                                        <!-- Đã bán -->
                                         <td class="text-center">
                                             <span class="badge bg-info fs-6">{{ $product->total_sold ?? 0 }}</span>
                                         </td>
-
-                                        <!-- Published Date -->
+                                        <!-- Ngày đăng -->
                                         <td class="text-center">
                                             <small class="text-muted">
-                                                {{ $product->created_at->format('M d, Y') }}
+                                                {{ $product->created_at->format('d/m/Y') }}
                                             </small>
                                         </td>
-
-                                        <!-- Status -->
+                                        <!-- Trạng thái -->
                                         <td class="text-center">
                                             @if($product->status == 'active')
                                                 <span class="badge bg-success">
-                                                    <i class="fas fa-check-circle me-1"></i>Active
+                                                    <i class="fas fa-check-circle me-1"></i>Đang bán
                                                 </span>
                                             @else
                                                 <span class="badge bg-secondary">
-                                                    <i class="fas fa-pause-circle me-1"></i>Inactive
+                                                    <i class="fas fa-pause-circle me-1"></i>Ngừng bán
                                                 </span>
                                             @endif
                                         </td>
-
-                                        <!-- Actions -->
+                                        <!-- Thao tác -->
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
-                                                <a href="{{route('product.view',$product->id)}}" class="btn btn-sm btn-outline-primary" title="View">
+                                                <a href="{{route('product.view',$product->id)}}" class="btn btn-sm btn-outline-primary" title="Xem">
                                                     <i class="fas fa-eye"></i>Xem 
                                                 </a>
                                                  <a href="{{ route('product.edit', $product->id) }}" class="btn btn-outline-secondary btn-sm flex-fill">
                                                     <i class="ri-edit-line me-1"></i>Sửa
                                                 </a>
-                                                <button class="btn btn-sm btn-outline-danger"
+<button class="btn btn-sm btn-outline-danger"
                                                         data-bs-toggle="modal" data-bs-target="#deleteModal{{ $product->id }}"
-                                                        title="Delete">
+                                                        title="Xóa">
                                                     <i class="fas fa-trash"></i>Xóa
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-
-                                    <!-- Delete Modal for each product -->
-                                    <div class="modal fade" id="deleteModal{{ $product->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title">
-                                                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
-                                                    </h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Bạn có chắc chắn muốn xóa mềm sản phẩm  <strong>{{ $product->name }}</strong> không?</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <form method="POST" action="{{ route('product.destroy', $product->id) }}" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger">
-                                                            <i class="fas fa-trash me-2"></i>YES
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @empty
                                     <tr>
                                         <td colspan="9" class="text-center py-5">
                                             <div class="text-muted">
                                                 <i class="fas fa-box-open fa-3x mb-3"></i>
-                                                <h5>No products found</h5>
-                                                <p>Try adjusting your search criteria or add new products.</p>
+                                                <h5>Không tìm thấy sản phẩm</h5>
+                                                <p>Hãy thử thay đổi tiêu chí tìm kiếm hoặc thêm sản phẩm mới.</p>
                                                 <a href="{{route('product.create')}}" class="btn btn-primary">
-                                                    <i class="fas fa-plus me-2"></i>Add First Product
+                                                    <i class="fas fa-plus me-2"></i>Thêm sản phẩm đầu tiên
                                                 </a>
                                             </div>
                                         </td>
@@ -251,12 +214,12 @@
                     </div>
                 </div>
 
-                <!-- Pagination -->
+                <!-- Phân trang -->
                 @if($products->hasPages())
                 <div class="card-footer bg-light">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-muted">
-                            Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} results
+                            Hiển thị từ {{ $products->firstItem() }} đến {{ $products->lastItem() }} trên tổng số {{ $products->total() }} kết quả
                         </div>
                         <div>
                             {{ $products->links() }}
@@ -269,48 +232,77 @@
     </div>
 </div>
 
-<!-- Filter Modal -->
+<!-- Modal xóa cho từng sản phẩm - Đặt ngoài bảng -->
+@foreach ($products as $product)
+    <div class="modal fade" id="deleteModal{{ $product->id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+<p>Bạn có chắc chắn muốn xóa mềm sản phẩm <strong>{{ $product->name }}</strong> không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form method="POST" action="{{ route('product.destroy', $product->id) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Xóa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
+
+<!-- Modal bộ lọc -->
 <div class="modal fade" id="filterModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">
-                    <i class="fas fa-filter me-2"></i>Advanced Filters
+                    <i class="fas fa-filter me-2"></i>Bộ lọc nâng cao
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="filterForm">
                     <div class="row">
-                        <!-- Category Filter -->
+                        <!-- Lọc theo danh mục -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Category</label>
+                            <label class="form-label fw-bold">Danh mục</label>
                             <div class="border rounded p-3 bg-light">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="category" value="">
-                                    <label class="form-check-label">All Categories</label>
+                                    <label class="form-check-label">Tất cả danh mục</label>
                                 </div>
-                                <!-- Add your categories here -->
+                                <!-- Thêm các danh mục tại đây -->
                             </div>
                         </div>
 
-                        <!-- Price Range -->
+                        <!-- Khoảng giá -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Price Range</label>
+                            <label class="form-label fw-bold">Khoảng giá</label>
                             <div class="row">
                                 <div class="col-6">
-                                    <input type="number" class="form-control" id="minCost" placeholder="Min Price" min="0">
+                                    <input type="number" class="form-control" id="minCost" placeholder="Giá thấp nhất" min="0">
                                 </div>
                                 <div class="col-6">
-                                    <input type="number" class="form-control" id="maxCost" placeholder="Max Price" min="0">
+                                    <input type="number" class="form-control" id="maxCost" placeholder="Giá cao nhất" min="0">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Rating Filter -->
+                        <!-- Lọc theo đánh giá -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Minimum Rating</label>
-                            <div class="border rounded p-3 bg-light">
+                            <label class="form-label fw-bold">Đánh giá tối thiểu</label>
+<div class="border rounded p-3 bg-light">
                                 @for($i = 5; $i >= 1; $i--)
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="rating" value="{{ $i }}">
@@ -318,28 +310,28 @@
                                         @for($j = 1; $j <= $i; $j++)
                                             <i class="fas fa-star text-warning"></i>
                                         @endfor
-                                        & up
+                                        & trở lên
                                     </label>
                                 </div>
                                 @endfor
                             </div>
                         </div>
 
-                        <!-- Status Filter -->
+                        <!-- Lọc theo trạng thái -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Status</label>
+                            <label class="form-label fw-bold">Trạng thái</label>
                             <div class="border rounded p-3 bg-light">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="status" value="">
-                                    <label class="form-check-label">All Status</label>
+                                    <label class="form-check-label">Tất cả trạng thái</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="status" value="active">
-                                    <label class="form-check-label">Active</label>
+                                    <label class="form-check-label">Đang bán</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="status" value="inactive">
-                                    <label class="form-check-label">Inactive</label>
+                                    <label class="form-check-label">Ngừng bán</label>
                                 </div>
                             </div>
                         </div>
@@ -348,11 +340,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" id="clearFilters">
-                    <i class="fas fa-eraser me-2"></i>Clear All
+                    <i class="fas fa-eraser me-2"></i>Xóa tất cả
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 <button type="button" class="btn btn-primary" id="applyFilters">
-                    <i class="fas fa-check me-2"></i>Apply Filters
+                    <i class="fas fa-check me-2"></i>Áp dụng bộ lọc
                 </button>
             </div>
         </div>
@@ -360,5 +352,3 @@
 </div>
 
 @endsection
-
-
