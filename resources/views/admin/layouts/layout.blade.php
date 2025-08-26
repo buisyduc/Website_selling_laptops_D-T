@@ -367,9 +367,9 @@
                                     class="bi bi-star"></i>
                                 <span>Đánh giá </span></a></li>
                                 
-                        <li><a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i
+                        {{-- <li><a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i
                                     class="bi bi-star"></i>
-                                <span>Bình luận </span></a></li>
+                                <span>Bình luận </span></a></li> --}}
                         {{-- <li><a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span>Thương
                                     hiệu</span></a></li> --}}
                         <li><a href="{{ route('admin.dashboard') }}" class="nav-link menu-link"><i

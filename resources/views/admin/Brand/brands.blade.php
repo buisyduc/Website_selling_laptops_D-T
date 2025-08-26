@@ -5,14 +5,16 @@
         <!-- Enhanced Page Title -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
+                <div
+                    class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
                     <div>
                         <h3 class="mb-1 fw-bold">Quản lý thương hiệu</h3>
                         <p class="mb-0 opacity-75">Quản lý thương hiệu sản phẩm hiệu quả</p>
                     </div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 bg-transparent">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="text-white-50 text-decoration-none">Sản phẩm</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);"
+                                    class="text-white-50 text-decoration-none">Sản phẩm</a></li>
                             <li class="breadcrumb-item text-white active" aria-current="page">Thương hiệu</li>
                         </ol>
                     </nav>
@@ -31,14 +33,15 @@
                         </div>
                     </div>
                     <div class="card-body p-4">
-                        @if(session('success'))
+                        @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="ri-check-circle-line me-2"></i>{{ session('success') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('brands.store') }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <form method="POST" action="{{ route('brands.store') }}" enctype="multipart/form-data"
+                            class="needs-validation" novalidate>
                             @csrf
 
                             <!-- Brand Name -->
@@ -51,9 +54,10 @@
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="ri-text text-muted"></i>
                                     </span>
-                                    <input type="text" class="form-control border-start-0 @error('name') is-invalid @enderror"
-                                           id="name" name="name" placeholder="Nhập tên thương hiệu"
-                                           value="{{ old('name') }}" required>
+                                    <input type="text"
+                                        class="form-control border-start-0 @error('name') is-invalid @enderror"
+                                        id="name" name="name" placeholder="Nhập tên thương hiệu"
+                                        value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -70,9 +74,10 @@
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="ri-hashtag text-muted"></i>
                                     </span>
-                                    <input type="text" class="form-control border-start-0 @error('slug') is-invalid @enderror"
-                                           id="slug" name="slug" placeholder="slug-tự-động"
-                                           value="{{ old('slug') }}" required>
+                                    <input type="text"
+                                        class="form-control border-start-0 @error('slug') is-invalid @enderror"
+                                        id="slug" name="slug" placeholder="slug-tự-động" value="{{ old('slug') }}"
+                                        required>
                                     @error('slug')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -86,9 +91,10 @@
                                 </label>
                                 <div class="position-relative">
                                     <input type="file" class="form-control" id="logo" name="logo"
-                                           accept="image/*" onchange="previewLogo(this)">
+                                        accept="image/*" onchange="previewLogo(this)">
                                     <div class="mt-2" id="logo-preview" style="display: none;">
-                                        <img id="preview-logo" class="rounded border" style="max-width: 120px; max-height: 120px; object-fit: cover;">
+                                        <img id="preview-logo" class="rounded border"
+                                            style="max-width: 120px; max-height: 120px; object-fit: cover;">
                                     </div>
                                 </div>
                             </div>
@@ -98,9 +104,8 @@
                                 <label for="description" class="form-label fw-semibold">
                                     <i class="ri-file-text-line me-1 text-info"></i>Mô tả
                                 </label>
-                                <textarea class="form-control @error('description') is-invalid @enderror"
-                                          id="description" name="description" rows="4"
-                                          placeholder="Nhập mô tả thương hiệu">{{ old('description') }}</textarea>
+                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
+                                    rows="4" placeholder="Nhập mô tả thương hiệu">{{ old('description') }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -128,7 +133,7 @@
                                     <i class="ri-search-line text-muted"></i>
                                 </span>
                                 <input type="text" name="search" value="{{ request('search') }}"
-                                       placeholder="Tìm kiếm thương hiệu..." class="form-control border-start-0">
+                                    placeholder="Tìm kiếm thương hiệu..." class="form-control border-start-0">
                             </div>
                             <button type="submit" class="btn btn-primary px-4">
                                 <i class="ri-search-line me-1"></i>Tìm kiếm
@@ -147,10 +152,9 @@
                             <div class="card h-100 border-0 shadow-sm brand-card">
                                 <!-- Logo Section -->
                                 <div class="position-relative overflow-hidden" style="height: 200px;">
-                                    @if($brand->logo)
-                                        <img src="{{ asset('storage/' . $brand->logo) }}"
-                                             alt="{{ $brand->name }}"
-                                             class="card-img-top h-100 object-fit-cover">
+                                    @if ($brand->logo)
+                                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
+                                            class="card-img-top h-100 object-fit-cover">
                                     @else
                                         <div class="d-flex align-items-center justify-content-center h-100 bg-light">
                                             <i class="ri-building-line fs-1 text-muted"></i>
@@ -172,7 +176,7 @@
                                         <p class="text-muted small mb-2">
                                             <i class="ri-link me-1"></i>{{ $brand->slug }}
                                         </p>
-                                        @if($brand->description)
+                                        @if ($brand->description)
                                             <p class="card-text text-muted small">
                                                 {{ Str::limit($brand->description, 80) }}
                                             </p>
@@ -181,28 +185,27 @@
 
                                     <!-- Action Buttons -->
                                     <div class="d-flex gap-2 mt-auto">
-                                        <button type="button"
-                                                class="btn btn-outline-primary btn-sm flex-fill brand-link"
-                                                data-bs-toggle="offcanvas"
-                                                data-bs-target="#overviewOffcanvas"
-                                                data-title="{{ $brand->name }}"
-                                                data-slug="{{ $brand->slug }}"
-                                                data-description="{{ $brand->description }}"
-                                                data-logo="{{ $brand->logo ? asset('storage/' . $brand->logo) : '' }}">
+                                        <button type="button" class="btn btn-outline-primary btn-sm flex-fill brand-link"
+                                            data-bs-toggle="offcanvas" data-bs-target="#overviewOffcanvas"
+                                            data-title="{{ $brand->name }}" data-slug="{{ $brand->slug }}"
+                                            data-description="{{ $brand->description }}"
+                                            data-logo="{{ $brand->logo ? asset('storage/' . $brand->logo) : '' }}">
                                             <i class="ri-eye-line me-1"></i>Xem
                                         </button>
-                                           <a href="{{ route('brands.edit', $brand->id) }}" class="btn btn-outline-secondary btn-sm flex-fill">
+                                        <a href="{{ route('brands.edit', $brand->id) }}"
+                                            class="btn btn-outline-secondary btn-sm flex-fill">
                                             <i class="ri-edit-line me-1"></i>Sửa
                                         </a>
-                                        <form action="{{ route('brands.destroy', $brand->id) }}" method="POST" class="d-inline flex-fill">
+                                        <form action="{{ route('brands.destroy', $brand->id) }}" method="POST"
+                                            class="d-inline flex-fill form-delete">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                    onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này không?')"
-                                                    class="btn btn-outline-danger btn-sm w-100">
+                                            <button type="button" class="btn btn-outline-danger btn-sm w-100 btn-delete"
+                                                data-bs-toggle="tooltip" title="Xóa thương hiệu">
                                                 <i class="ri-delete-bin-line me-1"></i>Xóa
                                             </button>
                                         </form>
+
 
                                     </div>
                                 </div>
@@ -232,8 +235,8 @@
             <div class="text-center p-4 bg-light">
                 <div class="position-relative d-inline-block">
                     <img src="" alt="Logo thương hiệu"
-                         class="overview-logo rounded-circle border border-3 border-white shadow"
-                         style="width: 120px; height: 120px; object-fit: cover;">
+                        class="overview-logo rounded-circle border border-3 border-white shadow"
+                        style="width: 120px; height: 120px; object-fit: cover;">
                 </div>
             </div>
 
@@ -300,17 +303,17 @@
         document.getElementById('name').addEventListener('input', function() {
             const name = this.value;
             const slug = name.toLowerCase()
-                            .replace(/[^\w\s-]/g, '')
-                            .replace(/\s+/g, '-')
-                            .replace(/-+/g, '-')
-                            .trim();
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
             document.getElementById('slug').value = slug;
         });
 
         // Offcanvas Brand Details
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll('.brand-link').forEach(item => {
-                item.addEventListener("click", function () {
+                item.addEventListener("click", function() {
                     const title = this.getAttribute("data-title");
                     const slug = this.getAttribute("data-slug");
                     const description = this.getAttribute("data-description") || "Không có mô tả";
@@ -361,6 +364,37 @@
             }, false);
         })();
     </script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Khởi tạo tooltip
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function(el){ return new bootstrap.Tooltip(el); });
+
+    // Confirm xóa
+    document.querySelectorAll('.btn-delete').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            const form = btn.closest('form');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Thao tác này sẽ xóa thương hiệu!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if(result.isConfirmed){
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 
     <style>
         .bg-gradient-primary {
@@ -379,10 +413,11 @@
 
         .brand-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
@@ -422,8 +457,8 @@
             border: none;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            color: rgba(255,255,255,0.7);
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .form-control::placeholder {
@@ -449,5 +484,4 @@
             background: #a8a8a8;
         }
     </style>
-
 @endsection

@@ -4,7 +4,7 @@
 @endsection
 @section('title', 'Trang chủ')
 @section('content')
-   
+
     <div class="container p-0">
         <div class="horizontal-banner"
             style="margin:0; padding:0; background:#b8001c; border-radius: 12px; overflow: hidden;">
@@ -18,7 +18,7 @@
         </div>
         <div id="noibat"
             style="background: #ff4663; border-radius: 18px; padding: 18px 10px 30px 10px; margin-bottom: 30px; margin-top: 16px">
-           
+
             <div class="block-featured-product">
                 <div class="product-list-title">
                     <div class="product-list-title__header">
@@ -65,15 +65,18 @@
                                         <div class="install-0-tag"><span>Trả góp <strong>0%</strong></span></div>
                                         <a href="{{ route('client.products.show', $product->id) }}" class="product-link">
                                             <div class="product-image">
-                                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                                <img src="{{ asset('storage/' . $product->image) }}"
+                                                    alt="{{ $product->name }}">
                                             </div>
 
                                             <h3 class="product-name">{{ $product->name }}</h3>
                                             <div class="product-price">
                                                 @if ($variant)
-                                                    <span class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
+                                                    <span
+                                                        class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
                                                     @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                        <span class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
+                                                        <span
+                                                            class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                                     @endif
                                                 @endif
                                             </div>
@@ -103,7 +106,9 @@
                                             </div>
                                             <div class="product-wishlist" data-product-id="{{ $product->id }}"
                                                 onclick="handleFavoriteClick(event, this)">
-                                                <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i> Yêu
+                                                <i
+                                                    class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                                Yêu
                                                 thích
                                             </div>
                                         </div>
@@ -113,14 +118,13 @@
                         </div>
                         <!-- Swiper Navigation Buttons (chỉ giữ 1 cặp ngoài .swiper-wrapper) -->
                         <div class="swiper-button-prev custom-swiper-nav">
-                            
+
                         </div>
                         <div class="swiper-button-next custom-swiper-nav">
-                          
+
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -212,124 +216,23 @@
 
             </div>
         </div>
-        <div id="laptop" style="margin-top: 26px;">
-            <div class="block-featured-product">
-                <div class="product-list-title">
-                    <div class="product-list-title__header">
-                        <a href="" class="title button__link">
-                            <h2>LAPTOP</h2>
-                        </a>
-                        <a href="" class="more-product button__link">Xem tất cả</a>
-                    </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Macbook</a><a
-                            href="" class="related-tag button__link">Asus</a><a href=""
-                            class="related-tag button__link">MSI</a><a href=""
-                            class="related-tag button__link">Lenovo</a><a href=""
-                            class="related-tag button__link">HP</a><a href=""
-                            class="related-tag button__link">Acer</a><a href=""
-                            class="related-tag button__link">Dell</a><a href=""
-                            class="related-tag button__link">Huawei</a><a href=""
-                            class="related-tag button__link">Gigabyte</a><a href=""
-                            class="related-tag button__link">Laptop
-                            AI</a>
-                        <a href="" class="related-tag button__link">Xem tất cả</a>
-                    </div>
-                </div>
-                <div class="product-list">
-                    <div class="product-grid">
-                        @foreach ($laptopProducts->take(5) as $laptopProduct)
-                            @if ($laptopProduct->variants->where('stock_quantity', '>', 0)->count() === 0)
-                                @continue
-                            @endif
-                            @php
-                                $variant = $laptopProduct->variants
-                                    ->sortBy(function ($v) {
-                                        return $v->sale_price ?? $v->price;
-                                    })
-                                    ->first();
-                                $discount = 0;
-                                if ($variant && $variant->sale_price && $variant->sale_price < $variant->price) {
-                                    $discount = round(
-                                        (($variant->price - $variant->sale_price) / $variant->price) * 100,
-                                    );
-                                }
-                            @endphp
-                            <div class="product-card-container">
-                                @if ($discount > 0)
-                                    <div class="discount-badge">Giảm {{ $discount }}%</div>
-                                @endif
-                                <div class="install-0-tag"><span>Trả góp <strong>0%</strong></span></div>
-                                <a href="{{ route('client.products.show', $laptopProduct->id) }}" class="product-link">
-                                    <div class="product-image">
-                                        <img src="{{ asset('storage/' . $laptopProduct->image) }}"
-                                            alt="{{ $laptopProduct->name }}">
-                                    </div>
-
-                                    <h3 class="product-name">{{ $laptopProduct->name }}</h3>
-                                    <div class="product-price">
-                                        @if ($variant)
-                                            <span
-                                                class="current-price">{{ number_format($variant->sale_price ?? $variant->price, 0, ',', '.') }}₫</span>
-                                            @if ($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span
-                                                    class="original-price">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
-                                            @endif
-                                        @endif
-                                    </div>
-
-                                    <div class="product-benefits">
-                                        <div class="smember-discount">Smember giảm đến 198.000₫</div>
-                                        <div class="sstudent-discount">S-Student giảm thêm 500.000₫</div>
-                                    </div>
-                                    <div class="product-promo">
-                                        Không phí chuyển đổi khi trả góp 0% qua thẻ tín dụng kỳ hạn 3-6 tháng
-                                    </div>
-                                </a>
-                                @php
-                                    $isFavorite = in_array($laptopProduct->id, $favoriteIds ?? []);
-                                @endphp
-                                <div class="product-actions">
-                                    <div class="product-rating">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= floor($laptopProduct->averageRating()))
-                                                <i class="fas fa-star"></i>
-                                            @elseif($i <= ceil($laptopProduct->averageRating()))
-                                                <i class="fas fa-star-half-alt"></i>
-                                            @else
-                                                <i class="far fa-star"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                    <div class="product-wishlist" data-product-id="{{ $laptopProduct->id }}"
-                                        onclick="handleFavoriteClick(event, this)">
-                                        <i class="bi icon-toggle {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                        Yêu thích
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-            </div>
-        </div>
         <div id="man-hinh" style="margin-top: 26px;">
             <div class="block-featured-product">
                 <div class="product-list-title">
                     <div class="product-list-title__header">
                         <a href="" class="title button__link">
-                            <h2>MÀN HÌNH, MÁY TÍNH ĐỂ BÀN</h2>
+                            <h2>MÀN HÌNH</h2>
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a><a
-                            href="" class="related-tag button__link">Máy tính bàn</a>
+                    {{-- <div class="list-related-tag">
+                        <a href="" class="related-tag button__link">Máy tính bàn</a>
                         <a href="" class="related-tag button__link">PC Gaming</a>
-                        <a href="" class="related-tag button__link">PC Đồ họa</a><a href=""
-                            class="related-tag button__link">PC đồng bộ</a>
+                        <a href="" class="related-tag button__link">PC Đồ họa</a>
+                        <a href="" class="related-tag button__link">PC đồng bộ</a>
                         <a href="" class="related-tag button__link">Màn hình Gaming</a>
                         <a href="" class="related-tag button__link">Xem tất cả</a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="product-list">
@@ -415,13 +318,14 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    <div class="list-related-tag"><a href="" class="related-tag button__link">Build PC</a>
+                    {{-- <div class="list-related-tag">
+                        <a href="" class="related-tag button__link">Build PC</a>
                         <a href="" class="related-tag button__link">PC Gaming</a>
                         <a href="" class="related-tag button__link">PC Đồ họa</a>
                         <a href="" class="related-tag button__link">MSI</a>
                         <a href="" class="related-tag button__link">ASUS</a>
                         <a href="" class="related-tag button__link">Xem tất cả</a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="product-list">
@@ -497,55 +401,130 @@
                 </div>
             </div>
         </div>
+        <style>
+    #pc .banner-item img {
+        border-radius: 16px; /* Bo góc */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%;
+        height: auto;
+    }
+
+    #pc .banner-item {
+        padding: 4px; /* Khoảng cách giữa các ảnh */
+    }
+</style>
+        <div id="pc" style="margin-top: 26px;">
+            <div class="block-featured-product">
+                <div class="product-list-title">
+                    <div class="product-list-title__header">
+                        <a href="" class="title button__link">
+                            <h2>ƯU ĐÃI SINH VIÊN</h2>
+
+                           <div class="row">
+                                 <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/banneruudai1.png') }}" alt="Ưu đãi 1"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                 <div class="col-md-3 col-6 banner-item">
+                                   <img src="{{ asset('storage/banneruudai2.png') }}" alt="Ưu đãi 2"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/banneruudai3.png') }}" alt="Ưu đãi 3"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/banneruudai4.png') }}" alt="Ưu đãi 4"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+
+
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div id="pc" style="margin-top: 26px;">
+            <div class="block-featured-product">
+                <div class="product-list-title">
+                    <div class="product-list-title__header">
+                        <a href="" class="title button__link">
+                            <h2>ƯU ĐÃI THANH TOÁN</h2>
+
+                           <div class="row">
+                                 <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/udtt1.jpg') }}" alt="Ưu đãi 1"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                 <div class="col-md-3 col-6 banner-item">
+                                   <img src="{{ asset('storage/udtt2.jpg') }}" alt="Ưu đãi 2"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/udtt3.jpg') }}" alt="Ưu đãi 3"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+                                <div class="col-md-3 col-6 banner-item">
+                                    <img src="{{ asset('storage/udtt4.jpg') }}" alt="Ưu đãi 4"
+                                        class="img-fluid rounded-10 shadow-sm">
+                                </div>
+
+
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
-// --- Swiper Slider for #noibat Featured Products ---
-window.addEventListener('load', function () {
-    if (typeof Swiper !== 'undefined') {
-        console.log('Swiper loaded, initializing #noibat slider...');
-        var noibatSwiper = new Swiper('#noibat .product-slider', {
-    autoplay: {
-        delay: 3500, // thời gian chuyển slide (ms)
-        disableOnInteraction: false // vẫn tự chạy dù người dùng vừa thao tác
-    },
-            slidesPerView: 5,
-            slidesPerGroup: 5,
-            spaceBetween: 16,
-            navigation: {
-                nextEl: '#noibat .swiper-button-next',
-                prevEl: '#noibat .swiper-button-prev',
-            },
-            speed: 600,
-            grabCursor: true,
-            loop: false,
-            watchOverflow: true,
-            allowTouchMove: true,
-            breakpoints: {
-                1200: {
+        // --- Swiper Slider for #noibat Featured Products ---
+        window.addEventListener('load', function() {
+            if (typeof Swiper !== 'undefined') {
+                console.log('Swiper loaded, initializing #noibat slider...');
+                var noibatSwiper = new Swiper('#noibat .product-slider', {
+                    autoplay: {
+                        delay: 3500, // thời gian chuyển slide (ms)
+                        disableOnInteraction: false // vẫn tự chạy dù người dùng vừa thao tác
+                    },
                     slidesPerView: 5,
                     slidesPerGroup: 5,
-                },
-                992: {
-                    slidesPerView: 4,
-                    slidesPerGroup: 4,
-                },
-                768: {
-                    slidesPerView: 3,
-                    slidesPerGroup: 3,
-                },
-                480: {
-                    slidesPerView: 2,
-                    slidesPerGroup: 2,
-                },
-                0: {
-                    slidesPerView: 1,
-                    slidesPerGroup: 1,
-                }
+                    spaceBetween: 16,
+                    navigation: {
+                        nextEl: '#noibat .swiper-button-next',
+                        prevEl: '#noibat .swiper-button-prev',
+                    },
+                    speed: 600,
+                    grabCursor: true,
+                    loop: false,
+                    watchOverflow: true,
+                    allowTouchMove: true,
+                    breakpoints: {
+                        1200: {
+                            slidesPerView: 5,
+                            slidesPerGroup: 5,
+                        },
+                        992: {
+                            slidesPerView: 4,
+                            slidesPerGroup: 4,
+                        },
+                        768: {
+                            slidesPerView: 3,
+                            slidesPerGroup: 3,
+                        },
+                        480: {
+                            slidesPerView: 2,
+                            slidesPerGroup: 2,
+                        },
+                        0: {
+                            slidesPerView: 1,
+                            slidesPerGroup: 1,
+                        }
+                    }
+                });
             }
         });
-    }
-});
-
     </script>
 
 

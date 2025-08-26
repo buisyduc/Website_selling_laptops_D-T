@@ -35,7 +35,7 @@
 
                     <!-- Đồng hồ, Camera -->
                     <div class="label-menu-tree" data-target="dropdown-audio">
-                         <a href="{{ url('/products/laptopvanphong') }}">
+                        <a href="{{ url('/products/laptopvanphong') }}">
                             <div class="label-item">
                                 <i class="bi bi-watch"></i>
                                 <span>Laptop văn phòng</span>
@@ -62,9 +62,9 @@
                             </div>
                         </a>
                     </div>
-<!-- PC, Màn hình, Máy in -->
+                    <!-- PC, Màn hình, Máy in -->
                     <div class="label-menu-tree" data-target="dropdown-pc">
-                        <a href="{{ url('/coming-soon') }}">
+                        <a href="{{ url('/products/pc') }}">
                             <div class="label-item">
                                 <i class="bi bi-pc-display"></i>
                                 <span>PC</span>
@@ -74,10 +74,10 @@
 
                     <!-- Tivi -->
                     <div class="label-menu-tree" data-target="dropdown-tivi">
-                        <a href="{{ url('/coming-soon') }}">
+                        <a href="{{ url('/products/manhinh') }}">
                             <div class="label-item">
                                 <i class="bi bi-tv"></i>
-                                <span>Tivi</span>
+                                <span>Màn hình</span>
                             </div>
                         </a>
                     </div>
@@ -131,16 +131,19 @@
             <div class="block-sliding-home">
                 <div class="swiper-container gallery-top">
                     <div class="swiper-wrapper">
-<!-- Thay các swiper-slide bên trong block-sliding-home -->
-                        <div class="swiper-slide"><img src="{{ asset('storage/GALAXY Z7.png') }}" width="690"
-                                height="200" alt="GALAXY Z7&lt;br /&gt;Đặt trước ngay" loading="lazy"></div>
+                        <!-- Thay các swiper-slide bên trong block-sliding-home -->
+                        <div class="swiper-slide"><img
+                                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/galaxy-z-7-home-0825-v3.png  "
+                                width="690" height="200" alt="GALAXY Z7&lt;br /&gt;Đặt trước ngay" loading="lazy">
+                        </div>
                         <div class="swiper-slide"><img
                                 src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/Sliding-iphone-v3.png"
                                 width="690" height="200" alt="IPHONE 16 PRO MAX &lt;br /&gt; Mua ngay"
                                 loading="lazy">
                         </div>
-                        <div class="swiper-slide"><img src="{{ asset('storage/OPPO RENO14.jpg') }}" width="690"
-                                height="200" alt="OPPO RENO14&lt;br /&gt;Mua ngay" loading="lazy">
+                        <div class="swiper-slide"><img
+                                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/oppo-reno14-f-Sliding-0825.png"
+                                width="690" height="200" alt="OPPO RENO14&lt;br /&gt;Mua ngay" loading="lazy">
                         </div>
                         <div class="swiper-slide"><img
                                 src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/home-watch8.jpg"
@@ -148,7 +151,7 @@
                                 loading="lazy">
                         </div>
                         <div class="swiper-slide"><img
-                                src="{{ asset('storage/acer.png') }}"
+                                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/sl5hpggg.png"
                                 width="690" height="200" alt="GALAXY WATCH8 &lt;br /&gt; Đặt trước ngay"
                                 loading="lazy">
                         </div>
@@ -171,12 +174,12 @@
                         <div class="swiper-slide swiper-slide-visible swiper-slide-active" style="width: 157.429px;">
                             <div>OPPO RENO14<br>Mua ngay</div>
                         </div>
-<div class="swiper-slide swiper-slide-visible swiper-slide-next" style="width: 157.429px;">
+                        <div class="swiper-slide swiper-slide-visible swiper-slide-next" style="width: 157.429px;">
                             <div>GALAXY WATCH8 <br> Đặt trước ngay</div>
                         </div>
                         <div class="swiper-slide swiper-slide-visible swiper-slide-thumb-active"
                             style="width: 157.429px;">
-                            <div>Laptop Gaming Nitro 5<br>Giá chỉ 18 triệu</div>
+                            <div>IDEAPAD SLIM 5<br>Giá siêu rẻ</div>
                         </div>
                     </div><span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
                 </div>
@@ -190,12 +193,12 @@
                         class="right-banner__img">
                 </div>
                 <div class="right-banner__item button__link">
-                    <img src="{{ asset('storage/b2s.jpg') }}"
-                        width="690" height="300" alt="B2S IPAD" class="right-banner__img">
+                    <img src="{{ asset('storage/b2s.jpg') }}" width="690" height="300" alt="B2S IPAD"
+                        class="right-banner__img">
                 </div>
                 <div class="right-banner__item button__link">
-                    <img src="{{ asset('storage/b2s laptop.jpg') }}"
-                        width="690" height="300" alt="B2S Laptop" class="right-banner__img">
+                    <img src="{{ asset('storage/b2s laptop.jpg') }}" width="690" height="300" alt="B2S Laptop"
+                        class="right-banner__img">
                 </div>
             </div>
         </div>
@@ -236,7 +239,7 @@
                         delay: 3500,
                         disableOnInteraction: false,
                     },
-navigation: {
+                    navigation: {
                         nextEl: '.swiper-button-next',
                         prevEl: '.swiper-button-prev',
                     },

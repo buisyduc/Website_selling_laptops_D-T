@@ -1184,10 +1184,13 @@ class ProductController extends Controller
     }
     function view($id)
     {
+        // Lấy sản phẩm kèm category và variants
+        $product = Product::with(['category', 'variants'])->findOrFail($id);
 
+        // Tính tổng số lượng tồn kho
+        $totalStock = $product->variants->sum('stock_quantity');
 
-        $product = Product::with('category')->findOrFail($id);
-
-        return view('admin/Product/product-view', compact('product'));
+        // Truyền cả product và totalStock vào view
+        return view('admin.Product.product-view', compact('product', 'totalStock'));
     }
 }

@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 
 class CategorieController extends Controller
 {
-     //Show list
-     public function index(Request $request) {
+    //Show list
+    public function index(Request $request)
+    {
         $query = categorie::query()->latest('id');
 
         if ($request->has('search') && !empty($request->search)) {
@@ -19,22 +20,27 @@ class CategorieController extends Controller
 
         $categories = $query->with('products')->paginate(8);
 
-        return view('admin/Category/categories', compact('categories'));
+        // Tạo HTML cho select parent category
+        $categoryOptions = $this->renderCategoryOptions(categorie::all());
+
+        return view('admin/Category/categories', compact('categories', 'categoryOptions'));
     }
+
     public function renderCategoryOptions($categories, $parent_id = null, $prefix = '')
-        {
-            $html = '';
-            foreach ($categories as $category) {
-                if ($category->parent_id == $parent_id) {
-                    $html .= '<option value="' . $category->id . '">' . $prefix . $category->name . '</option>';
-                    $html .= $this->renderCategoryOptions($categories, $category->id, $prefix . '— ');
-                }
+    {
+        $html = '';
+        foreach ($categories as $category) {
+            if ($category->parent_id == $parent_id) {
+                $html .= '<option value="' . $category->id . '">' . $prefix . $category->name . '</option>';
+                $html .= $this->renderCategoryOptions($categories, $category->id, $prefix . '— ');
             }
-            return $html;
         }
+        return $html;
+    }
 
     //create
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:categories,slug',
@@ -61,10 +67,9 @@ class CategorieController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Category created successfully.');
-
-
     }
-    public function sub_categories(Request $request) {
+    public function sub_categories(Request $request)
+    {
         $query = Categorie::query()->latest('id');
 
         if ($request->has('search') && !empty($request->search)) {
@@ -102,7 +107,7 @@ class CategorieController extends Controller
         $category->delete(); // xóa mềm danh mục
 
         return redirect()->route('categories')
-                        ->with('message', 'Đã xóa mềm danh mục thành công');
+            ->with('message', 'Đã xóa mềm danh mục thành công');
     }
     public function restore($id)
     {
@@ -110,33 +115,33 @@ class CategorieController extends Controller
         $category->restore();
 
         return redirect()->route('categories.trashed') // route xem danh mục đã xóa mềm
-                        ->with('message', 'Khôi phục danh mục thành công');
+            ->with('message', 'Khôi phục danh mục thành công');
     }
-   public function forceDelete($id)
-{
-    $category = Categorie::withTrashed()->with('products')->findOrFail($id);
+    public function forceDelete($id)
+    {
+        $category = Categorie::withTrashed()->with('products')->findOrFail($id);
 
-    // Nếu danh mục còn sản phẩm thì không cho xoá
-    if ($category->products->count() > 0) {
+        // Nếu danh mục còn sản phẩm thì không cho xoá
+        if ($category->products->count() > 0) {
+            return redirect()->route('categories.trashed')
+                ->with('error', 'Không thể xoá vì danh mục vẫn còn sản phẩm.');
+        }
+
+        $hasProductInChildren = Categorie::withTrashed()
+            ->where('parent_id', $category->id)
+            ->whereHas('products')
+            ->exists();
+
+        if ($hasProductInChildren) {
+            return redirect()->route('categories.trashed')
+                ->with('error', 'Không thể xoá vì có danh mục con chứa sản phẩm.');
+        }
+
+        $category->forceDelete();
+
         return redirect()->route('categories.trashed')
-            ->with('error', 'Không thể xoá vì danh mục vẫn còn sản phẩm.');
+            ->with('message', 'Đã xóa vĩnh viễn danh mục.');
     }
-
-    $hasProductInChildren = Categorie::withTrashed()
-        ->where('parent_id', $category->id)
-        ->whereHas('products')
-        ->exists();
-
-    if ($hasProductInChildren) {
-        return redirect()->route('categories.trashed')
-            ->with('error', 'Không thể xoá vì có danh mục con chứa sản phẩm.');
-    }
-
-    $category->forceDelete();
-
-    return redirect()->route('categories.trashed')
-        ->with('message', 'Đã xóa vĩnh viễn danh mục.');
-}
 
 
     public function edit(Categorie $category)
@@ -200,9 +205,4 @@ class CategorieController extends Controller
         return redirect()->route('categories.trashed')
             ->with('message', "Đã xoá $deletedCount danh mục. Bỏ qua $skippedCount danh mục vì còn sản phẩm.");
     }
-
-
-
-
-
 }

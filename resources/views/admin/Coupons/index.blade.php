@@ -6,26 +6,26 @@
             <div
                 class="page-title-box d-sm-flex align-items-center justify-content-between bg-gradient-primary p-4 rounded-3 text-white shadow-sm">
                 <div>
-                    <h3 class="mb-1 fw-bold">Coupon Management</h3>
-                    <p class="mb-0 opacity-75">Manage your coupon efficiently</p>
+                    <h3 class="mb-1 fw-bold">Quản lý mã giảm giá</h3>
+                    <p class="mb-0 opacity-75">Quản lý mã giảm giá một cách hiệu quả</p>
                 </div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 bg-transparent">
                         <li class="breadcrumb-item"><a href="javascript:void(0);"
-                                class="text-white-50 text-decoration-none">Coupons</a></li>
-
+                                class="text-white-50 text-decoration-none">Mã giảm giá</a></li>
                     </ol>
                 </nav>
             </div>
         </div>
     </div>
+
     <div class="row mb-4">
         <div class="col-xl-4">
             <div class="card border-0 shadow-lg">
                 <div class="card-header bg-gradient-success text-white">
                     <div class="d-flex align-items-center">
                         <i class="ri-add-circle-line fs-4 me-2"></i>
-                        <h5 class="card-title mb-0 fw-semibold">Create New Coupons</h5>
+                        <h5 class="card-title mb-0 fw-semibold">Tạo mã mới</h5>
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -79,78 +79,64 @@
 
                         <div class="mb-3">
                             <label class="form-label">Số lần dùng / người (tùy chọn)</label>
-
                             <input type="number" class="form-control" name="per_user_limit"
                                 value="{{ old('per_user_limit') }}" required min="1">
                             @error('per_user_limit')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+
                         <div class="mb-3">
-                    <label class="form-label">Ngày hết hạn (tùy chọn)</label>
+                            <label class="form-label">Ngày hết hạn (tùy chọn)</label>
+                            <input type="date" class="form-control" name="expires_at" value="{{ old('expires_at') }}" required>
+                            @error('expires_at')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
 
-                    <input type="date" class="form-control" name="expires_at" value="{{ old('expires_at') }}" required>
-                    @error('expires_at')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                        <button type="submit" class="btn btn-primary">Tạo mã</button>
+                    </form>
                 </div>
-
-
-
-
-
-
-
-                <button type="submit" class="btn btn-primary">Tạo mã</button>
-
-                </form>
             </div>
         </div>
-    </div>
-    <div class="col-xl-8">
-        <h2 class="mb-3">Danh sách mã giảm giá</h2>
 
-       
+        <div class="col-xl-8">
+            <h2 class="mb-3">Danh sách mã giảm giá</h2>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Giảm (%)</th>
-                    <th>Giảm tối đa</th>
-                    <th>Đơn tối thiểu</th>
-                    <th>Giới hạn</th>
-                    <th>HSD</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($coupons as $coupon)
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td>{{ $coupon->code }}</td>
-                        <td>{{ $coupon->discount_percent }}%</td>
-                        <td>{{ number_format($coupon->max_discount) }}đ</td>
-                        <td>{{ number_format($coupon->min_order_amount) }}đ</td>
-                        <td>{{ $coupon->used_count }}/{{ $coupon->usage_limit ?? '∞' }}</td>
-                        <td>{{ $coupon->expires_at ? $coupon->expires_at->format('d/m/Y') : 'Không' }}</td>
-                        <td>
-                            {{-- <a href="{{ route('admin.coupons.edit', $coupon) }}" class="btn btn-sm btn-warning">Sửa</a> --}}
-                            {{-- <form action="{{ route('admin.coupons.destroy', $coupon) }}" method="POST"
-                                    class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Xoá mã này?')">Xoá</button>
-                                </form> --}}
-                        </td>
+                        <th>Mã</th>
+                        <th>Giảm (%)</th>
+                        <th>Giảm tối đa</th>
+                        <th>Đơn tối thiểu</th>
+                        <th>Giới hạn</th>
+                        <th>HSD</th>
+                        <th>Hành động</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($coupons as $coupon)
+                        <tr>
+                            <td>{{ $coupon->code }}</td>
+                            <td>{{ $coupon->discount_percent }}%</td>
+                            <td>{{ number_format($coupon->max_discount) }}đ</td>
+                            <td>{{ number_format($coupon->min_order_amount) }}đ</td>
+                            <td>{{ $coupon->used_count }}/{{ $coupon->usage_limit ?? '∞' }}</td>
+                            <td>{{ $coupon->expires_at ? $coupon->expires_at->format('d/m/Y') : 'Không' }}</td>
+                            <td>
+                                {{-- Nút sửa / xóa có thể mở khi cần --}}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        {{ $coupons->links() }}
-    </div>
+            {{ $coupons->links() }}
+        </div>
     </div>
 @endsection
+
 <style>
     .bg-gradient-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -223,7 +209,6 @@
 
     .form-control::placeholder {
         color: var(--bs-secondary);
-        /* biến màu xám của Bootstrap */
         opacity: 0.5;
     }
 </style>

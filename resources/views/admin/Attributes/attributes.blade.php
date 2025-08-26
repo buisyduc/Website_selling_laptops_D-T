@@ -2,7 +2,7 @@
 @section('container-fluid')
     <div class="container-fluid">
 
-        <!-- Enhanced Page Title with gradient background -->
+        <!-- Tiêu đề trang nâng cao với nền gradient -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card border-0 shadow-sm bg-gradient"
@@ -12,22 +12,22 @@
                             <div>
                                 <h3 class="mb-1 fw-bold">
                                     <i class="ri-settings-3-line me-2"></i>
-                                    Product Attributes
+                                    Thuộc tính sản phẩm
                                 </h3>
-                                <p class="mb-0 opacity-75">Manage product attributes and variants</p>
+                                <p class="mb-0 opacity-75">Quản lý thuộc tính và biến thể sản phẩm</p>
                             </div>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0 bg-transparent">
                                     <li class="breadcrumb-item">
                                         <a href="javascript: void(0);" class="text-white-50 text-decoration-none">
-                                            <i class="ri-dashboard-line me-1"></i>Dashboard
+                                            <i class="ri-dashboard-line me-1"></i>Bảng điều khiển
                                         </a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="javascript: void(0);"
-                                            class="text-white-50 text-decoration-none">Products</a>
+                                        <a href="javascript: void(0);" class="text-white-50 text-decoration-none">Sản
+                                            phẩm</a>
                                     </li>
-                                    <li class="breadcrumb-item active text-white" aria-current="page">Attributes</li>
+                                    <li class="breadcrumb-item active text-white" aria-current="page">Thuộc tính</li>
                                 </ol>
                             </nav>
                         </div>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="row g-4">
-            <!-- Enhanced Create Attributes Form -->
+            <!-- Form tạo thuộc tính nâng cao -->
             <div class="col-xxl-4 col-xl-5">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-light border-0 py-3">
@@ -48,8 +48,8 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h5 class="card-title mb-0 fw-semibold">Create New Attribute</h5>
-                                <p class="card-text text-muted small mb-0">Add a new product attribute</p>
+                                <h5 class="card-title mb-0 fw-semibold">Tạo thuộc tính mới</h5>
+                                <p class="card-text text-muted small mb-0">Thêm một thuộc tính sản phẩm mới</p>
                             </div>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="ri-check-circle-line me-2 fs-5"></i>
                                     <div>
-                                        <strong>Success!</strong> {{ session('success') }}
+                                        <strong>Thành công!</strong> {{ session('success') }}
                                     </div>
                                 </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -74,7 +74,7 @@
                             <div class="mb-4">
                                 <label for="name" class="form-label fw-semibold">
                                     <i class="ri-price-tag-3-line me-1 text-primary"></i>
-                                    Attribute Name
+                                    Tên thuộc tính
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
@@ -84,7 +84,7 @@
                                     <input type="text"
                                         class="form-control border-start-0 ps-0 @error('name') is-invalid @enderror"
                                         name="name" value="{{ old('name') }}"
-                                        placeholder="Enter attribute name (e.g., Color, Size)" required>
+                                        placeholder="Nhập tên thuộc tính (ví dụ: Màu sắc, Kích thước)" required>
                                     @error('name')
                                         <div class="invalid-feedback">
                                             <i class="ri-error-warning-line me-1"></i>{{ $message }}
@@ -109,14 +109,10 @@
                                 </button>
                             </div>
 
-
-
-
-
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="ri-add-line me-2"></i>
-                                    Create Attribute
+                                    Tạo thuộc tính
                                 </button>
                             </div>
                         </form>
@@ -124,7 +120,7 @@
                 </div>
             </div>
 
-            <!-- Enhanced Product Variants List -->
+            <!-- Danh sách biến thể sản phẩm -->
             <div class="col-xxl-8 col-xl-7">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-light border-0 py-3">
@@ -136,12 +132,12 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1 ms-3">
-                                    <h5 class="card-title mb-0 fw-semibold">Variation management</h5>
-                                    <p class="card-text text-muted small mb-0">Manage existing variations</p>
+                                    <h5 class="card-title mb-0 fw-semibold">Quản lý biến thể</h5>
+                                    <p class="card-text text-muted small mb-0">Quản lý các biến thể đã tồn tại</p>
                                 </div>
                             </div>
 
-                            <!-- Enhanced Search Form -->
+                            <!-- Form tìm kiếm nâng cao -->
                             <div class="flex-shrink-0">
                                 <form method="GET" action="{{ route('attributes') }}"
                                     class="d-flex align-items-center gap-2">
@@ -150,7 +146,7 @@
                                             <i class="ri-search-line text-muted"></i>
                                         </span>
                                         <input type="text" name="search" value="{{ request('search') }}"
-                                            placeholder="Search variants..." class="form-control border-start-0 ps-0">
+                                            placeholder="Tìm kiếm biến thể..." class="form-control border-start-0 ps-0">
                                         <button type="submit" class="btn btn-primary">
                                             <i class="ri-search-line"></i>
                                         </button>
@@ -171,13 +167,13 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="border-0 fw-semibold text-uppercase small px-4 py-3">
-                                            <i class="ri-product-hunt-line me-1"></i>Variant name
+                                            <i class="ri-product-hunt-line me-1"></i>Tên biến thể
                                         </th>
                                         <th class="border-0 fw-semibold text-uppercase small px-2 py-3">
-                                            <i class="ri-barcode-line me-1"></i>Variant value
+                                            <i class="ri-barcode-line me-1"></i>Giá trị biến thể
                                         </th>
                                         <th class="border-0 fw-semibold text-uppercase small px-2 py-3">
-                                            <i class="ri-settings-3-line me-1"></i>Actions
+                                            <i class="ri-settings-3-line me-1"></i>Hành động
                                         </th>
                                     </tr>
                                 </thead>
@@ -190,24 +186,85 @@
                                                     <span class="badge bg-primary me-1">{{ $option->value }}</span>
                                                 @endforeach
                                             </td>
+                                            <!-- Thêm SweetAlert2 -->
+                                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    // Xử lý thêm giá trị thuộc tính (giữ nguyên của bạn)
+                                                    const valueFields = document.getElementById('value-fields');
+                                                    const addValueBtn = document.getElementById('add-value');
+
+                                                    addValueBtn.addEventListener('click', function() {
+                                                        const group = document.createElement('div');
+                                                        group.className = 'input-group mb-2';
+                                                        group.innerHTML = `
+            <input type="text" name="values[]" class="form-control"  required>
+            <button type="button" class="btn btn-danger remove-value"><i class="ri-close-line"></i></button>
+        `;
+                                                        valueFields.appendChild(group);
+                                                    });
+
+                                                    valueFields.addEventListener('click', function(e) {
+                                                        if (e.target.closest('.remove-value')) {
+                                                            e.target.closest('.input-group').remove();
+                                                        }
+                                                    });
+
+                                                    // Xử lý xóa bằng SweetAlert2
+                                                    const deleteButtons = document.querySelectorAll('.btn-delete');
+
+                                                    deleteButtons.forEach(button => {
+                                                        button.addEventListener('click', function() {
+                                                            const form = this.closest('.delete-form');
+
+                                                            Swal.fire({
+                                                                title: 'Bạn có chắc muốn xóa?',
+                                                                text: "Hành động này không thể hoàn tác!",
+                                                                icon: 'warning',
+                                                                showCancelButton: true,
+                                                                confirmButtonColor: '#d33',
+                                                                cancelButtonColor: '#3085d6',
+                                                                confirmButtonText: 'Xóa',
+                                                                cancelButtonText: 'Hủy',
+                                                                reverseButtons: true,
+                                                                showClass: {
+                                                                    popup: 'animate__animated animate__fadeInDown'
+                                                                },
+                                                                hideClass: {
+                                                                    popup: 'animate__animated animate__fadeOutUp'
+                                                                }
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    form.submit();
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                });
+                                            </script>
+
+                                            <!-- Sửa lại form xóa trong bảng -->
                                             <td class="px-2 py-2">
-                                                <!-- Nút chỉnh sửa / xoá (nếu có) -->
-                                                <a href="{{ route('attributes.edit', $attribute->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                                <a href="{{ route('attributes.edit', $attribute->id) }}"
+                                                    class="btn btn-sm btn-warning">Chỉnh sửa</a>
                                                 <form action="{{ route('attributes.destroy', $attribute->id) }}"
-                                                    method="POST" style="display:inline;">
+                                                    method="POST" class="d-inline delete-form">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Xóa tạm thời thuộc tính này?')">Delete</button>
+                                                    <button type="button" class="btn btn-sm btn-danger btn-delete">
+                                                        Xóa
+                                                    </button>
                                                 </form>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Pagination if exists -->
+                        <!-- Phân trang nếu có -->
                         @if (method_exists($variants, 'links'))
                             <div class="card-footer bg-light border-0 py-3">
                                 {{ $variants->links() }}
@@ -244,7 +301,7 @@
     </script>
 
     <style>
-        /* Enhanced Styling */
+        /* Styling nâng cao */
         .bg-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         }
@@ -308,7 +365,7 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Responsive improvements */
+        /* Cải thiện responsive */
         @media (max-width: 768px) {
             .d-flex.flex-wrap.gap-3 {
                 flex-direction: column;

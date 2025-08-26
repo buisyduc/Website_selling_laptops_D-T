@@ -56,6 +56,8 @@ Route::get('/products/laptopdohoa', [ClientProductController::class, 'laptopdoho
 Route::get('/products/laptopAI', [ClientProductController::class, 'laptopAI'])->name('client.products.laptopAI');
 Route::get('/products/laptopmongnhe', [ClientProductController::class, 'laptopmongnhe'])->name('client.products.laptopmongnhe');
 Route::get('/products/laptopvanphong', [ClientProductController::class, 'laptopvanphong'])->name('client.products.laptopvanphong');
+Route::get('/products/pc', [ClientProductController::class, 'pc'])->name('client.products.pc');
+Route::get('/products/manhinh', [ClientProductController::class, 'manhinh'])->name('client.products.manhinh');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
 // Các trang khác: Điện thoại, Tablet, Âm thanh, Mic… => Coming soon
 Route::get('/coming-soon', function() {

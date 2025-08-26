@@ -9,12 +9,13 @@
                 </a>
             @endif
             @php
-                $method = strtolower(trim((string)($order->payment_method ?? '')));
-                $codKeywords = ['cod','code','cash_on_delivery','cash','offline'];
+                $method = strtolower(trim((string) ($order->payment_method ?? '')));
+                $codKeywords = ['cod', 'code', 'cash_on_delivery', 'cash', 'offline'];
                 $isOnline = $method !== '' && !in_array($method, $codKeywords, true);
             @endphp
             @if (isset($order) && $isOnline && $order->status === 'pending' && $order->payment_status === 'refund_pending')
-                <a href="{{ route('orders.return.form', [$order->id, 'action' => 'cancel']) }}" class="btn btn-outline-secondary ms-2">
+                <a href="{{ route('orders.return.form', [$order->id, 'action' => 'cancel']) }}"
+                    class="btn btn-outline-secondary ms-2">
                     Thông tin hủy đơn / hoàn tiền
                 </a>
             @endif
@@ -61,6 +62,8 @@
                                     'unpaid' => 'Chưa thanh toán',
                                     'pending' => 'Đang xử lý',
                                     'failed' => 'Thanh toán thất bại',
+                                    'refunded' => 'Đã hoàn tiền',
+                                    'Waiting_for_order_confirmation' => 'Chưa thanh toán.',
                                     default => 'Không xác định',
                                 };
                             @endphp

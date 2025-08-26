@@ -348,6 +348,24 @@ public function show($id)
         return $this->filterAndPaginate($request, $query, 'client.products.laptopdohoa');
     }
 
+       public function pc(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'pc');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.pc');
+    }
+       public function manhinh(Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'images', 'variants'])
+            ->where('status', true)
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'man-hinh');
+            });
+        return $this->filterAndPaginate($request, $query, 'client.products.manhinh');
+    }
     protected function filterAndPaginate(Request $request, $query, $view)
     {
         // luôn chỉ rõ bảng products.status

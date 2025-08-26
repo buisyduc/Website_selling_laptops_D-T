@@ -852,10 +852,10 @@ Mua Ngay
                         <p>Chưa có đánh giá nào.</p>
                     @endif
 
-                    @auth
+                    {{-- @auth
                     @else
                         <p><a href="{{ route('login') }}">Đăng nhập</a> để gửi đánh giá.</p>
-                    @endauth
+                    @endauth --}}
 
                     <hr>
 

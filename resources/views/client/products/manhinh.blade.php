@@ -5,8 +5,8 @@
 
         <!-- Tabs sản phẩm -->
         <div class="mb-4 d-flex justify-content-center gap-3"
-            style="border:1px solid #eee; border-radius:16px; padding:16px;">
-            <a href="{{ url('/products/laptopvanphong') }}"
+            style="border:1px solid #eee; border-radius:10px; padding:10px;">
+            {{-- <a href="{{ url('/products/laptopvanphong') }}"
                 class="btn {{ request()->is('products/laptopvanphong') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
                     class="fas fa-laptop me-2"></i> Laptop văn phòng</a>
             <a href="{{ url('/products/laptopsinhvien') }}"
@@ -23,7 +23,25 @@
                     class="fas fa-desktop me-2"></i> Laptop đồ họa</a>
             <a href="{{ url('/products/laptopAI') }}"
                 class="btn {{ request()->is('products/laptopAI') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
-                    class="fas fa-desktop me-2"></i> Laptop AI</a>
+                    class="fas fa-desktop me-2"></i> Laptop AI</a> --}}
+            <a href="{{ url('/products/pc') }}"
+                class="btn {{ request()->is('products/pc') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i> PC</a>
+            <a href="{{ url('/products/manhinh') }}"
+                class="btn {{ request()->is('products/manhinh') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i> Màn hình</a>
+            <a href="{{ url('/coming-soon') }}"
+                class="btn {{ request()->is('/coming-soon') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i> Thu cũ đổi mới</a>
+            <a href="{{ url('/coming-soon') }}"
+                class="btn {{ request()->is('/coming-soon') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i>Hàng Cũ</a>
+            <a href="{{ url('/coming-soon') }}"
+                class="btn {{ request()->is('/coming-soon') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i>Khuyến mãi</a>
+                    <a href="{{ url('/coming-soon') }}"
+                class="btn {{ request()->is('/coming-soon') ? 'btn-danger' : 'btn-outline-danger' }} fw-bold"><i
+                    class="fas fa-desktop me-2"></i>Đồ công nghệ</a>
         </div>
         <!-- Banner ngang 2 ảnh, căn giữa và cân đối, có nút chuyển ảnh -->
         <div class="mb-4 d-flex justify-content-center gap-3">
@@ -94,7 +112,6 @@
                 </a>
             @endforeach
         </div>
-
 
 
     </div>
