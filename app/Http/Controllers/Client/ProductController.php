@@ -297,7 +297,7 @@ public function show($id)
         $query = Product::with(['category', 'brand', 'images', 'variants'])
             ->where('status', true)
             ->whereHas('category', function ($q) {
-                $q->where('slug', 'laptop-cho-sinh-vien');
+                $q->where('slug', 'laptop-cho-sinh-vin');
             });
         return $this->filterAndPaginate($request, $query, 'client.products.laptopsinhvien');
     }
