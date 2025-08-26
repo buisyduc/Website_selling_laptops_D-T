@@ -339,7 +339,7 @@ border-radius: 12px;
 </span>
 
                         <!-- Giá gạch ngang (giá cũ) -->
-                        <del class="text-muted small">34.590.000₫</del>
+                        <del class="text-muted small">50.000.000₫</del>
                     </div>
 
                     <!-- Thêm giá mặc định (ẩn đi) -->
@@ -788,7 +788,7 @@ justify-content: space-between;
 
 
                 <div style="text-decoration: line-through; color: #999; font-size: 14px;">
-                    34.590.000đ
+                    50.000.000đ
                 </div>
                 <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
                     @auth

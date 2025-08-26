@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
 
         <header id="page-topbar">
             <div class="layout-width">
@@ -83,7 +83,7 @@
 
 
                     <div class="d-flex align-items-center">
-                          @php
+                        @php
                             $user = auth()->user();
                             $unreadCount = $user ? $user->unreadNotifications()->count() : 0;
                             $totalCount = $user ? $user->notifications()->count() : 0;
@@ -100,7 +100,8 @@
                                 <i class='bi bi-bell fs-18'></i>
                                 <span
                                     class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"><span
-                                        class="notification-badge">{{ $unreadCount }}</span><span class="visually-hidden">unread
+                                        class="notification-badge">{{ $unreadCount }}</span><span
+                                        class="visually-hidden">unread
                                         messages</span></span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
@@ -114,7 +115,8 @@
                                                         class="badge bg-danger-subtle text-danger  fs-13 notification-badge">
                                                         {{ $totalCount }}</span></h6>
                                                 <p class="fs-14 text-muted mt-1 mb-0">Bạn có <span
-                                                        class="fw-semibold notification-unread">{{ $unreadCount }}</span> tin nhắn chưa đọc</p>
+                                                        class="fw-semibold notification-unread">{{ $unreadCount }}</span>
+                                                    tin nhắn chưa đọc</p>
                                             </div>
                                             <div class="col-auto dropdown">
                                                 <a href="javascript:void(0);" data-bs-toggle="dropdown"
@@ -136,49 +138,64 @@
                                     <div data-simplebar style="max-height: 300px;" class="pe-2">
 
                                         @forelse($newNotifications as $n)
-                                            <div class="text-reset notification-item d-block dropdown-item position-relative unread-message">
+                                            <div
+                                                class="text-reset notification-item d-block dropdown-item position-relative unread-message">
                                                 <div class="d-flex">
                                                     <div class="avatar-xs me-3 flex-shrink-0">
-                                                        <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
+                                                        <span
+                                                            class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
                                                             <i class="bi bi-bell"></i>
                                                         </span>
                                                     </div>
                                                     <div class="flex-grow-1">
-                                                        <a href="{{ route('admin.notifications.redirect', $n->id) }}" class="stretched-link">
-                                                            <h6 class="mt-0 fs-14 mb-2 lh-base">{{ data_get($n->data, 'title', 'Thông báo mới') }}</h6>
+                                                        <a href="{{ route('admin.notifications.redirect', $n->id) }}"
+                                                            class="stretched-link">
+                                                            <h6 class="mt-0 fs-14 mb-2 lh-base">
+                                                                {{ data_get($n->data, 'title', 'Thông báo mới') }}</h6>
                                                         </a>
                                                         <div class="fs-13 text-muted">
-                                                            <p class="mb-1">{{ data_get($n->data, 'message', json_encode($n->data)) }}</p>
+                                                            <p class="mb-1">
+                                                                {{ data_get($n->data, 'message', json_encode($n->data)) }}
+                                                            </p>
                                                         </div>
                                                         <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                            <span><i class="mdi mdi-clock-outline"></i> {{ $n->created_at->diffForHumans() }}</span>
+                                                            <span><i class="mdi mdi-clock-outline"></i>
+                                                                {{ $n->created_at->diffForHumans() }}</span>
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         @empty
-                                            
                                         @endforelse
 
-                                        @if($readNotifications->count())
-                                            <h6 class="text-overflow text-muted fs-13 my-2 text-uppercase notification-title">Đã đọc</h6>
-                                            @foreach($readNotifications as $n)
-                                                <div class="text-reset notification-item d-block dropdown-item position-relative">
+                                        @if ($readNotifications->count())
+                                            <h6
+                                                class="text-overflow text-muted fs-13 my-2 text-uppercase notification-title">
+                                                Đã đọc</h6>
+                                            @foreach ($readNotifications as $n)
+                                                <div
+                                                    class="text-reset notification-item d-block dropdown-item position-relative">
                                                     <div class="d-flex">
                                                         <div class="avatar-xs me-3 flex-shrink-0">
-                                                            <span class="avatar-title bg-secondary-subtle text-secondary rounded-circle fs-16">
+                                                            <span
+                                                                class="avatar-title bg-secondary-subtle text-secondary rounded-circle fs-16">
                                                                 <i class="bi bi-bell"></i>
                                                             </span>
                                                         </div>
                                                         <div class="flex-grow-1">
-                                                            <a href="{{ route('admin.notifications.redirect', $n->id) }}" class="stretched-link">
-                                                                <h6 class="mt-0 fs-14 mb-1 fw-semibold">{{ data_get($n->data, 'title', 'Thông báo') }}</h6>
+                                                            <a href="{{ route('admin.notifications.redirect', $n->id) }}"
+                                                                class="stretched-link">
+                                                                <h6 class="mt-0 fs-14 mb-1 fw-semibold">
+                                                                    {{ data_get($n->data, 'title', 'Thông báo') }}</h6>
                                                             </a>
                                                             <div class="fs-13 text-muted">
-                                                                <p class="mb-1">{{ data_get($n->data, 'message', json_encode($n->data)) }}</p>
+                                                                <p class="mb-1">
+                                                                    {{ data_get($n->data, 'message', json_encode($n->data)) }}
+                                                                </p>
                                                             </div>
                                                             <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                                <span><i class="mdi mdi-clock-outline"></i> {{ $n->created_at->diffForHumans() }}</span>
+                                                                <span><i class="mdi mdi-clock-outline"></i>
+                                                                    {{ $n->created_at->diffForHumans() }}</span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -189,7 +206,8 @@
                                     <div class="notification-actions" id="notification-actions">
                                         <div class="d-flex text-muted justify-content-center align-items-center">
                                             <span class="me-2">Tổng:</span>
-                                            <div id="select-content" class="text-body fw-semibold px-1">{{ $totalCount }}</div>
+                                            <div id="select-content" class="text-body fw-semibold px-1">
+                                                {{ $totalCount }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -219,10 +237,17 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
 
-                                <a class="dropdown-item" href="auth-logout-basic.html"><i
-                                        class="bi bi-box-arrow-right text-muted fs-15 align-middle me-1"></i> <span
-                                        class="align-middle" data-key="t-logout">Đăng xuất</span></a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                </form>
+                                <a class="dropdown-item" href="#"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="bi bi-box-arrow-right text-muted fs-15 align-middle me-1"></i>
+                                    <span class="align-middle" data-key="t-logout">Đăng xuất</span>
+                                </a>
                             </div>
+
                         </div>
                     </div>
 
@@ -270,13 +295,15 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span>Menu</span></li>
 
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="http://127.0.0.1:8000/admin/index" class="nav-link menu-link">
                                 <i class="bi bi-speedometer2"></i> <span>Bảng điều khiển</span>
                                 <span class="badge badge-pill bg-danger-subtle text-danger">Hot</span>
                             </a>
-                        </li>
-
+                        </li> --}}
+                        <li><a href="{{ route('admin.dashboard') }}" class="nav-link menu-link"><i
+                                    class="bi bi-pie-chart"></i>
+                                <span>Thống kê</span></a></li>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarProducts" data-bs-toggle="collapse">
                                 <i class="bi bi-box-seam"></i> <span>Sản phẩm</span>
@@ -360,24 +387,22 @@
                             </div>
                         </li> --}}
 
-                         <li><a href="{{ route('coupons-list') }}" class="nav-link menu-link"><i
+                        <li><a href="{{ route('coupons-list') }}" class="nav-link menu-link"><i
                                     class="bi bi-tag"></i> <span>Mã giảm giá</span></a></li>
 
                         <li><a href="{{ route('admin.reviews.index') }}" class="nav-link menu-link"><i
                                     class="bi bi-star"></i>
                                 <span>Đánh giá </span></a></li>
-                                
+
                         {{-- <li><a href="{{ route('admin.comments.index') }}" class="nav-link menu-link"><i
                                     class="bi bi-star"></i>
                                 <span>Bình luận </span></a></li> --}}
                         {{-- <li><a href="brands.html" class="nav-link menu-link"><i class="bi bi-shop"></i> <span>Thương
                                     hiệu</span></a></li> --}}
-                        <li><a href="{{ route('admin.dashboard') }}" class="nav-link menu-link"><i
-                                    class="bi bi-pie-chart"></i>
-                                <span>Thống kê</span></a></li>
 
-                       
-                        
+
+
+
 
                         {{-- <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarAccounts" data-bs-toggle="collapse">
@@ -458,7 +483,7 @@
         </div>
         <!-- End Page-content -->
 
-     
+
     </div>
 
     <!-- end main content-->
@@ -472,7 +497,7 @@
         <i class="ri-arrow-up-line"></i>
     </button>
     <!--end back-to-top-->
-   
+
 
 
     <!--preloader-->

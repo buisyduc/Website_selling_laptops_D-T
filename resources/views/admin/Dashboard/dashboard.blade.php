@@ -1,157 +1,225 @@
-@extends('admin.index') @section('container-fluid')
-    <div class="container py-4">
-        <h1 class="mb-4">📊 Thống kê</h1> <!-- Hàng 1: Tổng quan -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3 col-sm-6">
-                <div class="stat-card bg-primary text-white">
-                    <div class="card-icon">💰</div>
-                    <h5>Tổng doanh thu</h5>
-                    <h3>{{ number_format($totalRevenue) }}₫</h3>
+@extends('admin.index')
+
+@section('container-fluid')
+    <div class="container py-3">
+        <h2 class="mb-3 fw-bold text-dark">📊 Thống kê tổng quan</h2>
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="row g-2 mb-3 align-items-center">
+            <div class="col-auto">
+                <label for="from" class="col-form-label fw-bold">Từ ngày:</label>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="from" id="from" class="form-control" value="{{ request('from') }}">
+            </div>
+
+            <div class="col-auto">
+                <label for="to" class="col-form-label fw-bold">Đến ngày:</label>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="to" id="to" class="form-control" value="{{ request('to') }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark">Lọc</button>
+            </div>
+        </form>
+
+        <div class="row g-3">
+
+            <div class="row g-3 mt-2">
+                <!-- Target vs Doanh thu -->
+                <div class="col-md-12">
+                    <div class="card shadow-sm rounded-3">
+                        <div class="card-header bg-dark text-white py-2 small">🎯 Doanh thu vs Target</div>
+                        <div class="card-body p-2">
+                            <canvas id="targetChart" height="160"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stat-card bg-success text-white">
-                    <div class="card-icon">🛒</div>
-                    <h5>Tổng đơn hàng</h5>
-                    <h3>{{ $totalOrders }}</h3>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stat-card bg-warning text-white">
-                    <div class="card-icon">📦</div>
-                    <h5>Sản phẩm đã bán</h5>
-                    <h3>{{ $totalProductsSold }}</h3>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stat-card bg-info text-white">
-                    <div class="card-icon">📊</div>
-                    <h5>Doanh thu trung bình / đơn</h5>
-                    <h3>{{ number_format($avgOrderValue) }}₫</h3>
-                </div>
-            </div>
-        </div> <!-- Hàng 2: Khách hàng & trạng thái -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-4 col-sm-6">
-                <div class="stat-card bg-secondary text-white">
-                    <div class="card-icon">🆕</div>
-                    <h5>Khách hàng mới</h5>
-                    <h3>{{ $newCustomers }}</h3>
-                </div>
-            </div>
-            <div class="col-md-8 col-sm-6">
-                <div class="stat-card bg-light text-dark">
-                    <h5>Đơn hàng theo trạng thái</h5>
-                    <ul class="status-list">
-                        @foreach ($ordersByStatus as $status => $count)
-                            <li>{{ ucfirst($status) }}: {{ $count }}</li>
-                            @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div> <!-- Hàng 3: Top sản phẩm / khách hàng -->
-        <div class="row g-4 mb-4">
+            <!-- Doanh thu theo tháng -->
             <div class="col-md-6">
-                <div class="stat-card bg-light text-dark">
-                    <h5>Top sản phẩm bán chạy</h5>
-                    <ul>
-                        @foreach ($topProducts as $p)
-                            <li>{{ $p->product->name ?? '' }}: {{ $p->total_qty }}</li>
-                            @endforeach
-                    </ul>
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header bg-dark text-white py-2 small">💰 Doanh thu theo tháng</div>
+                    <div class="card-body p-2">
+                        <canvas id="revenueChart" height="140"></canvas>
+                    </div>
                 </div>
             </div>
+
+            <!-- Đơn hàng theo trạng thái -->
             <div class="col-md-6">
-                <div class="stat-card bg-light text-dark">
-                    <h5>Top khách hàng</h5>
-                    <ul>
-                        @foreach ($topCustomers as $c)
-                            <li>{{ $c->user->name ?? '' }}: {{ number_format($c->total_spent) }}₫</li>
-                            @endforeach
-                    </ul>
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header bg-dark text-white py-2 small">📦 Đơn hàng theo trạng thái</div>
+                    <div class="card-body p-2">
+                        <canvas id="orderStatusChart" height="140"></canvas>
+                    </div>
                 </div>
             </div>
-        </div> <!-- Hàng 4: Danh mục / đơn hàng gần đây -->
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="stat-card bg-light text-dark">
-                    <h5>Danh mục bán chạy</h5>
-                    <ul>
-                        @foreach ($topCategories as $cat)
-                            <li>{{ $cat->name }}: {{ $cat->total_sold }}</li>
-                            @endforeach
-                    </ul>
+        </div>
+
+        <div class="row g-3 mt-2">
+            <!-- Top sản phẩm bán chạy -->
+            <div class="col-md-12">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header bg-dark text-white py-2 small">🔥 Top sản phẩm bán chạy</div>
+                    <div class="card-body p-2">
+                        <canvas id="topProductsChart" height="160"></canvas>
+                    </div>
                 </div>
             </div>
+        </div>
+
+
+
+        <div class="row g-3 mt-2">
+            <!-- Khách hàng theo tháng -->
             <div class="col-md-6">
-                <div class="stat-card bg-light text-dark">
-                    <h5>Đơn hàng gần đây</h5>
-                    <ul class="list-group list-group-flush">
-                        @foreach ($recentOrders as $order)
-                            <li class="list-group-item"> Đơn #{{ $order->id }} - {{ $order->user->name ?? '' }} -
-                                {{ number_format($order->total_amount) }}₫ </li>
-                        @endforeach
-                    </ul>
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header bg-dark text-white py-2 small">👥 Khách hàng theo tháng</div>
+                    <div class="card-body p-2">
+                        <canvas id="customerChart" height="140"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Đơn hàng theo tháng -->
+            <div class="col-md-6">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-header bg-dark text-white py-2 small">📦 Đơn hàng theo tháng</div>
+                    <div class="card-body p-2">
+                        <canvas id="orderMonthChart" height="140"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    @endsection @push('styles')
-    <style>
-        .stat-card {
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const months = {!! json_encode($months) !!};
 
-        .stat-card h5 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
+        // Doanh thu vs Target
+        new Chart(document.getElementById('targetChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                        label: 'Doanh thu',
+                        data: {!! json_encode($revenuesData) !!},
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Target',
+                        data: {!! json_encode($targets) !!},
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: false,
+                        borderDash: [5, 5],
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
-        .stat-card h3 {
-            font-size: 22px;
-            font-weight: bold;
-        }
+        // Khách hàng theo tháng
+        new Chart(document.getElementById('customerChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Khách hàng mới',
+                    data: {!! json_encode($customersData) !!},
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
-        .card-icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
+        // Đơn hàng theo tháng
+        new Chart(document.getElementById('orderMonthChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Đơn hàng',
+                    data: {!! json_encode($ordersData) !!},
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
-        .status-list li {
-            margin-bottom: 5px;
-        }
+        // Doanh thu theo tháng (chỉ vẽ 1 lần duy nhất)
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: {!! json_encode($revenuesData) !!},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
-        .list-group-item {
-            display: flex;
-            justify-content: space-between;
-        }
+        // Đơn hàng theo trạng thái
+        new Chart(document.getElementById('orderStatusChart'), {
+            type: 'pie',
+            data: {
+                labels: {!! json_encode(array_keys($ordersByStatus)) !!},
+                datasets: [{
+                    data: {!! json_encode(array_values($ordersByStatus)) !!},
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6c757d']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
-        .bg-primary {
-            background-color: #0d6efd !important;
-        }
-
-        .bg-success {
-            background-color: #198754 !important;
-        }
-
-        .bg-warning {
-            background-color: #ffc107 !important;
-        }
-
-        .bg-info {
-            background-color: #0dcaf0 !important;
-        }
-
-        .bg-secondary {
-            background-color: #6c757d !important;
-        }
-    </style>
-@endpush
+        // Top sản phẩm bán chạy
+        new Chart(document.getElementById('topProductsChart'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($topProducts->pluck('name')) !!},
+                datasets: [{
+                    label: 'Số lượng bán',
+                    data: {!! json_encode($topProducts->pluck('total_qty')) !!},
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // cho dễ đọc
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+@endsection

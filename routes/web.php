@@ -60,7 +60,7 @@ Route::get('/products/pc', [ClientProductController::class, 'pc'])->name('client
 Route::get('/products/manhinh', [ClientProductController::class, 'manhinh'])->name('client.products.manhinh');
 Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('client.products.show');
 // Các trang khác: Điện thoại, Tablet, Âm thanh, Mic… => Coming soon
-Route::get('/coming-soon', function() {
+Route::get('/coming-soon', function () {
     return view('coming-soon');
 })->name('client.coming-soon');
 

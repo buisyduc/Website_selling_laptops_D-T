@@ -318,14 +318,14 @@
                         </a>
                         <a href="" class="more-product button__link">Xem tất cả</a>
                     </div>
-                    {{-- <div class="list-related-tag">
+                    <div class="list-related-tag">
                         <a href="" class="related-tag button__link">Build PC</a>
                         <a href="" class="related-tag button__link">PC Gaming</a>
                         <a href="" class="related-tag button__link">PC Đồ họa</a>
                         <a href="" class="related-tag button__link">MSI</a>
                         <a href="" class="related-tag button__link">ASUS</a>
                         <a href="" class="related-tag button__link">Xem tất cả</a>
-                    </div> --}}
+                    </div>
                 </div>
             </div>
             <div class="product-list">

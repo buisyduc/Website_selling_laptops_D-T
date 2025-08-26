@@ -33,8 +33,9 @@ class AuthController extends Controller
 
             Auth::login($user);
 
+
             if ($user->role === 'admin') {
-                return redirect()->route('admin.index')->with('success', 'Đăng nhập thành công');
+                return redirect()->route(route: 'admin.dashboard')->with(key: 'success');
             }
 
             return redirect()->route('index')->with('success', 'Đăng nhập thành công');
@@ -84,15 +85,14 @@ class AuthController extends Controller
 
         return redirect()->route('index'); // hoặc route('login') nếu muốn
     }
-   public function purchaseOrder()
-{
-    $user = Auth::user();
+    public function purchaseOrder()
+    {
+        $user = Auth::user();
 
-    // Giả sử bạn có các trường dữ liệu sau trong bảng users hoặc các bảng liên quan:
-    // $totalOrders = $user->orders()->count(); // Đếm tổng số đơn
-    // $totalSpent = $user->orders()->where('status', 'completed')->sum('total_amount'); // Tổng tiền
+        // Giả sử bạn có các trường dữ liệu sau trong bảng users hoặc các bảng liên quan:
+        // $totalOrders = $user->orders()->count(); // Đếm tổng số đơn
+        // $totalSpent = $user->orders()->where('status', 'completed')->sum('total_amount'); // Tổng tiền
 
-    return view('client/account/purchase_order', compact('user'));
-}
-
+        return view('client/account/purchase_order', compact('user'));
+    }
 }
